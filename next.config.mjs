@@ -9,6 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    allowedDevOrigins: ['*.replit.dev', '*.pike.replit.dev'],
+  },
 }
 
 export default nextConfig
