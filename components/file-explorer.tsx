@@ -1,43 +1,17 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
-import {
-  ChevronRight,
-  ChevronDown,
-  File,
-  Folder,
-  FolderOpen,
-  Plus,
-  MoreHorizontal,
-  FileText,
-  Code,
-  ImageIcon,
-  Settings,
-  Trash2,
-  Edit3,
-  Copy,
-  Scissors,
-  Download,
-  Upload,
-  RefreshCw,
-  Filter,
-  Search,
-  X,
-} from "lucide-react"
+import { useState } from "react"
+import { ChevronRight, ChevronDown, File, Folder, FolderOpen, Plus, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-} from "@/components/ui/context-menu"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useEditor, type FileItem } from "../lib/editor-context"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { useEditor, type FileItem } from "../lib/editor-store"
 
 export function FileExplorer() {
   const { state, dispatch } = useEditor()

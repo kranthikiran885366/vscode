@@ -1,125 +1,163 @@
+
 "use client"
 
-import { Files, Search, GitBranch, Bug, Package, Settings, TestTube, Users, Monitor } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useEditor } from "../lib/editor-context"
+import {
+  FileText,
+  Search,
+  GitBranch,
+  Play,
+  Package,
+  Settings,
+  Bot,
+  Users,
+  Monitor,
+  Terminal,
+  Zap,
+  Layers,
+} from "lucide-react"
+import { useEditor } from "../lib/editor-store"
 
 export function ActivityBar() {
   const { state, dispatch } = useEditor()
 
-  const panels = [
+  const activityItems = [
     {
       id: "explorer",
-      icon: Files,
+      icon: FileText,
       label: "Explorer",
       shortcut: "⌘⇧E",
-      badge: null,
+      panel: "explorer",
     },
     {
       id: "search",
       icon: Search,
       label: "Search",
       shortcut: "⌘⇧F",
-      badge: state.searchResults.length > 0 ? state.searchResults.length : null,
+      panel: "search",
     },
     {
       id: "git",
       icon: GitBranch,
       label: "Source Control",
       shortcut: "⌃⇧G",
-      badge: state.gitFiles.length > 0 ? state.gitFiles.length : null,
+      panel: "git",
     },
     {
       id: "debug",
-      icon: Bug,
+      icon: Play,
       label: "Run and Debug",
       shortcut: "⌘⇧D",
-      badge: state.breakpoints.length > 0 ? state.breakpoints.length : null,
+      panel: "debug",
     },
     {
       id: "extensions",
       icon: Package,
       label: "Extensions",
       shortcut: "⌘⇧X",
-      badge: null,
+      panel: "extensions",
     },
     {
-      id: "testing",
-      icon: TestTube,
-      label: "Testing",
-      shortcut: "⌘;",
-      badge: null,
+      id: "ai",
+      icon: Bot,
+      label: "AI Assistant",
+      shortcut: "⌘⇧A",
+      panel: "ai",
     },
   ]
 
-  const bottomPanels = [
+  const bottomItems = [
     {
-      id: "live-share",
+      id: "collaboration",
       icon: Users,
-      label: "Live Share",
-      badge: null,
+      label: "Collaboration",
+      action: () => {
+        dispatch({ type: "SET_ACTIVE_RIGHT_PANEL", payload: "collaboration" })
+        dispatch({ type: "SET_RIGHT_SIDEBAR_VISIBLE", payload: true })
+      },
     },
     {
-      id: "remote",
+      id: "preview",
       icon: Monitor,
-      label: "Remote Explorer",
-      badge: null,
+      label: "Live Preview",
+      action: () => {
+        dispatch({ type: "SET_ACTIVE_RIGHT_PANEL", payload: "preview" })
+        dispatch({ type: "SET_RIGHT_SIDEBAR_VISIBLE", payload: true })
+      },
+    },
+    {
+      id: "terminal",
+      icon: Terminal,
+      label: "Terminal",
+      action: () => {
+        dispatch({ type: "SET_ACTIVE_BOTTOM_PANEL", payload: "terminal" })
+        dispatch({ type: "SET_BOTTOM_PANEL_VISIBLE", payload: true })
+      },
     },
     {
       id: "settings",
       icon: Settings,
       label: "Settings",
-      shortcut: "⌘,",
-      badge: null,
+      action: () => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: "settings" }),
     },
   ]
 
-  const handlePanelClick = (panelId: string) => {
-    dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: panelId })
-  }
-
-  const renderPanel = (panel: any) => (
-    <Tooltip key={panel.id}>
-      <TooltipTrigger asChild>
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`w-10 h-10 mx-1 mb-1 p-0 rounded-md transition-all duration-200 relative ${
-              state.activeLeftPanel === panel.id && state.sidebarVisible
-                ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 border-r-2 border-blue-500"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => handlePanelClick(panel.id)}
-          >
-            <panel.icon className="w-5 h-5" />
-          </Button>
-          {panel.badge && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-              {panel.badge > 99 ? "99+" : panel.badge}
-            </div>
-          )}
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="right" className="flex items-center gap-2">
-        <span>{panel.label}</span>
-        {panel.shortcut && <kbd className="text-xs bg-gray-200 dark:bg-gray-700 px-1 rounded">{panel.shortcut}</kbd>}
-      </TooltipContent>
-    </Tooltip>
-  )
-
   return (
     <TooltipProvider>
-      <div className="w-12 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-        {/* Top Panels */}
-        <div className="flex flex-col py-2">{panels.map(renderPanel)}</div>
+      <div className="w-12 bg-gray-200 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 flex flex-col items-center py-2">
+        {/* Main Activity Items */}
+        <div className="flex flex-col space-y-1">
+          {activityItems.map((item) => (
+            <Tooltip key={item.id}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={state.activeLeftPanel === item.panel ? "default" : "ghost"}
+                  size="icon"
+                  className={`w-10 h-10 ${
+                    state.activeLeftPanel === item.panel
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  }`}
+                  onClick={() => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: item.panel })}
+                >
+                  <item.icon className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>
+                  {item.label}
+                  {item.shortcut && <span className="ml-2 text-xs opacity-60">{item.shortcut}</span>}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
 
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Bottom Panels */}
-        <div className="flex flex-col pb-2">{bottomPanels.map(renderPanel)}</div>
+        {/* Bottom Items */}
+        <div className="flex flex-col space-y-1">
+          {bottomItems.map((item) => (
+            <Tooltip key={item.id}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-10 h-10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  onClick={item.action}
+                >
+                  <item.icon className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{item.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
       </div>
     </TooltipProvider>
   )

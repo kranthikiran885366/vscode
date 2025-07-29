@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -12,7 +13,7 @@ import { TabBar } from "../components/tab-bar"
 import { Terminal } from "../components/terminal"
 import { StatusBar } from "../components/status-bar"
 import { CommandPalette } from "../components/command-palette"
-import { EditorProvider, useEditor } from "../lib/editor-context"
+import { EditorProvider, useEditor } from "../lib/editor-store"
 import { Layout, Code2, Sparkles, Users, Monitor, Bot, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -70,6 +71,7 @@ Get started by exploring the features or opening a file from the explorer!
     }
 
     dispatch({ type: "ADD_TAB", payload: sampleTab })
+    setShowWelcome(false)
   }, [dispatch])
 
   return (
@@ -100,14 +102,83 @@ Get started by exploring the features or opening a file from the explorer!
 
           {/* Editor Content */}
           <div className="flex-1 bg-white dark:bg-gray-900">
-            {showWelcome && (
+            {showWelcome && state.openTabs.length === 0 && (
               <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold mb-4">Welcome to Advanced Code Editor</h1>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Open a file to get started or explore the features
-                  </p>
+                <div className="text-center max-w-2xl mx-auto p-8">
+                  <div className="mb-8">
+                    <Code2 className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+                      Welcome to Advanced Code Editor
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                      A powerful, AI-enhanced IDE that combines the best features of modern development tools
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <Bot className="w-8 h-8 mb-3 text-purple-500" />
+                      <h3 className="font-semibold mb-2">AI-Powered</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Intelligent code completion, AI assistance, and automated refactoring
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <Users className="w-8 h-8 mb-3 text-green-500" />
+                      <h3 className="font-semibold mb-2">Collaborative</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Real-time editing with team members and shared workspaces
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <Monitor className="w-8 h-8 mb-3 text-blue-500" />
+                      <h3 className="font-semibold mb-2">Live Preview</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Instant preview of web applications and real-time updates
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <Zap className="w-8 h-8 mb-3 text-yellow-500" />
+                      <h3 className="font-semibold mb-2">Fast & Modern</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Lightning-fast performance with modern development tools
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <Button 
+                      onClick={() => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: "explorer" })}
+                      className="w-full md:w-auto"
+                    >
+                      <Layout className="w-4 h-4 mr-2" />
+                      Open File Explorer
+                    </Button>
+                    <p className="text-sm text-gray-500">
+                      Or use <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘P</kbd> to quickly open files
+                    </p>
+                  </div>
                 </div>
+              </div>
+            )}
+            
+            {state.openTabs.length > 0 && (
+              <div className="h-full p-4">
+                {state.openTabs.map((tab) => (
+                  <div 
+                    key={tab.id}
+                    className={`h-full ${state.activeTabId === tab.id ? 'block' : 'hidden'}`}
+                  >
+                    <div className="h-full bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 p-4 overflow-auto">
+                      <pre className="whitespace-pre-wrap text-sm font-mono">
+                        {tab.content}
+                      </pre>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -118,6 +189,7 @@ Get started by exploring the features or opening a file from the explorer!
           <div className="w-64 bg-gray-100 dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
             {state.activeRightPanel === "collaboration" && <CollaborationPanel />}
             {state.activeRightPanel === "preview" && <LivePreview />}
+            {state.activeRightPanel === "ai-chat" && <AIAssistant />}
           </div>
         )}
       </div>

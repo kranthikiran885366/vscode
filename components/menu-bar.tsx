@@ -29,7 +29,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useEditor } from "../lib/editor-context"
+import { useEditor } from "../lib/editor-store"
 
 interface MenuBarProps {
   onCommandPalette: () => void
