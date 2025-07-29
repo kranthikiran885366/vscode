@@ -1,0 +1,474 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+      "Droid Sans", "Helvetica Neue", sans-serif;
+  }
+}
+
+/* Zen Mode Styles */
+.zen-mode {
+  @apply bg-gray-50 dark:bg-gray-900;
+}
+
+.zen-mode .zen-mode-content {
+  @apply mx-auto max-w-4xl;
+}
+
+/* AI Assistant Styles */
+.ai-suggestion {
+  @apply bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.ai-suggestion.accepted {
+  @apply bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800;
+}
+
+/* Collaboration Styles */
+.collaborator-cursor {
+  @apply absolute w-4 h-4 rounded-full border-2 border-white shadow-lg transition-all duration-100 ease-out;
+  z-index: 1000;
+}
+
+.collaborator-label {
+  @apply absolute top-5 left-0 px-2 py-1 text-xs text-white rounded shadow-lg whitespace-nowrap;
+  z-index: 1001;
+}
+
+.selection-highlight {
+  @apply bg-blue-200 dark:bg-blue-800 bg-opacity-30;
+}
+
+/* Live Preview Styles */
+.preview-frame {
+  @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg;
+  transition: all 0.3s ease;
+}
+
+.preview-frame.mobile {
+  @apply w-96 h-screen max-h-96;
+}
+
+.preview-frame.tablet {
+  @apply w-full max-w-2xl h-96;
+}
+
+.preview-frame.desktop {
+  @apply w-full h-full;
+}
+
+/* Command Palette Styles */
+.command-palette-backdrop {
+  @apply fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.command-palette-content {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700;
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+/* Terminal Styles */
+.terminal-output {
+  font-family: "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.terminal-cursor {
+  @apply bg-green-400 w-2 h-5 inline-block;
+  animation: blink 1s infinite;
+}
+
+/* File Explorer Styles */
+.file-tree-item {
+  @apply flex items-center gap-2 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm transition-all duration-150;
+}
+
+.file-tree-item.selected {
+  @apply bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400;
+}
+
+.file-tree-item.dirty {
+  @apply bg-yellow-50 dark:bg-yellow-900/20;
+}
+
+.file-tree-item.dirty::after {
+  content: "●";
+  @apply text-orange-500 ml-auto;
+}
+
+/* Tab Styles */
+.tab-item {
+  @apply flex items-center gap-2 px-3 py-2 border-r border-gray-200 dark:border-gray-700 cursor-pointer min-w-0 max-w-xs transition-all duration-200;
+}
+
+.tab-item.active {
+  @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-b-2 border-blue-500;
+}
+
+.tab-item.dirty::after {
+  content: "●";
+  @apply text-orange-500;
+}
+
+.tab-item.preview {
+  @apply italic text-gray-500;
+}
+
+/* Status Bar Styles */
+.status-bar-item {
+  @apply px-2 py-1 text-xs hover:bg-white hover:bg-opacity-10 rounded transition-colors cursor-pointer;
+}
+
+.status-bar-item.active {
+  @apply bg-white bg-opacity-20;
+}
+
+/* Search Styles */
+.search-result {
+  @apply p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-800;
+}
+
+.search-result.selected {
+  @apply bg-blue-100 dark:bg-blue-900;
+}
+
+.search-match {
+  @apply bg-yellow-200 dark:bg-yellow-800 px-1 rounded;
+}
+
+/* Activity Bar Styles */
+.activity-bar-item {
+  @apply w-10 h-10 mx-1 mb-1 p-0 rounded-md transition-all duration-200 relative;
+}
+
+.activity-bar-item.active {
+  @apply bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400;
+}
+
+.activity-bar-item.active::before {
+  content: "";
+  @apply absolute left-0 top-0 bottom-0 w-0.5 bg-blue-500 rounded-r;
+}
+
+.activity-bar-badge {
+  @apply absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center;
+}
+
+/* Scrollbar Styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(156 163 175);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128);
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: rgb(75 85 99) transparent;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99);
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Floating Action Button Styles */
+.fab {
+  @apply fixed bottom-6 right-6 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105;
+}
+
+.fab.ai {
+  @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600;
+}
+
+.fab.collaboration {
+  @apply bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600;
+}
+
+.fab.preview {
+  @apply bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600;
+}
+
+/* Context Menu Styles */
+.context-menu {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1;
+  animation: fadeInUp 0.15s ease-out;
+}
+
+.context-menu-item {
+  @apply px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2;
+}
+
+.context-menu-separator {
+  @apply border-t border-gray-200 dark:border-gray-700 my-1;
+}
+
+/* Tooltip Styles */
+.tooltip {
+  @apply bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.dark ::selection {
+  background-color: rgba(96, 165, 250, 0.3);
+}
+
+/* Focus Styles */
+.focus-visible:focus {
+  outline: 2px solid rgb(59 130 246);
+  outline-offset: 2px;
+}
+
+/* Drag and Drop Styles */
+.drag-over {
+  @apply bg-blue-100 dark:bg-blue-900 border-2 border-dashed border-blue-500;
+}
+
+.dragging {
+  @apply opacity-50;
+}
+
+/* Loading Styles */
+.loading-skeleton {
+  @apply bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
+}
+
+.loading-spinner {
+  @apply w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin;
+}
+
+/* Error Styles */
+.error-message {
+  @apply bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-3 rounded-lg;
+}
+
+.warning-message {
+  @apply bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300 p-3 rounded-lg;
+}
+
+.success-message {
+  @apply bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 p-3 rounded-lg;
+}
+
+/* Code Syntax Highlighting */
+.code-block {
+  @apply bg-gray-900 dark:bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto;
+  font-family: "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+}
+
+.code-block .keyword {
+  @apply text-purple-400;
+}
+
+.code-block .string {
+  @apply text-green-400;
+}
+
+.code-block .comment {
+  @apply text-gray-500 italic;
+}
+
+.code-block .number {
+  @apply text-blue-400;
+}
+
+.code-block .function {
+  @apply text-yellow-400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    @apply hidden;
+  }
+
+  .mobile-full {
+    @apply w-full;
+  }
+
+  .sidebar-mobile {
+    @apply fixed inset-y-0 left-0 z-50 w-80 transform transition-transform;
+  }
+
+  .sidebar-mobile.closed {
+    @apply -translate-x-full;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    @apply hidden;
+  }
+
+  .print-break {
+    page-break-after: always;
+  }
+}
