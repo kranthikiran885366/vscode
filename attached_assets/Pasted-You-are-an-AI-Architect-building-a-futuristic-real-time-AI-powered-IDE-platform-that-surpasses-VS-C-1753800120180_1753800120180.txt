@@ -1,0 +1,65 @@
+You are an AI Architect building a futuristic, real-time AI-powered IDE platform that surpasses VS Code, Replit, Cursor, and Bolt in every dimension. Design and implement a full-fledged AI-based IDE that:
+
+🌐 MULTI-LANGUAGE & CROSS-PLATFORM SUPPORT:
+- Supports 500+ programming languages with auto-detection and syntax highlighting.
+- Real-time code conversion between languages (e.g., Java → Python, C++ → Go, JS → Rust).
+- Cross-platform compatibility: web, desktop (Electron), and mobile IDEs.
+
+🤖 AI & MULTI-MODEL INTEGRATION:
+- Integrate and orchestrate multiple AI models: OpenAI GPT-4o, Claude 3 Opus, Gemini 1.5 Pro, Mistral, Flash, and open-source LLMs (LLaMA3, Mixtral).
+- Smart routing of tasks to best-suited model (e.g., Gemini for web UI, GPT for codegen, Claude for documentation).
+- AI Plugin Marketplace: installable plugins for code review, test generation, refactoring, AI pair programming, and domain-specific models.
+
+🧑‍💻 FRONTEND UI/UX (MODERN DEV EXPERIENCE):
+- Split-pane UI (code + AI assistant + console + file tree).
+- Monaco Editor (VS Code engine) or custom WASM-based editor.
+- Multi-tab editing, auto-save, version control (Git), and AI chat dock.
+- Theme manager, accessibility features, and drag-drop UI builder.
+- Real-time team collaboration with shared cursors (like Google Docs/Live Share).
+- Terminal emulator, web preview, and browser sandbox.
+- Voice-activated commands & real-time AI voice assistant.
+
+🧱 BACKEND CAPABILITIES:
+- Use **Node.js** and **Python** together via orchestrated microservices.
+- REST, WebSocket & GraphQL API exposure for frontend IDE functions.
+- AI model inference orchestration, load balancing, autoscaling.
+- Real-time backend debugging & sandboxed execution per user.
+- File storage, code execution sandbox (Docker or Firecracker VM).
+- Git integration, cloud syncing (Dropbox, GDrive, GitHub).
+- Secure serverless deploys (AWS Lambda, Vercel, etc.) on button click.
+
+📦 FULL SDLC & PROJECT LIFECYCLE:
+- End-to-End Project Creation: From one-line idea → full working app.
+- Auto-generate: UI, backend APIs, DB schema, test cases, docs.
+- Live preview, test suites, CI/CD pipelines, Dockerfile, and Helm charts.
+- Generate APIs with Swagger/OpenAPI & Postman collections.
+- Add README.md, CONTRIBUTING.md, .gitignore, and LICENSE files.
+
+🧪 TESTING & DEPLOYMENT:
+- AI-generated unit, integration, and E2E test cases with real-time execution.
+- Support for Jest, Mocha, Pytest, Selenium, Cypress, etc.
+- AI debugger: auto-detect errors & generate fixes or bug reports.
+- One-click deploy to Vercel, Netlify, Heroku, AWS, GCP, Azure.
+- Live logs, analytics dashboard, performance monitoring.
+
+🔄 INTEGRATION ECOSYSTEM:
+- Connect to GitHub, GitLab, Bitbucket for repo sync.
+- Integrate with OpenAI, Cohere, HuggingFace, Pinecone, Weaviate.
+- Support for external APIs: Stripe, Twilio, Firebase, Supabase, MongoDB, MySQL.
+- Plugin API for developers to create & publish AI-powered IDE tools.
+
+🧠 LEARNING & ASSISTANCE:
+- Step-by-step code walkthroughs & guided learning modules.
+- AI Tutor Mode: ask questions, get visual explanations.
+- Smart documentation generator, diagram creator (UML, ERD).
+- Smart autocomplete, inline explanation, auto-refactor, and code comments.
+
+🛡️ SECURITY & USER MANAGEMENT:
+- Role-based access control (RBAC), user/org/team support.
+- Data encryption, audit logging, code vaults.
+- Real-time DDoS protection and AI anomaly detection.
+
+💼 BUSINESS & SAAS ENABLEMENT:
+- User management, billing, usage tracking, quota limits.
+- Custom IDE instance per org (white-labeling possible).
+- Subscription models with AI credit usage & plugin stores.
