@@ -1,217 +1,194 @@
 version: '3.8'
 
 services:
-  # Frontend Application
-  frontend:
-    build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:4000
-      - VITE_WS_URL=ws://localhost:4000
-      - VITE_AI_SERVICE_URL=http://localhost:8001
-    depends_on:
-      - backend
-      - ai-service
-    networks:
-      - ide-network
-
-  # Backend API Service
-  backend:
-    build:
-      context: ./services/backend
-      dockerfile: Dockerfile
-    ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=development
-      - PORT=4000
-      - MONGODB_URI=mongodb://mongodb:27017/ai-ide
-      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/ai_ide
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=${JWT_SECRET}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
-      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
-      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
-      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
-      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
-    depends_on:
-      - mongodb
-      - postgres
-      - redis
-    volumes:
-      - ./services/backend:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - ide-network
-
-  # AI Service (Python FastAPI)
-  ai-service:
-    build:
-      context: ./services/ai-service
-      dockerfile: Dockerfile
-    ports:
-      - "8001:8001"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
-      - REDIS_URL=redis://redis:6379
-      - MONGODB_URI=mongodb://mongodb:27017/ai-ide
-    depends_on:
-      - redis
-      - mongodb
-    volumes:
-      - ./services/ai-service:/app
-    networks:
-      - ide-network
-
-  # Orchestrator Service
-  orchestrator:
-    build:
-      context: ./services/orchestrator
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    environment:
-      - NODE_ENV=development
-      - PORT=5000
-      - MONGODB_URI=mongodb://mongodb:27017/ai-ide
-      - REDIS_URL=redis://redis:6379
-      - BACKEND_URL=http://backend:4000
-      - AI_SERVICE_URL=http://ai-service:8001
-    depends_on:
-      - mongodb
-      - redis
-      - backend
-      - ai-service
-    networks:
-      - ide-network
-
-  # Code Execution Service
-  code-runner:
-    build:
-      context: ./services/code-runner
-      dockerfile: Dockerfile
-    ports:
-      - "8002:8002"
-    environment:
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - redis
-    privileged: true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./services/code-runner/sandboxes:/app/sandboxes
-    networks:
-      - ide-network
-
-  # Database Services
+  # Databases
   mongodb:
-    image: mongo:7.0
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=ai_ide
     volumes:
       - mongodb_data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
-      - ide-network
-
-  postgres:
-    image: postgres:15
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=ai_ide
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    networks:
-      - ide-network
+      - backend
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
-    command: redis-server --requirepass password
     volumes:
       - redis_data:/data
     networks:
-      - ide-network
+      - backend
 
-  # Message Queue
   rabbitmq:
     image: rabbitmq:3-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - ide-network
+      - backend
 
-  # Monitoring
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    networks:
-      - ide-network
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-    networks:
-      - ide-network
-
-  # Reverse Proxy
+  # API Gateway
   nginx:
     image: nginx:alpine
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - frontend
-      - backend
+      - auth-service
+      - project-service
       - ai-service
-      - orchestrator
+      - execution-service
+      - collaboration-service
     networks:
-      - ide-network
+      - backend
+      - frontend
+
+  # Backend Services
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key
+      GOOGLE_CLIENT_ID: your-google-client-id
+      GOOGLE_CLIENT_SECRET: your-google-client-secret
+      GITHUB_CLIENT_ID: your-github-client-id
+      GITHUB_CLIENT_SECRET: your-github-client-secret
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - backend
+
+  project-service:
+    build:
+      context: ./services/project-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
+      REDIS_URL: redis://redis:6379
+      AUTH_SERVICE_URL: http://auth-service:3001
+    ports:
+      - "3002:3002"
+    depends_on:
+      - mongodb
+      - redis
+      - auth-service
+    volumes:
+      - project_data:/app/data
+    networks:
+      - backend
+
+  collaboration-service:
+    build:
+      context: ./services/collaboration-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
+      REDIS_URL: redis://redis:6379
+      AUTH_SERVICE_URL: http://auth-service:3001
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongodb
+      - redis
+      - auth-service
+    networks:
+      - backend
+
+  ai-service:
+    build:
+      context: ./services/ai-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: development
+      PORT: 8001
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: your-openai-api-key
+      ANTHROPIC_API_KEY: your-anthropic-api-key
+      GOOGLE_API_KEY: your-google-api-key
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - backend
+
+  execution-service:
+    build:
+      context: ./services/execution-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: development
+      PORT: 8002
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend
+
+  terminal-service:
+    build:
+      context: ./services/terminal-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      REDIS_URL: redis://redis:6379
+      AUTH_SERVICE_URL: http://auth-service:3001
+    ports:
+      - "3004:3004"
+    depends_on:
+      - redis
+      - auth-service
+    networks:
+      - backend
 
 volumes:
   mongodb_data:
-  postgres_data:
   redis_data:
   rabbitmq_data:
-  prometheus_data:
-  grafana_data:
+  project_data:
 
 networks:
-  ide-network:
+  backend:
+    driver: bridge
+  frontend:
     driver: bridge

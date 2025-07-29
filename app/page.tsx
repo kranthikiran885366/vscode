@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -114,7 +113,7 @@ Get started by exploring the features or opening a file from the explorer!
                       A powerful, AI-enhanced IDE that combines the best features of modern development tools
                     </p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Bot className="w-8 h-8 mb-3 text-purple-500" />
@@ -123,7 +122,7 @@ Get started by exploring the features or opening a file from the explorer!
                         Intelligent code completion, AI assistance, and automated refactoring
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Users className="w-8 h-8 mb-3 text-green-500" />
                       <h3 className="font-semibold mb-2">Collaborative</h3>
@@ -131,7 +130,7 @@ Get started by exploring the features or opening a file from the explorer!
                         Real-time editing with team members and shared workspaces
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Monitor className="w-8 h-8 mb-3 text-blue-500" />
                       <h3 className="font-semibold mb-2">Live Preview</h3>
@@ -139,7 +138,7 @@ Get started by exploring the features or opening a file from the explorer!
                         Instant preview of web applications and real-time updates
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <Zap className="w-8 h-8 mb-3 text-yellow-500" />
                       <h3 className="font-semibold mb-2">Fast & Modern</h3>
@@ -148,7 +147,7 @@ Get started by exploring the features or opening a file from the explorer!
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <Button 
                       onClick={() => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: "explorer" })}
@@ -164,7 +163,7 @@ Get started by exploring the features or opening a file from the explorer!
                 </div>
               </div>
             )}
-            
+
             {state.openTabs.length > 0 && (
               <div className="h-full p-4">
                 {state.openTabs.map((tab) => (

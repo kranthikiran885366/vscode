@@ -1,6 +1,9 @@
+Adding useCallback import to the file-explorer component.
+```
+```replit_final_file
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useCallback } from "react"
 import { ChevronRight, ChevronDown, File, Folder, FolderOpen, Plus, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {

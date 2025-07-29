@@ -288,3 +288,170 @@ export function CollaborationPanel() {
     </div>
   )
 }
+"use client"
+
+import { useState, useEffect } from "react"
+import { Users, Video, Mic, MicOff, VideoOff, MessageCircle, Crown, UserPlus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useEditor } from "../lib/editor-store"
+
+interface CollaboratorUser {
+  id: string
+  name: string
+  avatar?: string
+  isOwner: boolean
+  isActive: boolean
+  cursor?: { line: number; column: number }
+}
+
+export function CollaborationPanel() {
+  const { state, dispatch } = useEditor()
+  const [collaborators, setCollaborators] = useState<CollaboratorUser[]>([
+    {
+      id: "1",
+      name: "You",
+      isOwner: true,
+      isActive: true,
+    },
+    {
+      id: "2",
+      name: "Alice Johnson",
+      avatar: "/placeholder-user.jpg",
+      isOwner: false,
+      isActive: true,
+      cursor: { line: 15, column: 8 },
+    },
+    {
+      id: "3",
+      name: "Bob Smith",
+      isOwner: false,
+      isActive: false,
+    },
+  ])
+
+  const [isVideoOn, setIsVideoOn] = useState(false)
+  const [isMicOn, setIsMicOn] = useState(false)
+
+  return (
+    <div className="h-full bg-gray-50 dark:bg-gray-900 p-3">
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Collaboration</h3>
+          <Button variant="ghost" size="sm">
+            <UserPlus className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Active Session */}
+        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Live Session</span>
+            <Badge variant="secondary" className="bg-green-100 text-green-800">
+              Active
+            </Badge>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant={isVideoOn ? "default" : "outline"}
+              size="sm"
+              onClick={() => setIsVideoOn(!isVideoOn)}
+            >
+              {isVideoOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+            </Button>
+            <Button
+              variant={isMicOn ? "default" : "outline"}
+              size="sm"
+              onClick={() => setIsMicOn(!isMicOn)}
+            >
+              {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => dispatch({ type: "TOGGLE_AI_CHAT" })}
+            >
+              <MessageCircle className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Collaborators List */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+              Collaborators ({collaborators.length})
+            </span>
+          </div>
+          
+          <ScrollArea className="h-48">
+            <div className="space-y-2">
+              {collaborators.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <div className="relative">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={user.avatar} />
+                      <AvatarFallback className="text-xs">
+                        {user.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    {user.isActive && (
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {user.name}
+                      </span>
+                      {user.isOwner && (
+                        <Crown className="w-3 h-3 text-yellow-500" />
+                      )}
+                    </div>
+                    
+                    {user.cursor && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Line {user.cursor.line}, Col {user.cursor.column}
+                      </div>
+                    )}
+                    
+                    {!user.isActive && (
+                      <div className="text-xs text-gray-400">Offline</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Recent Activity */}
+        <div>
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+            Recent Activity
+          </span>
+          
+          <div className="space-y-2">
+            <div className="text-xs text-gray-600 dark:text-gray-400 p-2 bg-white dark:bg-gray-800 rounded">
+              <span className="font-medium">Alice</span> edited <span className="font-mono">App.tsx</span>
+              <div className="text-gray-400">2 minutes ago</div>
+            </div>
+            
+            <div className="text-xs text-gray-600 dark:text-gray-400 p-2 bg-white dark:bg-gray-800 rounded">
+              <span className="font-medium">You</span> created <span className="font-mono">utils.ts</span>
+              <div className="text-gray-400">5 minutes ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
