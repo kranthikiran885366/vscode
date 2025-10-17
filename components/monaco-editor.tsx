@@ -94,20 +94,9 @@ export function MonacoEditor({ value, language, theme, onChange, onSave }: Monac
 
   return <div ref={editorRef} className="w-full h-full" />
 }
-"use client"
 
-import { useEffect, useRef } from "react"
-import * as monaco from "monaco-editor"
-import { useEditor } from "../lib/editor-store"
-
-interface MonacoEditorProps {
-  value: string
-  language: string
-  onChange: (value: string) => void
-  theme?: "vs-dark" | "light"
-}
-
-export function MonacoEditor({ value, language, onChange, theme = "vs-dark" }: MonacoEditorProps) {
+// Component body starts from rewrite
+export function MonacoEditorWrapper({ value, language, onChange, theme = "vs-dark" }: { value: string; language: string; onChange: (value: string) => void; theme?: "vs-dark" | "light" }) {
   const editorRef = useRef<HTMLDivElement>(null)
   const monacoRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
