@@ -1,20 +1,25 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { MenuBar } from "../components/menu-bar"
-import { ActivityBar } from "../components/activity-bar"
-import { FileExplorer } from "../components/file-explorer"
-import { SearchPanel } from "../components/search-panel"
-import { AIAssistant } from "../components/ai-assistant"
-import { CollaborationPanel } from "../components/collaboration"
-import { LivePreview } from "../components/live-preview"
-import { TabBar } from "../components/tab-bar"
-import { Terminal } from "../components/terminal"
-import { StatusBar } from "../components/status-bar"
-import { CommandPalette } from "../components/command-palette"
-import { EditorProvider, useEditor } from "../lib/editor-store"
-import { Layout, Code2, Sparkles, Users, Monitor, Bot, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import LandingPage from './landing'
+
+export default function Home() {
+  const router = useRouter()
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+
+    if (token) {
+      // Redirect to editor if logged in
+      router.push('/editor')
+    }
+  }, [router])
+
+  // Show landing page by default
+  return <LandingPage />
+}
 
 function EditorContent() {
   const { state, dispatch } = useEditor()
