@@ -54,52 +54,6 @@ export default function LandingPage() {
     },
   ]
 
-  const pricingPlans = [
-    {
-      name: 'Starter',
-      price: '$0',
-      period: 'Forever free',
-      description: 'Perfect for learning',
-      features: [
-        '5 projects',
-        'Basic AI features',
-        'Community support',
-        'Public projects only',
-        '1GB storage',
-      ],
-    },
-    {
-      name: 'Pro',
-      price: '$9',
-      period: '/month',
-      description: 'For developers',
-      features: [
-        'Unlimited projects',
-        'Advanced AI features',
-        'Priority support',
-        'Private projects',
-        '100GB storage',
-        'Team collaboration',
-        'Custom domains',
-      ],
-      highlighted: true,
-    },
-    {
-      name: 'Enterprise',
-      price: 'Custom',
-      period: 'Contact us',
-      description: 'For teams',
-      features: [
-        'Everything in Pro',
-        'Dedicated support',
-        'SSO & security',
-        'Custom integrations',
-        'Unlimited storage',
-        'SLA guarantee',
-        'On-premise option',
-      ],
-    },
-  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -121,9 +75,6 @@ export default function LandingPage() {
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="hover:text-blue-400 transition">
                 Features
-              </a>
-              <a href="#pricing" className="hover:text-blue-400 transition">
-                Pricing
               </a>
               <a href="#docs" className="hover:text-blue-400 transition">
                 Docs
@@ -165,9 +116,6 @@ export default function LandingPage() {
             <div className="md:hidden pb-4 space-y-2">
               <a href="#features" className="block py-2 hover:text-blue-400">
                 Features
-              </a>
-              <a href="#pricing" className="block py-2 hover:text-blue-400">
-                Pricing
               </a>
               <a href="#docs" className="block py-2 hover:text-blue-400">
                 Docs
