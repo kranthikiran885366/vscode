@@ -216,7 +216,7 @@ Get started by exploring the features or opening a file from the explorer!
   )
 }
 
-export default function AdvancedCodeEditor() {
+function AdvancedCodeEditor() {
   return (
     <EditorProvider>
       <EditorContent />
