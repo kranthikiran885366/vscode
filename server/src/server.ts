@@ -72,6 +72,7 @@ app.use('/api/files', requireAuth, fileRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)
 app.use('/api/ai', requireAuth, aiRoutes)
 app.use('/api/execute', requireAuth, executionRoutes)
+app.use('/api/git', requireAuth, gitRoutes)
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
