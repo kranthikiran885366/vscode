@@ -76,6 +76,7 @@ app.use('/api/ai', requireAuth, aiRoutes)
 app.use('/api/execute', requireAuth, executionRoutes)
 app.use('/api/git', requireAuth, gitRoutes)
 app.use('/api/formatter', requireAuth, formatterRoutes)
+app.use('/api/snippets', requireAuth, snippetsRoutes)
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
