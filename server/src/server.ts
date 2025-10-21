@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import jwt from 'jsonwebtoken'
+import http from 'http'
 
 // Route imports
 import authRoutes from './routes/auth'
@@ -11,6 +12,8 @@ import fileRoutes from './routes/files'
 import projectRoutes from './routes/projects'
 import aiRoutes from './routes/ai'
 import executionRoutes from './routes/execution'
+import gitRoutes from './routes/git'
+import { initializeWebSocket } from './websocket'
 
 // Load environment variables
 dotenv.config()
