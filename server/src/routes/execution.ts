@@ -1,9 +1,37 @@
 import express, { Router, Response } from 'express'
+import { CodeExecutor } from '../services/codeExecutor'
 import { AuthRequest } from '../server'
 
 const router: Router = express.Router()
 
-// Execute JavaScript/TypeScript code
+// Execute code in any language
+router.post('/', async (req: AuthRequest, res: Response) => {
+  try {
+    const { code, language = 'javascript' } = req.body
+
+    if (!code) {
+      return res.status(400).json({ message: 'Code required' })
+    }
+
+    const result = await CodeExecutor.execute(code, language)
+
+    res.json({
+      ...result,
+      language,
+      timestamp: new Date(),
+    })
+  } catch (error: any) {
+    console.error('Execution error:', error)
+    res.status(500).json({
+      success: false,
+      output: '',
+      error: error.message || 'Execution failed',
+      duration: 0,
+    })
+  }
+})
+
+// Execute JavaScript code
 router.post('/javascript', async (req: AuthRequest, res: Response) => {
   try {
     const { code } = req.body
@@ -12,31 +40,20 @@ router.post('/javascript', async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Code required' })
     }
 
-    // In production, use vm2 or similar for safe code execution
-    // For now, return mock output
-    const mockOutputs = [
-      'Hello, World!',
-      '[1, 2, 3, 4, 5]',
-      'Result: 42',
-      'undefined',
-      'Error: Variable not defined',
-    ]
-
-    const output = mockOutputs[Math.floor(Math.random() * mockOutputs.length)]
-    const executionTime = Math.random() * 1000
+    const result = await CodeExecutor.execute(code, 'javascript')
 
     res.json({
-      output,
-      executionTime: Math.round(executionTime),
-      status: 'success',
-      error: null,
+      ...result,
+      language: 'javascript',
+      timestamp: new Date(),
     })
   } catch (error: any) {
-    console.error('Execution error:', error)
+    console.error('JavaScript execution error:', error)
     res.status(500).json({
+      success: false,
       output: '',
       error: error.message,
-      status: 'error',
+      duration: 0,
     })
   }
 })
@@ -50,35 +67,25 @@ router.post('/python', async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Code required' })
     }
 
-    // Mock Python execution
-    const mockOutputs = [
-      'Hello, World!',
-      '[1, 2, 3, 4, 5]',
-      '42',
-      'None',
-      'SyntaxError: invalid syntax',
-    ]
-
-    const output = mockOutputs[Math.floor(Math.random() * mockOutputs.length)]
-    const executionTime = Math.random() * 2000
+    const result = await CodeExecutor.execute(code, 'python')
 
     res.json({
-      output,
-      executionTime: Math.round(executionTime),
-      status: 'success',
-      error: null,
+      ...result,
+      language: 'python',
+      timestamp: new Date(),
     })
   } catch (error: any) {
     console.error('Python execution error:', error)
     res.status(500).json({
+      success: false,
       output: '',
       error: error.message,
-      status: 'error',
+      duration: 0,
     })
   }
 })
 
-// Test code
+// Test code with test cases
 router.post('/test', async (req: AuthRequest, res: Response) => {
   try {
     const { code, testCode, language = 'javascript' } = req.body
@@ -87,34 +94,57 @@ router.post('/test', async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Code and tests required' })
     }
 
-    // Mock test results
+    // Combine code and test
+    const fullCode = `${code}\n\n${testCode}`
+    const result = await CodeExecutor.execute(fullCode, language)
+
+    // Parse test results from output
+    const testPassed = !result.error && result.output.length > 0
     const testResults = [
       {
-        name: 'should handle basic input',
-        passed: true,
-        duration: 5,
-      },
-      {
-        name: 'should handle edge cases',
-        passed: true,
-        duration: 8,
-      },
-      {
-        name: 'should throw on invalid input',
-        passed: true,
-        duration: 3,
+        name: 'Test execution',
+        passed: testPassed,
+        duration: result.duration,
       },
     ]
 
     res.json({
-      totalTests: 3,
-      passedTests: 3,
-      failedTests: 0,
+      success: testPassed,
+      totalTests: 1,
+      passedTests: testPassed ? 1 : 0,
+      failedTests: testPassed ? 0 : 1,
       results: testResults,
-      coverage: 85,
+      coverage: 0,
+      output: result.output,
+      error: result.error,
     })
   } catch (error: any) {
     console.error('Test execution error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      status: 'error',
+    })
+  }
+})
+
+// Format code
+router.post('/format', async (req: AuthRequest, res: Response) => {
+  try {
+    const { code, language = 'javascript' } = req.body
+
+    if (!code) {
+      return res.status(400).json({ message: 'Code required' })
+    }
+
+    // For now, return the code as-is
+    // In production, use prettier or language-specific formatters
+    res.json({
+      formatted: code,
+      changes: 0,
+    })
+  } catch (error: any) {
+    console.error('Format error:', error)
     res.status(500).json({
       error: error.message,
       status: 'error',
@@ -125,14 +155,16 @@ router.post('/test', async (req: AuthRequest, res: Response) => {
 // Get execution history
 router.get('/history', async (req: AuthRequest, res: Response) => {
   try {
+    // Return mock history for now
+    // In production, store in MongoDB
     const history = [
       {
         id: '1',
         code: 'console.log("Hello")',
         language: 'javascript',
         output: 'Hello',
-        executionTime: 25,
-        status: 'success',
+        duration: 25,
+        success: true,
         createdAt: new Date(Date.now() - 3600000),
       },
       {
@@ -140,8 +172,8 @@ router.get('/history', async (req: AuthRequest, res: Response) => {
         code: 'print("Hello")',
         language: 'python',
         output: 'Hello',
-        executionTime: 145,
-        status: 'success',
+        duration: 145,
+        success: true,
         createdAt: new Date(Date.now() - 7200000),
       },
     ]
@@ -150,45 +182,6 @@ router.get('/history', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.error('History error:', error)
     res.status(500).json({ message: 'Failed to fetch history' })
-  }
-})
-
-// Lint code
-router.post('/lint', async (req: AuthRequest, res: Response) => {
-  try {
-    const { code, language = 'javascript' } = req.body
-
-    if (!code) {
-      return res.status(400).json({ message: 'Code required' })
-    }
-
-    // Mock linting results
-    const issues = [
-      {
-        line: 1,
-        column: 0,
-        message: 'Unexpected var, use let or const instead',
-        severity: 'warning',
-        rule: 'no-var',
-      },
-      {
-        line: 5,
-        column: 10,
-        message: 'Variable is declared but never used',
-        severity: 'warning',
-        rule: 'no-unused-vars',
-      },
-    ]
-
-    res.json({
-      issues,
-      totalIssues: issues.length,
-      errors: 0,
-      warnings: issues.length,
-    })
-  } catch (error) {
-    console.error('Lint error:', error)
-    res.status(500).json({ message: 'Failed to lint code' })
   }
 })
 
