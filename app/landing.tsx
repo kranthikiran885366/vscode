@@ -299,50 +299,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4">Simple Pricing</h2>
-          <p className="text-center text-gray-400 mb-16">
-            Choose the plan that fits your needs
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`rounded-lg p-8 transition ${
-                  plan.highlighted
-                    ? 'bg-gradient-to-b from-blue-600 to-blue-700 border-2 border-blue-400 transform scale-105'
-                    : 'bg-slate-700/50 border border-slate-600 hover:border-slate-500'
-                }`}
-              >
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-gray-300 ml-2">{plan.period}</span>
-                </div>
-                <p className="text-gray-300 mb-6">{plan.description}</p>
-
-                <Link href="/auth/signup" className="w-full block mb-8">
-                  <Button className="w-full bg-white text-blue-600 hover:bg-gray-100">
-                    Get Started
-                  </Button>
-                </Link>
-
-                <ul className="space-y-4">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
