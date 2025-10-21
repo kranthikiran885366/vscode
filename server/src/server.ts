@@ -98,10 +98,11 @@ mongoose
   .connect(MONGODB_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB')
-    
-    // Start server
-    app.listen(PORT, () => {
+
+    // Start server with HTTP
+    httpServer.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`)
+      console.log(`✅ WebSocket server initialized`)
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
     })
   })
