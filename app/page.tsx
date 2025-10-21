@@ -1,8 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import LandingPage from './landing'
+import { EditorProvider, useEditor } from '@/lib/editor-context'
+import { MenuBar } from '@/components/menu-bar'
+import { ActivityBar } from '@/components/activity-bar'
+import { FileExplorer } from '@/components/file-explorer'
+import { SearchPanel } from '@/components/search-panel'
+import { TabBar } from '@/components/tab-bar'
+import { CollaborationPanel } from '@/components/collaboration'
+import { LivePreview } from '@/components/live-preview'
+import { AIAssistant } from '@/components/ai-assistant'
+import { Terminal } from '@/components/terminal'
+import { StatusBar } from '@/components/status-bar'
+import { CommandPalette } from '@/components/command-palette'
+import { Button } from '@/components/ui/button'
+import { Code2, Bot, Users, Monitor, Zap, Layout } from 'lucide-react'
 
 export default function Home() {
   const router = useRouter()
