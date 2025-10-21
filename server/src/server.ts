@@ -19,8 +19,12 @@ import { initializeWebSocket } from './websocket'
 dotenv.config()
 
 const app: Express = express()
+const httpServer = http.createServer(app)
 const PORT = process.env.PORT || 5000
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/zencode'
+
+// Initialize WebSocket
+initializeWebSocket(httpServer)
 
 // Middleware
 app.use(helmet())
