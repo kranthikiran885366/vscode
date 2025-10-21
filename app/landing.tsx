@@ -351,7 +351,7 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center pt-8 border-t border-slate-700 text-gray-400">
-            <p>&copy; 2024 ZenCode AI. All rights reserved.</p>
+            <p>&copy; 2024 ZenCode AI by MVK Solutions. All rights reserved.</p>
           </div>
         </div>
       </footer>
