@@ -109,9 +109,12 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
               <Code2 className="w-8 h-8 text-blue-500" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                ZenCode AI
-              </span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                  ZenCode AI
+                </span>
+                <span className="text-xs text-gray-400">By MVK Solutions</span>
+              </div>
             </div>
 
             {/* Desktop Menu */}
