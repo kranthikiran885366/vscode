@@ -192,7 +192,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            ZenCode AI combines the power of VS Code, Cursor, and advanced AI to create the ultimate development experience. Write code faster, smarter, and with confidence.
+            ZenCode AI by MVK Solutions combines the power of VS Code with real-time collaboration, advanced AI, and cloud-native code execution. Write code faster, smarter, and together.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
