@@ -43,7 +43,7 @@ export default function LoginPage() {
       }
 
       localStorage.setItem('token', data.token)
-      router.push('/editor')
+      router.push('/dashboard')
     } catch (err) {
       setError('An error occurred. Please try again.')
     } finally {
