@@ -13,6 +13,7 @@ import projectRoutes from './routes/projects'
 import aiRoutes from './routes/ai'
 import executionRoutes from './routes/execution'
 import gitRoutes from './routes/git'
+import formatterRoutes from './routes/formatter'
 import { initializeWebSocket } from './websocket'
 
 // Load environment variables
