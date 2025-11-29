@@ -215,6 +215,72 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
         theme: action.payload,
       }
 
+    case "TOGGLE_PROBLEMS_PANEL":
+      return {
+        ...state,
+        problemsPanelVisible: !state.problemsPanelVisible,
+      }
+
+    case "TOGGLE_DEBUG_PANEL":
+      return {
+        ...state,
+        debugPanelVisible: !state.debugPanelVisible,
+      }
+
+    case "TOGGLE_EXTENSIONS_PANEL":
+      return {
+        ...state,
+        extensionsPanelVisible: !state.extensionsPanelVisible,
+      }
+
+    case "TOGGLE_DIFF_VIEWER":
+      return {
+        ...state,
+        diffViewerVisible: !state.diffViewerVisible,
+      }
+
+    case "TOGGLE_ZEN_MODE":
+      return {
+        ...state,
+        zenModeActive: !state.zenModeActive,
+      }
+
+    case "SET_ACTIVE_LEFT_PANEL":
+      return {
+        ...state,
+        activeLeftPanel: action.payload,
+        sidebarVisible: true,
+      }
+
+    case "SET_ACTIVE_BOTTOM_PANEL":
+      return {
+        ...state,
+        activeBottomPanel: action.payload,
+      }
+
+    case "SET_COLLABORATION":
+      return {
+        ...state,
+      }
+
+    case "TOGGLE_WORD_WRAP":
+      return {
+        ...state,
+        wordWrap: !state.wordWrap,
+      }
+
+    case "TOGGLE_MINIMAP":
+      return {
+        ...state,
+        minimap: !state.minimap,
+      }
+
+    case "TOGGLE_AUTO_SAVE":
+      return {
+        ...state,
+        autoSave: !state.autoSave,
+      }
+
     default:
       return state
   }
