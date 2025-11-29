@@ -49,6 +49,16 @@ export interface EditorState {
   livePreview: LivePreview | null
   executionStatus: "idle" | "running" | "completed" | "error"
   theme: "light" | "dark"
+  activeLeftPanel: "explorer" | "search" | "git" | "debug" | "extensions" | "settings" | "outline"
+  activeBottomPanel: "terminal" | "problems" | "output"
+  problemsPanelVisible: boolean
+  debugPanelVisible: boolean
+  extensionsPanelVisible: boolean
+  diffViewerVisible: boolean
+  zenModeActive: boolean
+  wordWrap: boolean
+  minimap: boolean
+  autoSave: boolean
 }
 
 type EditorAction =
@@ -61,10 +71,21 @@ type EditorAction =
   | { type: "TOGGLE_TERMINAL" }
   | { type: "TOGGLE_PREVIEW" }
   | { type: "TOGGLE_COMMAND_PALETTE" }
+  | { type: "TOGGLE_PROBLEMS_PANEL" }
+  | { type: "TOGGLE_DEBUG_PANEL" }
+  | { type: "TOGGLE_EXTENSIONS_PANEL" }
+  | { type: "TOGGLE_DIFF_VIEWER" }
+  | { type: "TOGGLE_ZEN_MODE" }
+  | { type: "SET_ACTIVE_LEFT_PANEL"; payload: EditorState["activeLeftPanel"] }
+  | { type: "SET_ACTIVE_BOTTOM_PANEL"; payload: EditorState["activeBottomPanel"] }
   | { type: "ADD_CHAT_MESSAGE"; payload: ChatMessage }
   | { type: "SET_LIVE_PREVIEW"; payload: LivePreview }
   | { type: "SET_EXECUTION_STATUS"; payload: EditorState["executionStatus"] }
   | { type: "SET_THEME"; payload: "light" | "dark" }
+  | { type: "SET_COLLABORATION"; payload: boolean }
+  | { type: "TOGGLE_WORD_WRAP" }
+  | { type: "TOGGLE_MINIMAP" }
+  | { type: "TOGGLE_AUTO_SAVE" }
 
 const initialState: EditorState = {
   openTabs: [],
