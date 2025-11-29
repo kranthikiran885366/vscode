@@ -106,6 +106,16 @@ const initialState: EditorState = {
   livePreview: null,
   executionStatus: "idle",
   theme: "dark",
+  activeLeftPanel: "explorer",
+  activeBottomPanel: "terminal",
+  problemsPanelVisible: false,
+  debugPanelVisible: false,
+  extensionsPanelVisible: false,
+  diffViewerVisible: false,
+  zenModeActive: false,
+  wordWrap: true,
+  minimap: true,
+  autoSave: false,
 }
 
 function editorReducer(state: EditorState, action: EditorAction): EditorState {
