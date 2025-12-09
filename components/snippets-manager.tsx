@@ -29,13 +29,7 @@ const defaultSnippets: Snippet[] = [
     name: "React Functional Component",
     language: "typescript",
     prefix: "rfc",
-    body: `import React from 'react'
-
-interface Props {}
-
-export const $1: React.FC<Props> = () => {
-  return <div>$2</div>
-}`,
+    body: "import React from 'react'\n\ninterface Props {}\n\nexport const $1: React.FC<Props> = () => {\n  return <div>$2</div>\n}",
     description: "Create a new React functional component",
   },
   {
@@ -43,9 +37,7 @@ export const $1: React.FC<Props> = () => {
     name: "useEffect Hook",
     language: "typescript",
     prefix: "ueff",
-    body: `React.useEffect(() => {
-  $1
-}, [$2])`,
+    body: "React.useEffect(() => {\n  $1\n}, [$2])",
     description: "Insert useEffect hook",
   },
   {
@@ -53,7 +45,7 @@ export const $1: React.FC<Props> = () => {
     name: "useState Hook",
     language: "typescript",
     prefix: "ust",
-    body: `const [$1, set$2] = React.useState<$3>(${4:initialValue})`,
+    body: "const [$1, set$2] = React.useState<$3>(initialValue)",
     description: "Insert useState hook",
   },
   {
@@ -61,13 +53,7 @@ export const $1: React.FC<Props> = () => {
     name: "Async Function",
     language: "typescript",
     prefix: "afn",
-    body: `async function $1($2): Promise<$3> {
-  try {
-    $4
-  } catch (error) {
-    console.error(error)
-  }
-}`,
+    body: "async function $1($2): Promise<$3> {\n  try {\n    $4\n  } catch (error) {\n    console.error(error)\n  }\n}",
     description: "Create an async function with error handling",
   },
   {
@@ -75,12 +61,7 @@ export const $1: React.FC<Props> = () => {
     name: "Try Catch",
     language: "javascript",
     prefix: "tc",
-    body: `try {
-  $1
-} catch (error) {
-  console.error(error)
-  $2
-}`,
+    body: "try {\n  $1\n} catch (error) {\n  console.error(error)\n  $2\n}",
     description: "Insert try-catch block",
   },
   {
@@ -88,15 +69,7 @@ export const $1: React.FC<Props> = () => {
     name: "Class Declaration",
     language: "typescript",
     prefix: "cls",
-    body: `class $1 {
-  constructor($2) {
-    $3
-  }
-
-  $4() {
-    $5
-  }
-}`,
+    body: "class $1 {\n  constructor($2) {\n    $3\n  }\n\n  $4() {\n    $5\n  }\n}",
     description: "Create a new class",
   },
   {
@@ -104,9 +77,7 @@ export const $1: React.FC<Props> = () => {
     name: "Arrow Function",
     language: "javascript",
     prefix: "af",
-    body: `const $1 = ($2) => {
-  $3
-}`,
+    body: "const $1 = ($2) => {\n  $3\n}",
     description: "Create an arrow function",
   },
   {
@@ -114,7 +85,7 @@ export const $1: React.FC<Props> = () => {
     name: "Console Log",
     language: "javascript",
     prefix: "log",
-    body: `console.log($1)`,
+    body: "console.log($1)",
     description: "Insert console.log statement",
   },
 ]
