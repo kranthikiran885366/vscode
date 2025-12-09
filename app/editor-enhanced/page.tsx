@@ -6,24 +6,27 @@ import { io, Socket } from "socket.io-client"
 import { useEditor } from "@/lib/editor-store"
 import { MonacoEditor } from "@/components/monaco-editor"
 import { FileExplorer } from "@/components/file-explorer"
-import { Terminal } from "@/components/terminal"
+import { EnhancedTerminal } from "@/components/enhanced-terminal"
 import { MenuBar } from "@/components/menu-bar"
 import { TabBar } from "@/components/tab-bar"
 import { StatusBar } from "@/components/status-bar"
 import { AIAssistant } from "@/components/ai-assistant"
 import { ProblemsPanel } from "@/components/problems-panel"
-import { DebugPanel } from "@/components/debug-panel"
+import { AdvancedDebugger } from "@/components/advanced-debugger"
 import { ExtensionsPanel } from "@/components/extensions-panel"
 import { SettingsPanel } from "@/components/settings-panel"
-import { GitPanel } from "@/components/git-panel"
-import { SymbolNavigator } from "@/components/symbol-navigator"
-import { DiffViewer } from "@/components/diff-viewer"
-import { ZenMode } from "@/components/zen-mode"
+import { EnhancedGitPanel } from "@/components/enhanced-git-panel"
+import { SnippetsManager } from "@/components/snippets-manager"
 import { CommandPalette } from "@/components/command-palette"
-import { SearchPanel } from "@/components/search-panel"
+import { AdvancedSearch } from "@/components/advanced-search"
 import { ActivityBar } from "@/components/activity-bar"
 import { Button } from "@/components/ui/button"
-import { Play, Save, GitBranch, Code2 } from "lucide-react"
+import { Play, Save, GitBranch, Code2, Terminal } from "lucide-react"
+import { ZenMode } from "@/components/zen-mode"
+import { AdvancedFormatter } from "@/components/advanced-formatter"
+import { ThemesManager } from "@/components/themes-manager"
+import { OutlineNavigator } from "@/components/outline-navigator"
+import { RunDebugConfig } from "@/components/run-debug-config"
 
 interface File {
   _id: string
@@ -252,14 +255,15 @@ export default function EnhancedEditorPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ctrl/Cmd + K + Z: Toggle Zen Mode
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-        const nextKey = new Promise<KeyboardEvent>((resolve) => {
+        e.preventDefault()
+        const nextKeyPromise = new Promise<KeyboardEvent>((resolve) => {
           const handleNextKey = (event: KeyboardEvent) => {
             document.removeEventListener("keydown", handleNextKey)
             resolve(event)
           }
           document.addEventListener("keydown", handleNextKey)
         })
-        nextKey.then((event) => {
+        nextKeyPromise.then((event) => {
           if (event.key === "z") {
             dispatch({ type: "TOGGLE_ZEN_MODE" })
           }
@@ -331,17 +335,17 @@ export default function EnhancedEditorPage() {
       case "explorer":
         return <FileExplorer />
       case "search":
-        return <SearchPanel />
+        return <AdvancedSearch />
       case "git":
-        return <GitPanel />
+        return <EnhancedGitPanel />
       case "debug":
-        return <DebugPanel />
+        return <AdvancedDebugger />
       case "extensions":
         return <ExtensionsPanel />
       case "settings":
         return <SettingsPanel />
       case "outline":
-        return <SymbolNavigator />
+        return <OutlineNavigator />
       default:
         return <FileExplorer />
     }
@@ -350,13 +354,13 @@ export default function EnhancedEditorPage() {
   const renderBottomPanel = () => {
     switch (state.activeBottomPanel) {
       case "terminal":
-        return <Terminal />
+        return <EnhancedTerminal />
       case "problems":
         return <ProblemsPanel />
       case "output":
-        return <div className="p-4 text-gray-400">Output panel coming soon</div>
+        return <div className="p-4 text-gray-400">Output panel</div>
       default:
-        return <Terminal />
+        return <EnhancedTerminal />
     }
   }
 
@@ -409,8 +413,9 @@ export default function EnhancedEditorPage() {
                 <MonacoEditor
                   value={currentFile.content}
                   language={currentFile.language}
-                  theme="vs-dark"
+                  theme={state.theme === "dark" ? "vs-dark" : "vs-light"}
                   onChange={handleFileChange}
+                  onSave={handleSaveFile}
                 />
               ) : (
                 <div className="h-full flex items-center justify-center text-gray-400">
@@ -432,15 +437,6 @@ export default function EnhancedEditorPage() {
         {(state.terminalVisible || state.problemsPanelVisible) && (
           <div className="h-64 bg-gray-800 border-t border-gray-700 overflow-auto">
             {renderBottomPanel()}
-          </div>
-        )}
-
-        {/* Diff Viewer */}
-        {state.diffViewerVisible && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
-            <div className="bg-gray-900 rounded-lg w-5/6 h-5/6 flex flex-col border border-gray-700">
-              <DiffViewer />
-            </div>
           </div>
         )}
 
