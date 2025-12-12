@@ -12,8 +12,15 @@ import {
   Zap,
   Search,
   Filter,
-  Plus,
   ChevronRight,
+  Heart,
+  ShoppingCart,
+  Code2,
+  TrendingUp,
+  Users,
+  Eye,
+  Check,
+  X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,6 +37,7 @@ interface Template {
   reviews: number
   author: string
   price: number
+  trending: boolean
   tags: string[]
   features: string[]
 }
@@ -50,8 +58,24 @@ interface Extension {
 
 export default function MarketplacePage() {
   const [searchTerm, setSearchTerm] = useState('')
+  const [activeTab, setActiveTab] = useState<'templates' | 'extensions'>('templates')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<'popular' | 'rating' | 'new'>('popular')
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [sortBy, setSortBy] = useState<'popular' | 'rating' | 'newest'>('popular')
+  const [showFilters, setShowFilters] = useState(false)
+
+  const categoryIcons: Record<string, any> = {
+    web: <Layout className="w-5 h-5" />,
+    backend: <Code className="w-5 h-5" />,
+    mobile: <Zap className="w-5 h-5" />,
+    devops: <Database className="w-5 h-5" />,
+    data: <TrendingUp className="w-5 h-5" />,
+    editor: <Code className="w-5 h-5" />,
+    language: <Code2 className="w-5 h-5" />,
+    theme: <Layout className="w-5 h-5" />,
+    tool: <Zap className="w-5 h-5" />,
+    integration: <Package className="w-5 h-5" />,
+  }
 
   const templates: Template[] = [
     {
@@ -64,6 +88,7 @@ export default function MarketplacePage() {
       reviews: 824,
       author: 'DevTeam Pro',
       price: 29,
+      trending: true,
       tags: ['React', 'Node.js', 'MongoDB', 'Auth'],
       features: [
         'User authentication',
@@ -78,313 +103,595 @@ export default function MarketplacePage() {
       category: 'web',
       description: 'Modern e-commerce platform with Stripe integration',
       downloads: 12340,
-      rating: 4.9,
-      reviews: 567,
-      author: 'Web Masters',
+      rating: 4.7,
+      reviews: 612,
+      author: 'Web Solutions',
       price: 39,
-      tags: ['Next.js', 'Tailwind', 'Stripe', 'Typescript'],
-      features: ['Product catalog', 'Shopping cart', 'Payment processing', 'Admin panel'],
+      trending: true,
+      tags: ['Next.js', 'Tailwind', 'Stripe', 'Database'],
+      features: [
+        'Product catalog',
+        'Shopping cart',
+        'Payment processing',
+        'Admin dashboard',
+      ],
     },
     {
       id: '3',
-      name: 'FastAPI Backend',
+      name: 'Real-time Chat App',
       category: 'backend',
-      description: 'Production-ready Python FastAPI backend setup',
-      downloads: 8920,
-      rating: 4.7,
-      reviews: 321,
-      author: 'Backend Masters',
-      price: 19,
-      tags: ['Python', 'FastAPI', 'PostgreSQL', 'Docker'],
-      features: ['REST API', 'Database models', 'Authentication', 'Deployment config'],
+      description: 'Socket.io based real-time messaging platform',
+      downloads: 8900,
+      rating: 4.6,
+      reviews: 445,
+      author: 'Realtime Labs',
+      price: 24,
+      trending: false,
+      tags: ['Socket.io', 'WebSocket', 'Node.js'],
+      features: [
+        'Real-time messaging',
+        'User groups',
+        'File sharing',
+        'Notifications',
+      ],
     },
     {
       id: '4',
-      name: 'React Native Mobile App',
+      name: 'Mobile App Starter',
       category: 'mobile',
-      description: 'Cross-platform mobile app template',
-      downloads: 5670,
-      rating: 4.6,
-      reviews: 234,
-      author: 'Mobile Devs',
-      price: 34,
-      tags: ['React Native', 'iOS', 'Android', 'Firebase'],
-      features: ['Navigation', 'State management', 'API integration', 'Offline support'],
+      description: 'React Native starter kit with navigation and UI components',
+      downloads: 10200,
+      rating: 4.5,
+      reviews: 356,
+      author: 'Mobile First',
+      price: 19,
+      trending: true,
+      tags: ['React Native', 'Expo', 'Navigation'],
+      features: [
+        'Navigation setup',
+        'UI kit',
+        'State management',
+        'API integration',
+      ],
     },
     {
       id: '5',
-      name: 'Kubernetes DevOps',
+      name: 'DevOps Pipeline',
       category: 'devops',
-      description: 'Complete Kubernetes setup with CI/CD pipeline',
-      downloads: 4230,
-      rating: 4.5,
-      reviews: 189,
+      description: 'Complete CI/CD setup with Docker and Kubernetes',
+      downloads: 5600,
+      rating: 4.9,
+      reviews: 234,
       author: 'DevOps Pro',
       price: 49,
-      tags: ['Kubernetes', 'Docker', 'CI/CD', 'GitOps'],
-      features: ['Helm charts', 'Pipeline config', 'Monitoring setup', 'Documentation'],
+      trending: false,
+      tags: ['Docker', 'Kubernetes', 'CI/CD', 'GitHub'],
+      features: [
+        'Docker setup',
+        'Kubernetes config',
+        'Auto deployment',
+        'Monitoring',
+      ],
     },
     {
       id: '6',
-      name: 'Data Analytics Pipeline',
+      name: 'Data Analytics Hub',
       category: 'data',
-      description: 'ETL pipeline for data processing and visualization',
-      downloads: 3120,
-      rating: 4.8,
-      reviews: 156,
-      author: 'Data Engineers',
-      price: 44,
-      tags: ['Python', 'Apache Airflow', 'BigQuery', 'Tableau'],
-      features: ['ETL workflow', 'Data validation', 'Visualization', 'Reporting'],
+      description: 'Build data dashboards with D3.js and React',
+      downloads: 7800,
+      rating: 4.7,
+      reviews: 389,
+      author: 'Analytics Plus',
+      price: 34,
+      trending: true,
+      tags: ['D3.js', 'Charts', 'Analytics', 'React'],
+      features: [
+        'Chart library',
+        'Data processing',
+        'Export functionality',
+        'Real-time updates',
+      ],
     },
   ]
 
   const extensions: Extension[] = [
     {
-      id: '1',
+      id: 'ext-1',
       name: 'Prettier Code Formatter',
-      category: 'editor',
-      description: 'Auto-format code with Prettier integration',
-      version: '2.8.0',
-      author: 'Code Formatters',
-      downloads: 125000,
+      category: 'tool',
+      description: 'Automatic code formatting for consistent style',
+      version: '3.0.0',
+      author: 'Prettier Team',
+      downloads: 2450000,
       rating: 4.9,
-      reviews: 3420,
+      reviews: 5230,
       free: true,
-      tags: ['Formatting', 'Code quality', 'Auto-save'],
+      tags: ['Formatting', 'Code Quality'],
     },
     {
-      id: '2',
-      name: 'Python Language Server',
-      category: 'language',
-      description: 'Complete Python support with intellisense and debugging',
-      version: '1.12.4',
-      author: 'Python Collective',
-      downloads: 98420,
+      id: 'ext-2',
+      name: 'GitLens',
+      category: 'integration',
+      description: 'Advanced Git integration and blame visualization',
+      version: '13.5.0',
+      author: 'Eric Amodio',
+      downloads: 1890000,
       rating: 4.8,
-      reviews: 2850,
+      reviews: 4120,
       free: true,
-      tags: ['Python', 'Linting', 'Testing'],
+      tags: ['Git', 'Version Control', 'Productivity'],
     },
     {
-      id: '3',
+      id: 'ext-3',
+      name: 'Copilot AI',
+      category: 'tool',
+      description: 'AI-powered code suggestions and completion',
+      version: '1.40.0',
+      author: 'GitHub',
+      downloads: 1650000,
+      rating: 4.7,
+      reviews: 3890,
+      free: false,
+      tags: ['AI', 'Code Completion', 'Productivity'],
+    },
+    {
+      id: 'ext-4',
       name: 'Dracula Theme',
       category: 'theme',
-      description: 'Dark theme with carefully selected colors',
-      version: '3.5.1',
-      author: 'Theme Artists',
-      downloads: 156000,
-      rating: 4.7,
-      reviews: 4200,
-      free: true,
-      tags: ['Dark theme', 'Customizable', 'Popular'],
-    },
-    {
-      id: '4',
-      name: 'Docker Manager Pro',
-      category: 'tool',
-      description: 'Manage Docker containers directly from the IDE',
-      version: '2.1.0',
-      author: 'DevTools Inc',
-      downloads: 45300,
+      description: 'Dark theme with high contrast for reduced eye strain',
+      version: '2.23.0',
+      author: 'Zeno Rocha',
+      downloads: 920000,
       rating: 4.6,
-      reviews: 890,
-      free: false,
-      tags: ['Docker', 'Containers', 'DevOps'],
-    },
-    {
-      id: '5',
-      name: 'GitHub Integration Plus',
-      category: 'integration',
-      description: 'Enhanced GitHub workflow with pull requests and issues',
-      version: '3.4.2',
-      author: 'GitHub Experts',
-      downloads: 78900,
-      rating: 4.9,
-      reviews: 2100,
+      reviews: 2340,
       free: true,
-      tags: ['GitHub', 'Git', 'Collaboration'],
+      tags: ['Theme', 'Dark Mode', 'Appearance'],
     },
     {
-      id: '6',
-      name: 'REST API Tester',
+      id: 'ext-5',
+      name: 'ESLint',
       category: 'tool',
-      description: 'Test APIs directly from your editor',
-      version: '1.8.5',
-      author: 'API Tools',
-      downloads: 34560,
-      rating: 4.5,
-      reviews: 650,
+      description: 'JavaScript linting to find and fix problems',
+      version: '8.20.0',
+      author: 'ESLint Team',
+      downloads: 1200000,
+      rating: 4.8,
+      reviews: 2890,
       free: true,
-      tags: ['API testing', 'HTTP', 'Development'],
+      tags: ['Linting', 'Code Quality', 'JavaScript'],
     },
   ]
 
+  const templateCategories = ['web', 'backend', 'mobile', 'devops', 'data']
+  const extensionCategories = ['editor', 'language', 'theme', 'tool', 'integration']
+
+  let filteredItems =
+    activeTab === 'templates'
+      ? templates.filter((t) => {
+          const matchesSearch =
+            t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            t.description.toLowerCase().includes(searchTerm.toLowerCase())
+          const matchesCategory = selectedCategory ? t.category === selectedCategory : true
+          return matchesSearch && matchesCategory
+        })
+      : extensions.filter((e) => {
+          const matchesSearch =
+            e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.description.toLowerCase().includes(searchTerm.toLowerCase())
+          const matchesCategory = selectedCategory ? e.category === selectedCategory : true
+          return matchesSearch && matchesCategory
+        })
+
+  // Sort items
+  if (sortBy === 'rating') {
+    filteredItems.sort(
+      (a, b) => (b as any).rating - (a as any).rating
+    )
+  } else if (sortBy === 'newest') {
+    filteredItems.sort((a, b) => (b as any).version?.localeCompare((a as any).version) || 0)
+  } else {
+    filteredItems.sort(
+      (a, b) => (b as any).downloads - (a as any).downloads
+    )
+  }
+
+  const toggleFavorite = (id: string) => {
+    const newFavorites = new Set(favorites)
+    if (newFavorites.has(id)) {
+      newFavorites.delete(id)
+    } else {
+      newFavorites.add(id)
+    }
+    setFavorites(newFavorites)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white">
       {/* Header */}
-      <div className="border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <Package className="w-8 h-8 text-blue-400" />
-                <h1 className="text-4xl font-bold text-white">Marketplace</h1>
+      <header className="bg-slate-800/50 border-b border-slate-700/50 sticky top-0 z-40 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-6">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+                <Code2 className="w-6 h-6 text-white" />
               </div>
-              <p className="text-slate-400">Discover templates and extensions</p>
-            </div>
+              <div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                  ZenCode Marketplace
+                </span>
+              </div>
+            </Link>
             <Link href="/dashboard">
-              <Button className="flex items-center gap-2">
-                <ChevronRight className="w-4 h-4" />
+              <Button variant="outline" className="border-slate-600 text-white hover:bg-slate-700/50">
                 Back to Dashboard
               </Button>
             </Link>
           </div>
-
-          {/* Search */}
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <Input
-                placeholder="Search templates and extensions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-slate-800 border-slate-700 text-white"
-              />
-            </div>
-
-            <div className="flex gap-2 flex-wrap">
-              {[
-                'React',
-                'Next.js',
-                'Node.js',
-                'Python',
-                'TypeScript',
-                'Tailwind',
-              ].map((tag) => (
-                <Button
-                  key={tag}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                >
-                  {tag}
-                </Button>
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Tabs defaultValue="templates" className="space-y-8">
-          <TabsList className="bg-slate-800 border-slate-700">
-            <TabsTrigger value="templates">Templates</TabsTrigger>
-            <TabsTrigger value="extensions">Extensions</TabsTrigger>
-          </TabsList>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Search Section */}
+        <div className="mb-12 space-y-6">
+          <div className="text-center space-y-3 mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold">
+              Explore <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Templates & Extensions</span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Discover powerful templates and extensions to accelerate your development
+            </p>
+          </div>
 
-          {/* Templates Tab */}
+          {/* Search Bar */}
+          <div className="relative group">
+            <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+            <Input
+              type="text"
+              placeholder="Search templates, extensions, authors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+            />
+          </div>
+
+          {/* Tabs and Filters */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => {
+                setActiveTab(value as 'templates' | 'extensions')
+                setSelectedCategory(null)
+              }}
+              className="w-full"
+            >
+              <TabsList className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-1">
+                <TabsTrigger value="templates" className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Templates
+                </TabsTrigger>
+                <TabsTrigger value="extensions" className="flex items-center gap-2">
+                  <Zap className="w-4 h-4" />
+                  Extensions
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <div className="flex gap-3 w-full sm:w-auto">
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'popular' | 'rating' | 'newest')}
+                className="px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 font-medium text-sm"
+              >
+                <option value="popular">Most Popular</option>
+                <option value="rating">Highest Rated</option>
+                <option value="newest">Newest</option>
+              </select>
+
+              {/* Filters Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-slate-600 transition-all duration-300 group"
+              >
+                <Filter className="w-4 h-4" />
+                <span className="text-sm font-medium">Filters</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Categories Filter */}
+          {showFilters && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`p-3 rounded-lg font-medium text-sm transition-all duration-300 flex items-center justify-between ${
+                  !selectedCategory
+                    ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300'
+                    : 'bg-slate-700/50 border border-slate-600 text-gray-400 hover:border-slate-500'
+                }`}
+              >
+                <span>All</span>
+                {!selectedCategory && <Check className="w-4 h-4" />}
+              </button>
+
+              {(activeTab === 'templates' ? templateCategories : extensionCategories).map(
+                (cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`p-3 rounded-lg font-medium text-sm transition-all duration-300 flex items-center justify-between ${
+                      selectedCategory === cat
+                        ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300'
+                        : 'bg-slate-700/50 border border-slate-600 text-gray-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <span className="capitalize">{cat}</span>
+                    {selectedCategory === cat && <Check className="w-4 h-4" />}
+                  </button>
+                )
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Content Tabs */}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'templates' | 'extensions')}>
           <TabsContent value="templates" className="space-y-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {templates.map((template) => (
-                <div
-                  key={template.id}
-                  className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-blue-500 transition group cursor-pointer"
-                >
-                  {/* Preview */}
-                  <div className="w-full h-40 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden group-hover:scale-105 transition">
-                    <Code className="w-20 h-20 text-white/50" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-white mb-1">{template.name}</h3>
-                    <p className="text-sm text-slate-400 mb-3">{template.description}</p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {template.tags.slice(0, 2).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-slate-700 text-slate-300 rounded text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Stats */}
-                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-700">
-                      <div className="flex items-center gap-2 text-sm text-slate-400">
-                        <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                        <span>{template.rating}</span>
-                        <span>({template.reviews})</span>
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-20">
+                <Package className="w-16 h-16 text-gray-500 mx-auto mb-6 opacity-50" />
+                <h3 className="text-xl font-bold text-white mb-2">No Templates Found</h3>
+                <p className="text-gray-400">Try adjusting your search or filter criteria.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {(filteredItems as Template[]).map((template) => (
+                  <div
+                    key={template.id}
+                    className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 flex flex-col"
+                  >
+                    {/* Trending Badge */}
+                    {template.trending && (
+                      <div className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/50 rounded-full text-orange-300 text-xs font-semibold animate-in fade-in slide-in-from-top-2 duration-300">
+                        <TrendingUp className="w-3.5 h-3.5" />
+                        Trending
                       </div>
-                      <span className="text-xs text-slate-400">
-                        {(template.downloads / 1000).toFixed(0)}K downloads
-                      </span>
+                    )}
+
+                    {/* Favorite Button */}
+                    <button
+                      onClick={() => toggleFavorite(template.id)}
+                      className="absolute top-4 left-4 z-10 p-2 rounded-lg bg-slate-900/50 text-gray-400 hover:text-red-400 hover:bg-slate-800/70 transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${
+                          favorites.has(template.id)
+                            ? 'fill-red-400 text-red-400'
+                            : ''
+                        }`}
+                      />
+                    </button>
+
+                    {/* Content */}
+                    <div className="p-6 flex-1 flex flex-col gap-4">
+                      <div>
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+                            {categoryIcons[template.category]}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-white group-hover:text-blue-300 transition-colors duration-300">
+                              {template.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 mt-1">{template.author}</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-400 line-clamp-2">
+                          {template.description}
+                        </p>
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold text-gray-400">Features:</p>
+                        <ul className="text-xs text-gray-400 space-y-1">
+                          {template.features.slice(0, 3).map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2">
+                              <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {template.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2.5 py-1 bg-slate-700/50 border border-slate-600 text-xs rounded-full text-gray-300 hover:border-slate-500 transition-colors duration-300 cursor-pointer"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-700">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <span className="text-sm font-medium">{template.rating}</span>
+                            <span className="text-xs text-gray-500">({template.reviews})</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-gray-400">
+                            <Download className="w-4 h-4" />
+                            <span className="text-xs">
+                              {(template.downloads / 1000).toFixed(1)}k
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-lg font-bold text-blue-400">
+                          ${template.price}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-white">${template.price}</span>
-                      <Button size="sm" className="flex items-center gap-2">
-                        <Download className="w-4 h-4" />
-                        Use
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 p-6 border-t border-slate-700 bg-slate-900/20">
+                      <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center justify-center gap-2">
+                        <ShoppingCart className="w-4 h-4" />
+                        Add to Cart
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1 border-slate-600 text-white hover:bg-slate-700/50 flex items-center justify-center gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Preview
                       </Button>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          {/* Extensions Tab */}
           <TabsContent value="extensions" className="space-y-6">
-            <div className="space-y-3">
-              {extensions.map((ext) => (
-                <div
-                  key={ext.id}
-                  className="bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-blue-500 transition flex items-start justify-between group"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-semibold text-white">{ext.name}</h3>
-                      <span className="text-xs text-slate-500">v{ext.version}</span>
-                    </div>
-                    <p className="text-sm text-slate-400 mb-2">{ext.description}</p>
-
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span>by {ext.author}</span>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                        {ext.rating} ({ext.reviews})
-                      </div>
-                      <span>•</span>
-                      <span>{(ext.downloads / 1000).toFixed(0)}K downloads</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                    {ext.free ? (
-                      <span className="px-3 py-1 bg-green-900 text-green-200 rounded text-xs font-semibold">
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-20">
+                <Zap className="w-16 h-16 text-gray-500 mx-auto mb-6 opacity-50" />
+                <h3 className="text-xl font-bold text-white mb-2">No Extensions Found</h3>
+                <p className="text-gray-400">Try adjusting your search or filter criteria.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {(filteredItems as Extension[]).map((extension) => (
+                  <div
+                    key={extension.id}
+                    className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 flex flex-col"
+                  >
+                    {/* Free Badge */}
+                    {extension.free && (
+                      <div className="absolute top-4 right-4 inline-flex items-center px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-green-300 text-xs font-semibold">
                         Free
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 bg-blue-900 text-blue-200 rounded text-xs font-semibold">
-                        Pro
-                      </span>
+                      </div>
                     )}
-                    <Button size="sm">Install</Button>
+
+                    {/* Favorite Button */}
+                    <button
+                      onClick={() => toggleFavorite(extension.id)}
+                      className="absolute top-4 left-4 p-2 rounded-lg bg-slate-900/50 text-gray-400 hover:text-red-400 hover:bg-slate-800/70 transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${
+                          favorites.has(extension.id)
+                            ? 'fill-red-400 text-red-400'
+                            : ''
+                        }`}
+                      />
+                    </button>
+
+                    {/* Content */}
+                    <div className="space-y-4 flex-1">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
+                          {categoryIcons[extension.category]}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
+                            {extension.name}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-1">v{extension.version}</p>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-gray-400">
+                        {extension.description}
+                      </p>
+
+                      {/* By Author */}
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <Users className="w-3 h-3" />
+                        By {extension.author}
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {extension.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2.5 py-1 bg-slate-700/50 border border-slate-600 text-xs rounded-full text-gray-300 hover:border-slate-500 transition-colors duration-300 cursor-pointer"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-4 pt-4 border-t border-slate-700">
+                        <div className="flex items-center gap-1.5">
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <span className="text-sm font-medium">{extension.rating}</span>
+                          <span className="text-xs text-gray-500">({extension.reviews})</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-gray-400">
+                          <Download className="w-4 h-4" />
+                          <span className="text-xs">
+                            {(extension.downloads / 1000000).toFixed(1)}M
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <Button className="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2">
+                      <Download className="w-4 h-4" />
+                      {extension.free ? 'Install' : 'View Details'}
+                    </Button>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
+
+      {/* CSS for animations */}
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes slide-in-from-top {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-in {
+          opacity: 1;
+        }
+
+        .fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+
+        .slide-in-from-top-2 {
+          animation: slide-in-from-top 0.3s ease-out;
+        }
+      `}</style>
     </div>
   )
 }
