@@ -5,6 +5,33 @@
 [![GitHub Issues](https://img.shields.io/github/issues/kranthikiran885366/zencode-ai?style=flat-square)](https://github.com/kranthikiran885366/zencode-ai/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat-square)](https://github.com/kranthikiran885366/zencode-ai/pulls)
 
+### 📦 NPM Badges
+[![npm version](https://img.shields.io/npm/v/zencode-ai?color=white&labelColor=black)](https://www.npmjs.com/package/zencode-ai)
+![npm downloads](https://img.shields.io/npm/dm/zencode-ai?color=white&labelColor=black)
+![npm license](https://img.shields.io/npm/l/zencode-ai?color=white&labelColor=black)
+
+### 🐳 DockerHub Badges
+![Docker Pulls](https://img.shields.io/docker/pulls/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+![Docker Image Size](https://img.shields.io/docker/image-size/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+![Docker Build](https://img.shields.io/docker/cloud/build/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+
+### 🎉 Product Hunt Badges
+[![Product Hunt](https://img.shields.io/badge/Product_Hunt-Upvote-black?logo=producthunt)](https://www.producthunt.com/posts/zencode-ai)
+[![Product Hunt Featured](https://img.shields.io/badge/Featured_on-Product_Hunt-black?logo=producthunt)](https://www.producthunt.com/posts/zencode-ai)
+
+### 📊 GitHub Repository Stats
+![GitHub stars](https://img.shields.io/github/stars/kranthikiran885366/zencode-ai?style=flat&color=white&labelColor=black)
+![GitHub forks](https://img.shields.io/github/forks/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+![GitHub issues](https://img.shields.io/github/issues/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+![GitHub license](https://img.shields.io/github/license/kranthikiran885366/zencode-ai?color=white&labelColor=black)
+
+### 🔄 CI/CD Badges
+![CI](https://img.shields.io/github/actions/workflow/status/kranthikiran885366/zencode-ai/ci.yml?color=white&labelColor=black)
+
+### 🤝 Social Badges
+![Follow on X](https://img.shields.io/twitter/follow/kranthikiran?style=flat&color=white&labelColor=black)
+![Discord](https://img.shields.io/discord/YOUR_SERVER_ID?color=white&labelColor=black&logo=discord)
+
 > **A production-ready, enterprise-grade web-based VS Code IDE** with 40+ advanced features, real-time collaboration, and AI-powered code intelligence.
 
 ## 📊 Project Stats
