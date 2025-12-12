@@ -3,721 +3,890 @@
 ## Base URL
 
 ```
-https://api.zencode.ai/v1
-```
-
-For development:
-```
-http://localhost:5000/api
+https://api.zencode.ai/api
+# or
+http://localhost:3000/api (development)
 ```
 
 ## Authentication
 
-All API requests require an authentication token in the header:
+All API endpoints require a valid JWT token in the Authorization header:
 
-```
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-### Get Auth Token
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
+```bash
+Authorization: Bearer <your-jwt-token>
 ```
 
-**Response**
+## Response Format
+
+All responses follow this format:
+
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "user_123",
-    "email": "user@example.com",
-    "username": "john_doe"
-  }
+  "success": true,
+  "data": { /* endpoint-specific data */ },
+  "message": "Operation successful",
+  "timestamp": "2024-01-01T12:00:00Z"
 }
 ```
 
-## API Endpoints
+---
 
-### Authentication
+## 🔐 Authentication Endpoints
 
-#### Sign Up
-```http
-POST /auth/signup
-Content-Type: application/json
+### Sign Up
+Create a new user account.
 
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "username": "john_doe",
-  "firstName": "John",
-  "lastName": "Doe"
-}
-```
+**Endpoint:** `POST /auth/signup`
 
-**Response (201)**
+**Request Body:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "user_123",
-    "email": "user@example.com",
-    "username": "john_doe"
-  }
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "SecurePassword123!"
 }
 ```
 
-#### Login
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-**Response (200)**
+**Response:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "user_123",
-    "email": "user@example.com"
-  }
-}
-```
-
-#### Get Current User
-```http
-GET /auth/me
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
-```json
-{
-  "id": "user_123",
-  "email": "user@example.com",
-  "username": "john_doe",
-  "profile": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "avatar": "https://..."
-  }
-}
-```
-
-### Projects
-
-#### List Projects
-```http
-GET /projects
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
-```json
-{
-  "projects": [
-    {
-      "id": "proj_123",
-      "name": "My Project",
-      "description": "Project description",
-      "language": "typescript",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "updatedAt": "2024-01-15T10:30:00Z"
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "_id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "email": "john@example.com"
     }
-  ]
+  }
 }
 ```
 
-#### Get Project Details
-```http
-GET /projects/:projectId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+**Status Codes:**
+- `201` - User created successfully
+- `400` - Invalid input
+- `409` - Email already registered
 
-**Response (200)**
+---
+
+### Sign In
+Authenticate and receive JWT token.
+
+**Endpoint:** `POST /auth/login`
+
+**Request Body:**
 ```json
 {
-  "id": "proj_123",
+  "email": "john@example.com",
+  "password": "SecurePassword123!"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "_id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+**Status Codes:**
+- `200` - Login successful
+- `401` - Invalid credentials
+- `404` - User not found
+
+---
+
+### Get Current User
+Get authenticated user information.
+
+**Endpoint:** `GET /auth/me`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "settings": {
+      "theme": "dark",
+      "fontSize": 14,
+      "tabSize": 2
+    }
+  }
+}
+```
+
+---
+
+## 📁 Project Endpoints
+
+### List Projects
+Get all projects for the authenticated user.
+
+**Endpoint:** `GET /projects`
+
+**Query Parameters:**
+```
+?skip=0&limit=10&sort=-createdAt&search=query
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "projects": [
+      {
+        "_id": "507f1f77bcf86cd799439012",
+        "name": "My First Project",
+        "description": "A sample project",
+        "language": "javascript",
+        "owner": {
+          "_id": "507f1f77bcf86cd799439011",
+          "name": "John Doe",
+          "email": "john@example.com"
+        },
+        "collaborators": [],
+        "files": [],
+        "createdAt": "2024-01-01T12:00:00Z",
+        "lastModified": "2024-01-01T12:00:00Z"
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+**Status Codes:**
+- `200` - Projects retrieved
+- `401` - Unauthorized
+
+---
+
+### Create Project
+Create a new project.
+
+**Endpoint:** `POST /projects`
+
+**Request Body:**
+```json
+{
   "name": "My Project",
   "description": "Project description",
-  "owner": "user_123",
-  "collaborators": ["user_456", "user_789"],
-  "files": [
-    {
-      "id": "file_123",
-      "name": "index.ts",
-      "path": "/src/index.ts",
-      "language": "typescript"
+  "language": "javascript"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "project": {
+      "_id": "507f1f77bcf86cd799439012",
+      "name": "My Project",
+      "description": "Project description",
+      "language": "javascript",
+      "owner": "507f1f77bcf86cd799439011",
+      "files": [],
+      "collaborators": [],
+      "createdAt": "2024-01-01T12:00:00Z"
     }
-  ],
-  "settings": {
-    "visibility": "private",
-    "language": "typescript"
   }
 }
 ```
 
-#### Create Project
-```http
-POST /projects
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
+**Status Codes:**
+- `201` - Project created
+- `400` - Invalid input
+- `401` - Unauthorized
 
-{
-  "name": "My New Project",
-  "description": "Project description",
-  "language": "typescript"
-}
-```
+---
 
-**Response (201)**
+### Get Project Details
+Get a specific project with all files.
+
+**Endpoint:** `GET /projects/:projectId`
+
+**Response:**
 ```json
 {
-  "id": "proj_456",
-  "name": "My New Project",
-  "description": "Project description",
-  "owner": "user_123",
-  "createdAt": "2024-01-15T10:30:00Z"
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439012",
+    "name": "My Project",
+    "files": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "index.js",
+        "path": "/index.js",
+        "content": "console.log('Hello')",
+        "language": "javascript",
+        "isDirty": false
+      }
+    ]
+  }
 }
 ```
 
-#### Update Project
-```http
-PUT /projects/:projectId
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
+**Status Codes:**
+- `200` - Project retrieved
+- `404` - Project not found
+- `401` - Unauthorized
 
+---
+
+### Update Project
+Update project metadata.
+
+**Endpoint:** `PUT /projects/:projectId`
+
+**Request Body:**
+```json
 {
   "name": "Updated Name",
   "description": "Updated description"
 }
 ```
 
-**Response (200)**
+**Response:**
 ```json
 {
-  "id": "proj_123",
-  "name": "Updated Name",
-  "description": "Updated description",
-  "updatedAt": "2024-01-15T11:30:00Z"
+  "success": true,
+  "data": {
+    "project": { /* updated project */ }
+  }
 }
 ```
 
-#### Delete Project
-```http
-DELETE /projects/:projectId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+**Status Codes:**
+- `200` - Updated successfully
+- `404` - Project not found
+- `401` - Unauthorized
 
-**Response (204)** - No content
+---
 
-### Files
+### Delete Project
+Delete a project and all its files.
 
-#### List Project Files
-```http
-GET /files?projectId=:projectId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+**Endpoint:** `DELETE /projects/:projectId`
 
-**Response (200)**
+**Response:**
 ```json
 {
-  "files": [
-    {
-      "id": "file_123",
-      "name": "index.ts",
-      "path": "/src/index.ts",
-      "language": "typescript",
-      "size": 2048,
-      "isDirty": false,
-      "lastModified": "2024-01-15T10:30:00Z"
-    }
-  ]
+  "success": true,
+  "message": "Project deleted successfully"
 }
 ```
 
-#### Get File Content
-```http
-GET /files/:fileId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+**Status Codes:**
+- `204` - Deleted successfully
+- `404` - Project not found
+- `401` - Unauthorized
 
-**Response (200)**
+---
+
+## 📝 File Endpoints
+
+### Get Files
+Get all files in a project.
+
+**Endpoint:** `GET /files/:projectId`
+
+**Response:**
 ```json
 {
-  "id": "file_123",
-  "name": "index.ts",
-  "path": "/src/index.ts",
-  "language": "typescript",
-  "content": "export function hello() { ... }",
-  "isDirty": false
+  "success": true,
+  "data": {
+    "files": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "name": "index.js",
+        "path": "/index.js",
+        "content": "console.log('Hello')",
+        "language": "javascript",
+        "isDirty": false
+      }
+    ]
+  }
 }
 ```
 
-#### Create File
-```http
-POST /files
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
+---
 
-{
-  "projectId": "proj_123",
-  "name": "newfile.ts",
-  "language": "typescript",
-  "content": ""
-}
-```
+### Create File
+Create a new file in a project.
 
-**Response (201)**
+**Endpoint:** `POST /files/:projectId`
+
+**Request Body:**
 ```json
 {
-  "id": "file_456",
-  "name": "newfile.ts",
-  "path": "/src/newfile.ts",
-  "language": "typescript",
-  "createdAt": "2024-01-15T10:30:00Z"
+  "name": "new-file.js",
+  "path": "/src/new-file.js",
+  "content": "// new file content"
 }
 ```
 
-#### Update File
-```http
-PUT /files/:fileId
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "content": "Updated file content"
-}
-```
-
-**Response (200)**
+**Response:**
 ```json
 {
-  "id": "file_123",
-  "name": "index.ts",
-  "content": "Updated file content",
-  "isDirty": false,
-  "updatedAt": "2024-01-15T11:30:00Z"
+  "success": true,
+  "data": {
+    "file": { /* created file */ }
+  }
 }
 ```
 
-#### Delete File
-```http
-DELETE /files/:fileId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+---
 
-**Response (204)** - No content
+### Update File
+Update file content.
 
-### Git Operations
+**Endpoint:** `PUT /files/:projectId/:fileId`
 
-#### List Branches
-```http
-GET /git/:projectId/branches
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
+**Request Body:**
 ```json
 {
-  "branches": [
-    {
-      "name": "main",
-      "isCurrentBranch": true,
-      "lastCommit": "abc123",
-      "lastCommitMessage": "feat: add feature"
-    },
-    {
-      "name": "develop",
-      "isCurrentBranch": false,
-      "lastCommit": "def456",
-      "lastCommitMessage": "fix: resolve issue"
-    }
-  ]
+  "content": "updated content"
 }
 ```
 
-#### Create Branch
-```http
-POST /git/:projectId/branches
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
+**Response:**
+```json
 {
-  "branchName": "feature/new-feature",
-  "fromBranch": "develop"
+  "success": true,
+  "data": {
+    "file": { /* updated file */ }
+  }
 }
 ```
 
-**Response (201)**
+---
+
+### Delete File
+Delete a file.
+
+**Endpoint:** `DELETE /files/:projectId/:fileId`
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "File deleted"
+}
+```
+
+---
+
+## 🎨 Code Formatting Endpoints
+
+### Format Code
+Format code using selected formatter preset.
+
+**Endpoint:** `POST /formatter/format`
+
+**Request Body:**
+```json
+{
+  "code": "const x=1",
+  "language": "javascript",
+  "formatter": "prettier",
+  "options": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "formatted": "const x = 1;"
+  }
+}
+```
+
+---
+
+### Get Formatter Presets
+Get available formatter presets.
+
+**Endpoint:** `GET /formatter/presets`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "presets": [
+      {
+        "name": "prettier",
+        "label": "Prettier",
+        "options": { /* default options */ }
+      },
+      {
+        "name": "eslint",
+        "label": "ESLint"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 🔀 Git Endpoints
+
+### Get Git Status
+Get current git status of project.
+
+**Endpoint:** `GET /git/:projectId/status`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "branch": "main",
+    "status": "working tree clean",
+    "staged": [],
+    "unstaged": [
+      {
+        "path": "src/index.js",
+        "status": "M"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Get Branches
+Get all branches in repository.
+
+**Endpoint:** `GET /git/:projectId/branches`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "branches": [
+      {
+        "name": "main",
+        "current": true,
+        "commits": 42
+      },
+      {
+        "name": "develop",
+        "current": false,
+        "commits": 50
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Create Branch
+Create a new branch.
+
+**Endpoint:** `POST /git/:projectId/branches`
+
+**Request Body:**
 ```json
 {
   "name": "feature/new-feature",
-  "isCurrentBranch": true
+  "from": "main"
 }
 ```
 
-#### Switch Branch
-```http
-POST /git/:projectId/switch
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "branchName": "develop"
-}
-```
-
-**Response (200)**
+**Response:**
 ```json
 {
-  "currentBranch": "develop",
-  "message": "Switched to branch develop"
-}
-```
-
-#### Create Commit
-```http
-POST /git/:projectId/commit
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "message": "feat: add new feature",
-  "description": "Detailed description of changes",
-  "files": ["file_123", "file_456"]
-}
-```
-
-**Response (201)**
-```json
-{
-  "hash": "abc123def456",
-  "message": "feat: add new feature",
-  "author": "john_doe",
-  "timestamp": "2024-01-15T10:30:00Z"
-}
-```
-
-#### Get Commit History
-```http
-GET /git/:projectId/history
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
-```json
-{
-  "commits": [
-    {
-      "hash": "abc123",
-      "message": "feat: add feature",
-      "author": "john_doe",
-      "timestamp": "2024-01-15T10:30:00Z",
-      "changes": 15
+  "success": true,
+  "data": {
+    "branch": {
+      "name": "feature/new-feature",
+      "current": true
     }
-  ]
-}
-```
-
-#### Push to Remote
-```http
-POST /git/:projectId/push
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "branch": "main",
-  "remote": "origin"
-}
-```
-
-**Response (200)**
-```json
-{
-  "message": "Successfully pushed to origin/main",
-  "commits": 3
-}
-```
-
-#### Pull from Remote
-```http
-POST /git/:projectId/pull
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "branch": "main",
-  "remote": "origin"
-}
-```
-
-**Response (200)**
-```json
-{
-  "message": "Successfully pulled from origin/main",
-  "commits": 2,
-  "conflicts": 0
-}
-```
-
-### Code Execution
-
-#### Execute Code
-```http
-POST /execute
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "code": "console.log('Hello, World!')",
-  "language": "javascript",
-  "timeout": 5000
-}
-```
-
-**Response (200)**
-```json
-{
-  "executionId": "exec_123",
-  "output": "Hello, World!\n",
-  "error": null,
-  "duration": 45,
-  "status": "completed"
-}
-```
-
-#### Get Execution Status
-```http
-GET /execute/:executionId
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
-```json
-{
-  "executionId": "exec_123",
-  "status": "completed",
-  "output": "Hello, World!\n",
-  "error": null,
-  "duration": 45
-}
-```
-
-#### Cancel Execution
-```http
-POST /execute/:executionId/cancel
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-**Response (200)**
-```json
-{
-  "message": "Execution cancelled",
-  "executionId": "exec_123"
-}
-```
-
-### AI Features
-
-#### Code Completion
-```http
-POST /ai/completion
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "code": "function hello() { ",
-  "language": "javascript",
-  "context": {
-    "file": "index.js",
-    "line": 5
   }
 }
 ```
 
-**Response (200)**
+---
+
+### Stage Files
+Stage files for commit.
+
+**Endpoint:** `POST /git/:projectId/stage`
+
+**Request Body:**
 ```json
 {
-  "suggestions": [
-    {
-      "text": "console.log('Hello');",
-      "score": 0.95
-    },
-    {
-      "text": "return 'Hello';",
-      "score": 0.87
+  "files": ["src/index.js", "package.json"]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Files staged"
+}
+```
+
+---
+
+### Commit
+Create a commit with staged changes.
+
+**Endpoint:** `POST /git/:projectId/commit`
+
+**Request Body:**
+```json
+{
+  "message": "feat: add new feature",
+  "description": "Detailed description of changes"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "commit": {
+      "hash": "abc123def456",
+      "message": "feat: add new feature",
+      "author": "John Doe",
+      "date": "2024-01-01T12:00:00Z"
     }
-  ]
-}
-```
-
-#### Code Refactoring
-```http
-POST /ai/refactor
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "code": "var x = 1; var y = 2; var z = x + y;",
-  "language": "javascript"
-}
-```
-
-**Response (200)**
-```json
-{
-  "refactored": "const sum = 1 + 2;",
-  "suggestions": [
-    "Use const instead of var",
-    "Combine variable declarations"
-  ]
-}
-```
-
-#### Code Explanation
-```http
-POST /ai/explain
-Authorization: Bearer YOUR_JWT_TOKEN
-Content-Type: application/json
-
-{
-  "code": "const arr = [1,2,3]; const doubled = arr.map(x => x * 2);",
-  "language": "javascript"
-}
-```
-
-**Response (200)**
-```json
-{
-  "explanation": "This code creates an array of numbers and uses the map function to double each element."
-}
-```
-
-## Error Responses
-
-### 400 Bad Request
-```json
-{
-  "error": "Bad Request",
-  "message": "Invalid request parameters",
-  "details": {
-    "field": "email",
-    "error": "Invalid email format"
   }
 }
 ```
 
-### 401 Unauthorized
+---
+
+### Push Changes
+Push commits to remote repository.
+
+**Endpoint:** `POST /git/:projectId/push`
+
+**Request Body:**
 ```json
 {
-  "error": "Unauthorized",
-  "message": "Missing or invalid authentication token"
+  "branch": "main"
 }
 ```
 
-### 403 Forbidden
+**Response:**
 ```json
 {
-  "error": "Forbidden",
+  "success": true,
+  "message": "Pushed to main"
+}
+```
+
+---
+
+## 💾 Code Snippets Endpoints
+
+### List Snippets
+Get all code snippets.
+
+**Endpoint:** `GET /snippets`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "snippets": [
+      {
+        "_id": "507f1f77bcf86cd799439014",
+        "name": "Console Log",
+        "prefix": "log",
+        "body": "console.log('$1')",
+        "language": "javascript",
+        "description": "Log to console"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Create Snippet
+Create a new code snippet.
+
+**Endpoint:** `POST /snippets`
+
+**Request Body:**
+```json
+{
+  "name": "Console Log",
+  "prefix": "log",
+  "body": "console.log('$1')",
+  "language": "javascript",
+  "description": "Log to console"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "snippet": { /* created snippet */ }
+  }
+}
+```
+
+---
+
+## ⚙️ Execution Endpoints
+
+### Run Code
+Execute code and get output.
+
+**Endpoint:** `POST /execution/run`
+
+**Request Body:**
+```json
+{
+  "code": "console.log('Hello World')",
+  "language": "javascript",
+  "input": ""
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "output": "Hello World\n",
+    "exitCode": 0,
+    "executionTime": 125
+  }
+}
+```
+
+---
+
+### Get Execution History
+Get recent code executions.
+
+**Endpoint:** `GET /execution/history?limit=10`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "executions": [
+      {
+        "_id": "507f1f77bcf86cd799439015",
+        "code": "console.log('Hello')",
+        "language": "javascript",
+        "output": "Hello\n",
+        "exitCode": 0,
+        "timestamp": "2024-01-01T12:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 🚨 Error Responses
+
+### Common Error Codes
+
+**400 - Bad Request**
+```json
+{
+  "success": false,
+  "error": "INVALID_INPUT",
+  "message": "Email is required"
+}
+```
+
+**401 - Unauthorized**
+```json
+{
+  "success": false,
+  "error": "UNAUTHORIZED",
+  "message": "Invalid or missing authentication token"
+}
+```
+
+**403 - Forbidden**
+```json
+{
+  "success": false,
+  "error": "FORBIDDEN",
   "message": "You don't have permission to access this resource"
 }
 ```
 
-### 404 Not Found
+**404 - Not Found**
 ```json
 {
-  "error": "Not Found",
+  "success": false,
+  "error": "NOT_FOUND",
   "message": "Resource not found"
 }
 ```
 
-### 409 Conflict
+**429 - Too Many Requests**
 ```json
 {
-  "error": "Conflict",
-  "message": "Resource already exists"
+  "success": false,
+  "error": "RATE_LIMITED",
+  "message": "Too many requests, try again later"
 }
 ```
 
-### 500 Internal Server Error
+**500 - Server Error**
 ```json
 {
-  "error": "Internal Server Error",
-  "message": "Something went wrong on the server"
+  "success": false,
+  "error": "INTERNAL_ERROR",
+  "message": "An unexpected error occurred"
 }
 ```
 
-## Rate Limiting
+---
 
-All endpoints are rate limited to prevent abuse:
+## 🔄 Rate Limiting
 
-- **Standard**: 60 requests per minute
-- **Authenticated**: 300 requests per minute
-- **Pro Plan**: Unlimited
+- **Standard**: 100 requests per minute
+- **Premium**: 1000 requests per minute
+- **Rate limit headers**:
+  - `X-RateLimit-Limit`: Total requests allowed
+  - `X-RateLimit-Remaining`: Remaining requests
+  - `X-RateLimit-Reset`: Reset timestamp
 
-**Rate limit headers:**
-```
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 45
-X-RateLimit-Reset: 1642256400
-```
+---
 
-## Pagination
+## 📊 Pagination
 
 List endpoints support pagination:
 
-```http
-GET /projects?page=1&limit=20&sort=createdAt&order=desc
+```bash
+GET /projects?skip=0&limit=10&sort=-createdAt
 ```
 
-**Response**
+**Parameters:**
+- `skip` - Number of items to skip (default: 0)
+- `limit` - Number of items to return (default: 10, max: 100)
+- `sort` - Sort field (prefix with `-` for descending)
+
+**Response includes:**
 ```json
 {
-  "data": [...],
+  "data": { /* items */ },
   "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 150,
-    "pages": 8
+    "total": 50,
+    "skip": 0,
+    "limit": 10,
+    "pages": 5
   }
 }
 ```
 
-## WebSocket Events
+---
 
-### Connection
-```javascript
-const socket = io('https://api.zencode.ai', {
-  auth: { token: JWT_TOKEN }
-})
+## 🧪 Testing API
 
-socket.on('connect', () => {
-  socket.emit('join-project', { projectId: 'proj_123' })
-})
+### Using cURL
+```bash
+# Sign up
+curl -X POST http://localhost:3000/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "Password123!"
+  }'
 ```
 
-### Events
-- `editor-update` - Code change
-- `cursor-move` - Cursor position
-- `file-saved` - File saved
-- `collaborator-joined` - User joined
-- `collaborator-left` - User left
-- `execution-result` - Code executed
+### Using Postman
+1. Import [Postman Collection](./postman-collection.json)
+2. Set environment variables
+3. Run requests from collection
 
 ---
 
-For more information, see:
-- [Architecture.md](ARCHITECTURE.md) - System design
-- [Development.md](DEVELOPMENT.md) - Setup guide
+## 📚 API Client Libraries
+
+- **JavaScript/TypeScript**: [zencode-sdk-js](https://npm.im/zencode-sdk)
+- **Python**: [zencode-sdk-python](https://pypi.org/project/zencode-sdk)
+- **Go**: [zencode-sdk-go](https://github.com/zencode/sdk-go)
+
+---
+
+## 🔗 WebSocket Events
+
+Connect to WebSocket for real-time updates:
+
+```javascript
+const socket = io('http://localhost:3000')
+
+// Listen for events
+socket.on('file:updated', (data) => {
+  console.log('File updated:', data)
+})
+
+socket.on('execution:output', (data) => {
+  console.log('Execution output:', data)
+})
+
+// Emit events
+socket.emit('join-project', { projectId: '...' })
+```
+
+---
+
+## 📖 API Changelog
+
+### v1.0.0 (Current)
+- Initial API release
+- Authentication endpoints
+- Projects and files management
+- Git integration
+- Code formatting
+- Execution endpoints
+
+---
+
+## 📞 Support
+
+- **Email**: api-support@zencode.ai
+- **Docs**: https://docs.zencode.ai
+- **Status**: https://status.zencode.ai
