@@ -1,288 +1,465 @@
-# Contributing to ZenCode AI IDE
+# Contributing to ZenCode AI
 
-First off, thank you for considering contributing to ZenCode AI! It's people like you that make ZenCode AI such a great tool.
+Thank you for your interest in contributing to ZenCode AI! We're excited to work with you. This document provides guidelines and instructions for contributing.
 
-## Code of Conduct
+## 🤝 Code of Conduct
 
-This project and everyone participating in it is governed by our [Code of Conduct](.github/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+By participating in this project, you agree to maintain a respectful and inclusive environment for all contributors.
 
-## How Can I Contribute?
+- Be respectful and constructive in discussions
+- Welcome diverse perspectives and experiences
+- Help others learn and grow
+- Report inappropriate behavior to maintainers
 
-### 🐛 Reporting Bugs
-
-Before creating bug reports, please check the issue list as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible:
-
-* **Use a clear and descriptive title**
-* **Provide a step-by-step description** of the exact steps which reproduce the problem
-* **Provide specific examples** to demonstrate the steps
-* **Describe the behavior you observed** after following the steps
-* **Explain which behavior you expected** to see instead and why
-* **Include screenshots and animated GIFs** if possible
-* **Include your environment details** (OS, Node version, browser, etc.)
-
-### 💡 Suggesting Enhancements
-
-Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion, please include:
-
-* **Use a clear and descriptive title**
-* **Provide a step-by-step description** of the suggested enhancement
-* **Provide specific examples** to demonstrate the steps
-* **Describe the current behavior** and **explain the expected behavior**
-* **Explain why this enhancement would be useful** to most users
-
-### 🔧 Pull Requests
-
-* Fill in the required template
-* Follow the JavaScript/TypeScript styleguides
-* Include appropriate test cases
-* Update documentation as needed
-* End all files with a newline
-* Avoid platform-dependent code
-
-## Development Setup
+## 🚀 Getting Started
 
 ### Prerequisites
+- Node.js 18+
+- npm or pnpm
+- Git
+- Docker (for backend services)
+- Basic knowledge of React and TypeScript
 
-* Node.js 16 or higher
-* npm or pnpm
-* Git
-* A code editor (VS Code recommended)
-
-### Setup Steps
+### Development Setup
 
 1. **Fork the repository**
-```bash
-# Click "Fork" on GitHub
-```
+   ```bash
+   # Click "Fork" on GitHub
+   ```
 
 2. **Clone your fork**
-```bash
-git clone https://github.com/YOUR-USERNAME/vscode.git
-cd vscode
-```
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/zencode-ai.git
+   cd zencode-ai
+   ```
 
 3. **Add upstream remote**
-```bash
-git remote add upstream https://github.com/kranthikiran885366/vscode.git
-```
+   ```bash
+   git remote add upstream https://github.com/kranthikiran885366/zencode-ai.git
+   ```
 
 4. **Install dependencies**
-```bash
-npm install
-# or
-pnpm install
-```
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
 
-5. **Create a feature branch**
-```bash
-git checkout -b feature/your-feature-name
-```
+5. **Create environment file**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your settings
+   ```
 
 6. **Start development server**
+   ```bash
+   npm run dev
+   # Server runs on http://localhost:3000
+   ```
+
+## 📝 Before You Start
+
+### Check Existing Issues
+- Search for existing issues before creating new ones
+- Add to relevant discussions instead of creating duplicates
+- React to issues if you have similar problems
+
+### Create an Issue
+If you found a bug or have a feature request:
+
+1. Go to [Issues](https://github.com/kranthikiran885366/zencode-ai/issues)
+2. Click "New Issue"
+3. Select issue template (Bug Report or Feature Request)
+4. Provide detailed information
+
+## 🔧 Making Changes
+
+### Create a Feature Branch
+
 ```bash
-npm run dev
+# Update main branch
+git checkout main
+git pull upstream main
+
+# Create feature branch
+git checkout -b feature/amazing-feature
+# or for bug fixes
+git checkout -b fix/bug-description
 ```
 
-7. **Make your changes**
+### Branch Naming Conventions
 
-8. **Test your changes**
+- `feature/description` - New features
+- `fix/description` - Bug fixes
+- `docs/description` - Documentation updates
+- `refactor/description` - Code refactoring
+- `test/description` - Tests
+- `chore/description` - Maintenance tasks
+
+### Code Style Guidelines
+
+#### JavaScript/TypeScript
+- Use **TypeScript** for type safety
+- Follow **ESLint** configuration in project
+- Use **Prettier** for formatting
+
 ```bash
-npm run test
+# Format code
+npm run format
+
+# Check linting
 npm run lint
 ```
 
-9. **Commit your changes**
-```bash
-git commit -m "feat: add new feature"
-```
+#### React Components
+- Use functional components with hooks
+- Keep components small and focused
+- Use TypeScript interfaces for props
 
-10. **Push to your fork**
-```bash
-git push origin feature/your-feature-name
-```
-
-11. **Create a Pull Request** on GitHub
-
-## Styleguides
-
-### Git Commit Messages
-
-* Use the present tense ("add feature" not "added feature")
-* Use the imperative mood ("move cursor to..." not "moves cursor to...")
-* Limit the first line to 72 characters or less
-* Reference issues and pull requests liberally after the first line
-* Start commits with conventional commit types:
-  - `feat:` - A new feature
-  - `fix:` - A bug fix
-  - `docs:` - Documentation only changes
-  - `style:` - Changes that don't affect code meaning (formatting, etc.)
-  - `refactor:` - Code changes that neither fix bugs nor add features
-  - `perf:` - Code changes that improve performance
-  - `test:` - Adding missing tests or correcting existing tests
-  - `chore:` - Changes to build process, dependencies, etc.
-
-### TypeScript/JavaScript Styleguide
-
-* Use TypeScript for new code
-* Use meaningful variable and function names
-* Use comments for complex logic
-* Follow the existing code style
-* Use arrow functions when appropriate
-* Prefer `const` over `let`, avoid `var`
-* Use template literals for strings with variables
-* Keep functions small and focused
-
-#### Example
 ```typescript
-// Good
-const calculateTotal = (items: number[]): number => {
-  return items.reduce((sum, item) => sum + item, 0)
-}
-
-// Bad
-var total = 0
-function calc(i) {
-  for (var x = 0; x < i.length; x++) {
-    total = total + i[x]
-  }
-  return total
-}
-```
-
-### React/Component Styleguide
-
-* Use functional components with hooks
-* Props should be typed with TypeScript interfaces
-* Use meaningful component names
-* Keep components focused and single-responsibility
-* Use composition over inheritance
-
-#### Example
-```typescript
+// ✅ Good
 interface ButtonProps {
-  children: React.ReactNode
   onClick: () => void
   disabled?: boolean
-  variant?: 'primary' | 'secondary'
+  children: React.ReactNode
 }
 
-export function Button({
-  children,
-  onClick,
-  disabled = false,
-  variant = 'primary',
-}: ButtonProps) {
+const MyButton: React.FC<ButtonProps> = ({ 
+  onClick, 
+  disabled = false, 
+  children 
+}) => {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn btn-${variant}`}
-    >
+    <button onClick={onClick} disabled={disabled}>
       {children}
     </button>
   )
 }
+
+export default MyButton
 ```
 
-### CSS/Tailwind Styleguide
+#### CSS/Styling
+- Use **Tailwind CSS** for styling
+- Follow BEM naming for custom CSS
+- Organize by component
 
-* Use Tailwind CSS classes for styling
-* Follow mobile-first approach
-* Use semantic class names
-* Avoid inline styles
-* Use CSS variables for custom colors
-
-#### Example
-```jsx
-<div className="flex items-center gap-4 p-4 bg-gray-900 text-white rounded-lg">
-  <div className="flex-1">
-    <h2 className="text-lg font-semibold">Title</h2>
-    <p className="text-sm text-gray-400">Description</p>
-  </div>
-  <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">
-    Action
-  </button>
+```tsx
+// ✅ Good - Use Tailwind
+<div className="flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg">
+  <Icon className="w-5 h-5" />
+  <span>Button text</span>
 </div>
 ```
 
-## Testing
+### Commit Messages
 
-### Running Tests
+Follow **Conventional Commits** format:
 
-```bash
-# Run all tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
 ```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation
+- `style:` - Formatting
+- `refactor:` - Code restructuring
+- `perf:` - Performance improvement
+- `test:` - Adding/updating tests
+- `chore:` - Maintenance
+
+**Examples:**
+```bash
+# Feature
+git commit -m "feat(editor): add code minimap"
+
+# Bug fix
+git commit -m "fix(button): resolve hover animation issue"
+
+# Documentation
+git commit -m "docs(readme): add installation steps"
+
+# Multiple commits
+git commit -m "feat(search): add regex support
+
+- Add regex pattern matching
+- Add case sensitivity toggle
+- Update search panel UI"
+```
+
+## 🧪 Testing
 
 ### Writing Tests
 
-* Write tests for new features and bug fixes
-* Aim for 80%+ code coverage
-* Use descriptive test names
-* Test both happy path and error cases
+```bash
+# Run tests
+npm test
 
-#### Example
+# Run tests in watch mode
+npm test -- --watch
+
+# Generate coverage report
+npm test -- --coverage
+```
+
+### Test Structure
+
 ```typescript
-describe('calculateTotal', () => {
-  it('should sum all numbers in an array', () => {
-    const result = calculateTotal([1, 2, 3, 4, 5])
-    expect(result).toBe(15)
+// ✅ Good test structure
+describe('Button Component', () => {
+  it('should render with text', () => {
+    const { getByText } = render(<Button>Click me</Button>)
+    expect(getByText('Click me')).toBeInTheDocument()
   })
 
-  it('should return 0 for empty array', () => {
-    const result = calculateTotal([])
-    expect(result).toBe(0)
-  })
-
-  it('should handle negative numbers', () => {
-    const result = calculateTotal([1, -2, 3])
-    expect(result).toBe(2)
+  it('should call onClick handler', () => {
+    const handleClick = jest.fn()
+    const { getByRole } = render(
+      <Button onClick={handleClick}>Click</Button>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(handleClick).toHaveBeenCalled()
   })
 })
 ```
 
-## Pull Request Process
+## 📤 Submitting Changes
 
-1. Update the CHANGELOG.md with notes on your changes
-2. Update the README.md if you're adding/changing features
-3. Ensure all tests pass: `npm run test`
-4. Ensure code is formatted: `npm run format`
-5. Ensure no lint errors: `npm run lint`
-6. Your PR will be reviewed by maintainers
-7. Make requested changes and re-push
-8. Once approved, your PR will be merged
+### Push Your Changes
 
-## Additional Notes
+```bash
+# Stage changes
+git add .
 
-### Issue and Pull Request Labels
+# Commit with message
+git commit -m "feat(component): add awesome feature"
 
-* `bug` - Something isn't working
-* `enhancement` - New feature or request
-* `documentation` - Improvements or additions to documentation
-* `good first issue` - Good for newcomers
-* `help wanted` - Extra attention is needed
-* `question` - Further information is requested
-* `wontfix` - This will not be worked on
+# Push to your fork
+git push origin feature/amazing-feature
+```
 
-### Recognition
+### Create Pull Request
 
-Contributors will be recognized in:
-- CHANGELOG.md
-- GitHub Contributors page
-- Project website (if applicable)
+1. Go to [Pull Requests](https://github.com/kranthikiran885366/zencode-ai/pulls)
+2. Click "New Pull Request"
+3. Compare your branch with `upstream/main`
+4. Fill out PR template:
 
-## Questions?
+```markdown
+## Description
+Brief description of changes
 
-* Check [GitHub Discussions](https://github.com/kranthikiran885366/vscode/discussions)
-* Ask in the comments of an issue or PR
-* Email: support@zencode.ai
+## Type of Change
+- [ ] New feature
+- [ ] Bug fix
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Related Issues
+Fixes #(issue number)
+
+## Testing
+Describe testing performed
+
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No new warnings generated
+```
+
+## 🔍 PR Review Process
+
+### What We Look For
+- ✅ Code quality and style
+- ✅ Test coverage
+- ✅ Documentation
+- ✅ No breaking changes
+- ✅ Alignment with project goals
+
+### Feedback & Iterations
+- We may request changes to PRs
+- Please respond to feedback promptly
+- Push additional commits to address feedback
+- Rebase if needed to keep commit history clean
+
+## 📁 File Structure
+
+### Components
+```
+components/
+├── feature/
+│   ├── component-name.tsx
+│   ├── component-name.test.tsx
+│   └── README.md
+└── ui/
+    ├── button.tsx
+    └── input.tsx
+```
+
+### Pages
+```
+app/
+├── (group)/
+│   ├── page.tsx
+│   └── layout.tsx
+└── api/
+    └── [endpoint]/
+        └── route.ts
+```
+
+### Libraries
+```
+lib/
+├── hooks/
+│   └── use-something.ts
+├── utils/
+│   └── helper-function.ts
+└── types/
+    └── definitions.ts
+```
+
+## 🚀 Development Workflow Example
+
+```bash
+# 1. Create feature branch
+git checkout -b feature/add-dark-mode
+
+# 2. Make changes
+# ... edit files ...
+
+# 3. Test locally
+npm run dev
+npm test
+
+# 4. Format code
+npm run format
+
+# 5. Commit changes
+git commit -m "feat(theme): add dark mode support"
+
+# 6. Push to fork
+git push origin feature/add-dark-mode
+
+# 7. Create PR on GitHub
+# ... fill out PR template ...
+
+# 8. Address feedback
+# ... make requested changes ...
+git commit -m "refactor(theme): improve dark mode implementation"
+git push origin feature/add-dark-mode
+
+# 9. Merge and cleanup
+# After merge, delete branch
+git checkout main
+git pull upstream main
+git branch -d feature/add-dark-mode
+git push origin --delete feature/add-dark-mode
+```
+
+## 🐛 Bug Report Template
+
+When reporting bugs, include:
+
+```markdown
+## Bug Description
+Clear description of what happened
+
+## Expected Behavior
+What should have happened
+
+## Actual Behavior
+What actually happened
+
+## Steps to Reproduce
+1. Step one
+2. Step two
+3. Step three
+
+## Environment
+- Browser: [e.g. Chrome 120]
+- OS: [e.g. Windows 11]
+- Node version: [e.g. 18.12.0]
+
+## Screenshots
+[If applicable]
+
+## Additional Context
+[Any other relevant information]
+```
+
+## 💡 Feature Request Template
+
+```markdown
+## Feature Description
+Clear description of proposed feature
+
+## Use Case
+Why is this feature needed?
+
+## Proposed Solution
+How should it be implemented?
+
+## Alternatives Considered
+Other approaches you've considered
+
+## Additional Context
+Any other relevant information
+```
+
+## 📚 Documentation Guidelines
+
+### Writing Docs
+- Use clear, concise language
+- Include code examples
+- Update table of contents
+- Add links to related docs
+
+### Code Comments
+```typescript
+// ✅ Good - explain WHY, not WHAT
+// We cache search results for 5 minutes to reduce API calls
+const cache = new Map<string, CacheEntry>()
+
+// ❌ Avoid - obvious comments
+// Set cache to new Map
+const cache = new Map()
+```
+
+## 🔐 Security
+
+### Reporting Security Issues
+⚠️ **Do NOT** create public issues for security vulnerabilities!
+
+1. Email: security@zencode.ai
+2. Include detailed information
+3. Allow reasonable time for patches
+
+## 📞 Getting Help
+
+- **Questions**: Use [GitHub Discussions](https://github.com/kranthikiran885366/zencode-ai/discussions)
+- **Chat**: Join our [Discord community](https://discord.gg/zencode)
+- **Email**: contact@zencode.ai
+
+## ✨ Recognition
+
+Contributors are recognized in:
+- [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+- Release notes for significant contributions
+- Monthly contributor spotlights
+
+## 📝 License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
 
 ---
 
-**Happy coding! 🚀**
+**Thank you for contributing to ZenCode AI! 🎉**
+
+Together, we're building the future of web-based development environments.
