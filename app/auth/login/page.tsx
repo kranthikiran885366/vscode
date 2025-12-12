@@ -16,6 +16,7 @@ import {
   Chrome,
   CheckCircle,
   AlertCircle,
+  Shield,
 } from 'lucide-react'
 
 export default function LoginPage() {
