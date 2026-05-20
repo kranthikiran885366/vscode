@@ -66,6 +66,42 @@ export default function LandingPage() {
       description: 'Built-in version control and deployment',
       gradient: 'from-red-500 to-pink-500',
     },
+    {
+      icon: <Shield className="w-8 h-8" />,
+      title: 'Enterprise Security',
+      description: '2FA, API keys, SSO/SAML, encryption & compliance',
+      gradient: 'from-indigo-500 to-purple-500',
+    },
+    {
+      icon: <Users className="w-8 h-8" />,
+      title: 'Team Management',
+      description: 'Organizations, roles, permissions & audit logs',
+      gradient: 'from-teal-500 to-cyan-500',
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: 'Advanced Analytics',
+      description: 'Comprehensive dashboards & productivity metrics',
+      gradient: 'from-yellow-500 to-red-500',
+    },
+    {
+      icon: <Cpu className="w-8 h-8" />,
+      title: 'Sandbox Execution',
+      description: 'Secure Docker-based code execution with timeouts',
+      gradient: 'from-green-500 to-teal-500',
+    },
+    {
+      icon: <Share2 className="w-8 h-8" />,
+      title: 'Project Sharing',
+      description: 'Share, archive & export projects with ease',
+      gradient: 'from-pink-500 to-orange-500',
+    },
+    {
+      icon: <Star className="w-8 h-8" />,
+      title: 'API-First Platform',
+      description: 'RESTful API with rate limiting & webhooks',
+      gradient: 'from-purple-500 to-pink-500',
+    },
   ]
 
   const testimonials = [
@@ -150,40 +186,47 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white overflow-hidden">
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000" />
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-4000" />
+    <div className="min-h-screen bg-white text-gray-900 overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
       </div>
+      
+      {/* Grid pattern background */}
+      <div className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: `linear-gradient(0deg, transparent 24%, rgba(229, 231, 235, 0.05) 25%, rgba(229, 231, 235, 0.05) 26%, transparent 27%, transparent 74%, rgba(229, 231, 235, 0.05) 75%, rgba(229, 231, 235, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(229, 231, 235, 0.05) 25%, rgba(229, 231, 235, 0.05) 26%, transparent 27%, transparent 74%, rgba(229, 231, 235, 0.05) 75%, rgba(229, 231, 235, 0.05) 76%, transparent 77%, transparent)`,
+          backgroundSize: '50px 50px',
+        }}
+      />
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 z-50">
+      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-xl border-b border-gray-200 z-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-purple-700 group-hover:shadow-lg group-hover:shadow-blue-600/50 transition-all duration-300">
                 <Code2 className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
                   ZenCode AI
                 </span>
-                <span className="text-xs text-gray-500">By MVK Solutions</span>
+                <span className="text-xs text-gray-500">Enterprise IDE</span>
               </div>
             </Link>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
                 Features
               </a>
-              <a href="#pricing" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
                 Pricing
               </a>
-              <a href="#testimonials" className="text-gray-300 hover:text-white transition-colors duration-300">
+              <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
                 Testimonials
               </a>
             </div>
@@ -193,13 +236,13 @@ export default function LandingPage() {
               <Link href="/auth/login">
                 <Button
                   variant="ghost"
-                  className="text-gray-300 hover:text-white hover:bg-slate-800 transition-all duration-300"
+                  className="text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-300"
                 >
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                   Get Started
                 </Button>
               </Link>
@@ -221,13 +264,13 @@ export default function LandingPage() {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden pb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-              <a href="#features" className="block py-2 text-gray-300 hover:text-white hover:pl-2 transition-all duration-300">
+              <a href="#features" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
                 Features
               </a>
-              <a href="#pricing" className="block py-2 text-gray-300 hover:text-white hover:pl-2 transition-all duration-300">
+              <a href="#pricing" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
                 Pricing
               </a>
-              <a href="#testimonials" className="block py-2 text-gray-300 hover:text-white hover:pl-2 transition-all duration-300">
+              <a href="#testimonials" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
                 Testimonials
               </a>
             </div>
@@ -236,76 +279,77 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-full px-6 py-2 mb-8 hover:border-blue-500/40 transition-all duration-300 cursor-pointer group">
+          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-6 py-2 mb-8 hover:border-blue-300 hover:bg-blue-100 transition-all duration-300 cursor-pointer group">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-yellow-500 group-hover:animate-spin" />
-              <span className="text-sm text-gray-300">
+              <Zap className="w-4 h-4 text-blue-600" />
+              <span className="text-sm text-gray-700 font-medium">
                 Powered by GPT-4 & Claude AI
               </span>
             </div>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-6xl sm:text-8xl font-bold mb-8 leading-tight">
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-              The Future of Code Editing
+          <h1 className="text-5xl sm:text-7xl font-bold mb-8 leading-tight text-gray-900">
+            The Enterprise IDE
+            <span className="block bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
+              for Modern Development
             </span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Combine the power of VS Code with real-time collaboration, advanced AI, and cloud-native code execution. 
-            <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-semibold"> Write code faster, smarter, and together.</span>
+          <p className="text-lg sm:text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            VS Code-like experience with real-time collaboration, AI-powered assistance, and enterprise-grade security. 
+            <span className="text-blue-600 font-semibold"> 40+ features built for teams.</span>
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link href="/auth/signup">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg px-10 py-6 rounded-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 group w-full sm:w-auto">
-                Start Coding Free
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white text-lg px-10 py-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group w-full sm:w-auto">
+                Start Free
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
             <a href="#features">
               <Button
                 variant="outline"
-                className="border-slate-600 hover:border-slate-400 hover:bg-slate-800/50 text-lg px-10 py-6 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto"
+                className="border-gray-300 hover:border-blue-600 hover:bg-blue-50 text-gray-900 text-lg px-10 py-6 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto"
               >
-                Explore Features
+                View Features
               </Button>
             </a>
           </div>
 
           {/* Hero Stats */}
           <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto mb-16">
-            <div className="p-4 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-blue-500/30 transition-all duration-300">
-              <div className="text-3xl font-bold text-blue-400">10K+</div>
-              <div className="text-sm text-gray-400">Active Developers</div>
+            <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-lg transition-all duration-300">
+              <div className="text-3xl font-bold text-blue-600">10K+</div>
+              <div className="text-sm text-gray-600 font-medium">Active Users</div>
             </div>
-            <div className="p-4 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-purple-500/30 transition-all duration-300">
-              <div className="text-3xl font-bold text-purple-400">50ms</div>
-              <div className="text-sm text-gray-400">AI Response Time</div>
+            <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-lg transition-all duration-300">
+              <div className="text-3xl font-bold text-purple-600">50ms</div>
+              <div className="text-sm text-gray-600 font-medium">Response Time</div>
             </div>
-            <div className="p-4 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-pink-500/30 transition-all duration-300">
-              <div className="text-3xl font-bold text-pink-400">99.9%</div>
-              <div className="text-sm text-gray-400">Uptime SLA</div>
+            <div className="p-6 bg-white border border-gray-200 rounded-lg hover:border-green-300 hover:shadow-lg transition-all duration-300">
+              <div className="text-3xl font-bold text-green-600">99.9%</div>
+              <div className="text-sm text-gray-600 font-medium">Uptime SLA</div>
             </div>
           </div>
 
           {/* Demo Video Placeholder */}
-          <div className="rounded-2xl overflow-hidden border border-slate-700 shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 group">
-            <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
+          <div className="rounded-2xl overflow-hidden border border-gray-300 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
               {/* Animated border effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/20 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-purple-700/20 to-pink-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="text-center relative z-10">
-                <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 group-hover:border-blue-500/60 transition-all duration-300">
-                  <ZapIcon className="w-10 h-10 text-blue-400" />
+                <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 border border-blue-300 group-hover:border-blue-600 transition-all duration-300">
+                  <ZapIcon className="w-10 h-10 text-blue-600" />
                 </div>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300 font-medium">
                   Interactive Demo Coming Soon
                 </p>
               </div>
@@ -315,12 +359,12 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 relative">
+      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6">Powerful Features</h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Everything you need to write better code, faster. Powered by cutting-edge AI.
+            <h2 className="text-5xl font-bold mb-6 text-gray-900">40+ Professional Features</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Enterprise-grade IDE with AI, collaboration, security, and analytics.
             </p>
           </div>
 
@@ -330,27 +374,27 @@ export default function LandingPage() {
                 key={index}
                 onMouseEnter={() => setHoveredFeature(index)}
                 onMouseLeave={() => setHoveredFeature(null)}
-                className="group relative p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative p-8 rounded-2xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
               >
                 {/* Gradient overlay on hover */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                 
                 {/* Icon container */}
-                <div className={`mb-6 inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} text-white transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg`}>
+                <div className={`mb-6 inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} text-white transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-md`}>
                   {feature.icon}
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all duration-300">
+                <h3 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-700 group-hover:bg-clip-text transition-all duration-300">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300 text-sm">
                   {feature.description}
                 </p>
 
                 {/* Arrow indicator */}
                 <div className="mt-6 opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all duration-300">
-                  <ArrowRight className="w-5 h-5 text-blue-400" />
+                  <ArrowRight className="w-5 h-5 text-blue-600" />
                 </div>
               </div>
             ))}
@@ -359,30 +403,30 @@ export default function LandingPage() {
       </section>
 
       {/* Why ZenCode Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-800/50 to-slate-900/50 relative">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white relative z-10">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-16">Why Choose ZenCode?</h2>
+          <h2 className="text-5xl font-bold text-center mb-16 text-gray-900">Why Choose ZenCode?</h2>
 
           <div className="grid md:grid-cols-2 gap-16 items-center">
             {/* Left side - Features list */}
             <div>
-              <h3 className="text-3xl font-bold mb-8">Built for Modern Development</h3>
+              <h3 className="text-3xl font-bold mb-8 text-gray-900">Built for Modern Development</h3>
               <ul className="space-y-4">
                 {[
-                  { icon: Code2, text: 'Native support for 50+ programming languages', color: 'text-blue-400' },
-                  { icon: Users, text: 'Real-time collaboration with your team', color: 'text-green-400' },
-                  { icon: Bot, text: 'Advanced AI assistance with debugging', color: 'text-purple-400' },
-                  { icon: Cpu, text: 'Instant code execution and testing', color: 'text-orange-400' },
-                  { icon: GitBranch, text: 'Git integration with AI-powered commits', color: 'text-red-400' },
-                  { icon: Shield, text: 'Custom themes and security features', color: 'text-pink-400' },
+                  { icon: Code2, text: '50+ language support with syntax highlighting', color: 'text-blue-600' },
+                  { icon: Users, text: 'Real-time collaboration with your team', color: 'text-green-600' },
+                  { icon: Bot, text: 'Advanced AI assistance with code generation', color: 'text-purple-600' },
+                  { icon: Cpu, text: 'Instant code execution and testing', color: 'text-orange-600' },
+                  { icon: GitBranch, text: 'Git integration with smart commits', color: 'text-red-600' },
+                  { icon: Shield, text: 'Enterprise security & compliance', color: 'text-pink-600' },
                 ].map((item, i) => {
                   const IconComponent = item.icon
                   return (
                     <li key={i} className="flex items-start gap-4 group">
-                      <div className={`p-2 rounded-lg bg-slate-800/50 group-hover:bg-slate-700 transition-all duration-300 flex-shrink-0 ${item.color}`}>
+                      <div className={`p-2 rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-all duration-300 flex-shrink-0 ${item.color}`}>
                         <IconComponent className="w-5 h-5" />
                       </div>
-                      <span className="text-gray-300 group-hover:text-white transition-colors duration-300 mt-1">
+                      <span className="text-gray-700 group-hover:text-gray-900 transition-colors duration-300 mt-1 font-medium">
                         {item.text}
                       </span>
                     </li>
@@ -393,34 +437,34 @@ export default function LandingPage() {
 
             {/* Right side - Stats */}
             <div className="space-y-6">
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 group">
+              <div className="p-8 rounded-2xl bg-white border border-gray-300 hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 rounded-lg bg-blue-500/20 group-hover:bg-blue-500/30 transition-all duration-300">
-                    <Zap className="w-6 h-6 text-blue-400" />
+                  <div className="p-3 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-all duration-300">
+                    <Zap className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h4 className="text-2xl font-bold">Lightning Fast</h4>
+                  <h4 className="text-2xl font-bold text-gray-900">Lightning Fast</h4>
                 </div>
-                <p className="text-gray-400">50ms average AI response time with <span className="text-blue-400 font-semibold">99.9% uptime</span></p>
+                <p className="text-gray-700">50ms average AI response time with <span className="text-blue-600 font-semibold">99.9% uptime</span></p>
               </div>
 
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 group">
+              <div className="p-8 rounded-2xl bg-white border border-gray-300 hover:border-purple-400 hover:shadow-lg transition-all duration-300 group">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 rounded-lg bg-purple-500/20 group-hover:bg-purple-500/30 transition-all duration-300">
-                    <Users className="w-6 h-6 text-purple-400" />
+                  <div className="p-3 rounded-lg bg-purple-100 group-hover:bg-purple-200 transition-all duration-300">
+                    <Users className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h4 className="text-2xl font-bold">10K+ Developers</h4>
+                  <h4 className="text-2xl font-bold text-gray-900">10K+ Users</h4>
                 </div>
-                <p className="text-gray-400">Join our growing community of developers building the future</p>
+                <p className="text-gray-700">Join developers worldwide building amazing projects</p>
               </div>
 
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 hover:border-green-500/40 transition-all duration-300 group">
+              <div className="p-8 rounded-2xl bg-white border border-gray-300 hover:border-green-400 hover:shadow-lg transition-all duration-300 group">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 rounded-lg bg-green-500/20 group-hover:bg-green-500/30 transition-all duration-300">
-                    <Share2 className="w-6 h-6 text-green-400" />
+                  <div className="p-3 rounded-lg bg-green-100 group-hover:bg-green-200 transition-all duration-300">
+                    <Share2 className="w-6 h-6 text-green-600" />
                   </div>
-                  <h4 className="text-2xl font-bold">Enterprise Ready</h4>
+                  <h4 className="text-2xl font-bold text-gray-900">Enterprise Ready</h4>
                 </div>
-                <p className="text-gray-400">SSO, SAML, and dedicated support for teams</p>
+                <p className="text-gray-700">SSO, SAML, and dedicated support for teams</p>
               </div>
             </div>
           </div>
@@ -428,18 +472,18 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8">
+      <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6">Loved by Developers</h2>
-            <p className="text-xl text-gray-400">See what developers are saying about ZenCode AI</p>
+            <h2 className="text-5xl font-bold mb-6 text-gray-900">Loved by Developers</h2>
+            <p className="text-xl text-gray-600">See what developers are saying about ZenCode AI</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="p-8 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 group hover:shadow-xl hover:shadow-blue-500/10"
+                className="p-8 rounded-2xl bg-white border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group"
               >
                 {/* Stars */}
                 <div className="flex gap-1 mb-6">
@@ -453,16 +497,16 @@ export default function LandingPage() {
                 </div>
 
                 {/* Quote */}
-                <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+                <p className="text-gray-700 text-lg mb-6 leading-relaxed">
                   "{testimonial.content}"
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center gap-4 pt-6 border-t border-slate-700">
+                <div className="flex items-center gap-4 pt-6 border-t border-gray-200">
                   <div className="text-4xl">{testimonial.avatar}</div>
                   <div>
-                    <p className="font-semibold text-white">{testimonial.name}</p>
-                    <p className="text-sm text-gray-400">{testimonial.role}</p>
+                    <p className="font-semibold text-gray-900">{testimonial.name}</p>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
                     <p className="text-xs text-gray-500">{testimonial.company}</p>
                   </div>
                 </div>
@@ -473,22 +517,22 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-800/50 to-slate-900/50 relative">
+      <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-6">Simple, Transparent Pricing</h2>
-            <p className="text-xl text-gray-400 mb-8">
+            <h2 className="text-5xl font-bold mb-6 text-gray-900">Simple, Transparent Pricing</h2>
+            <p className="text-xl text-gray-600 mb-8">
               Choose the perfect plan for your needs
             </p>
 
             {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4 bg-slate-800/50 border border-slate-700 rounded-full p-2 inline-block">
+            <div className="flex items-center justify-center gap-4 bg-gray-100 border border-gray-300 rounded-full p-2 inline-block">
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
                   billingCycle === 'monthly'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 Monthly
@@ -497,13 +541,13 @@ export default function LandingPage() {
                 onClick={() => setBillingCycle('yearly')}
                 className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 relative ${
                   billingCycle === 'yearly'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-700 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 Yearly
                 {billingCycle === 'yearly' && (
-                  <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                  <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
                     Save 20%
                   </span>
                 )}
@@ -518,39 +562,39 @@ export default function LandingPage() {
                 key={index}
                 className={`relative rounded-2xl transition-all duration-300 overflow-hidden group ${
                   plan.highlighted
-                    ? 'border-2 border-blue-500 shadow-2xl shadow-blue-500/20 md:scale-105'
-                    : 'border border-slate-700 hover:border-slate-600'
+                    ? 'border-2 border-blue-600 shadow-2xl shadow-blue-600/20 md:scale-105'
+                    : 'border border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {/* Background */}
-                <div className={`absolute inset-0 ${plan.highlighted ? 'bg-gradient-to-br from-blue-600/10 to-purple-600/10' : 'bg-slate-800/50'}`} />
+                <div className={`absolute inset-0 ${plan.highlighted ? 'bg-gradient-to-br from-blue-600/5 to-purple-700/5' : 'bg-white'}`} />
 
                 {/* Popular Badge */}
                 {plan.highlighted && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-700 text-white px-4 py-1 rounded-full text-sm font-semibold">
                     Most Popular
                   </div>
                 )}
 
                 {/* Content */}
                 <div className="relative p-8 z-10">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900">{plan.name}</h3>
+                  <p className="text-gray-600 text-sm mb-6">{plan.description}</p>
 
                   {/* Price */}
                   <div className="mb-8">
                     {typeof plan.price === 'number' ? (
                       <>
-                        <div className="text-4xl font-bold mb-1">
+                        <div className="text-4xl font-bold mb-1 text-gray-900">
                           ${plan.price}
-                          <span className="text-lg text-gray-400">{plan.period}</span>
+                          <span className="text-lg text-gray-600">{plan.period}</span>
                         </div>
                         {billingCycle === 'yearly' && plan.price > 0 && (
-                          <p className="text-sm text-green-400">Billed annually</p>
+                          <p className="text-sm text-green-600 font-medium">Billed annually</p>
                         )}
                       </>
                     ) : (
-                      <div className="text-4xl font-bold text-gray-300">{plan.price}</div>
+                      <div className="text-4xl font-bold text-gray-900">{plan.price}</div>
                     )}
                   </div>
 
@@ -558,8 +602,8 @@ export default function LandingPage() {
                   <Button
                     className={`w-full mb-8 font-semibold py-3 transition-all duration-300 ${
                       plan.highlighted
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
-                        : 'bg-slate-700 hover:bg-slate-600 text-white'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                     }`}
                   >
                     {plan.cta}
@@ -569,8 +613,8 @@ export default function LandingPage() {
                   <ul className="space-y-4">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start gap-3 group/item">
-                        <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-300" />
-                        <span className="text-gray-300 group-hover/item:text-white transition-colors duration-300">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-300" />
+                        <span className="text-gray-700 group-hover/item:text-gray-900 transition-colors duration-300 text-sm">
                           {feature}
                         </span>
                       </li>
@@ -584,20 +628,20 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-3xl overflow-hidden">
             {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-90" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900 opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-700 to-pink-600" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-900 opacity-40" />
 
             {/* Content */}
             <div className="relative p-12 md:p-16 text-center z-10">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                 Ready to Transform Your Coding?
               </h2>
               <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-                Join thousands of developers using ZenCode AI to write better code faster. Start your free trial today with no credit card required.
+                Join 10,000+ developers using ZenCode AI to write better code faster. Start your free trial today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/signup">
@@ -618,29 +662,29 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-700/50">
+      <footer className="py-16 px-4 sm:px-6 lg:px-8 border-t border-gray-200 bg-white relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             {/* Company info */}
             <div>
               <div className="flex items-center gap-2 mb-6">
-                <Code2 className="w-6 h-6 text-blue-500" />
-                <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <Code2 className="w-6 h-6 text-blue-600" />
+                <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
                   ZenCode AI
                 </span>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Building the future of code editing with AI, collaboration, and cloud-native execution.
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Enterprise IDE with AI, collaboration, and cloud-native execution for modern development teams.
               </p>
             </div>
 
             {/* Product Links */}
             <div>
-              <h4 className="font-bold mb-6 text-white">Product</h4>
-              <ul className="space-y-3 text-gray-400 text-sm">
+              <h4 className="font-bold mb-6 text-gray-900">Product</h4>
+              <ul className="space-y-3 text-gray-600 text-sm">
                 {['Features', 'Pricing', 'Security', 'Roadmap'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="hover:text-white transition-colors duration-300">
+                    <a href="#" className="hover:text-blue-600 transition-colors duration-300">
                       {link}
                     </a>
                   </li>
@@ -650,11 +694,11 @@ export default function LandingPage() {
 
             {/* Company Links */}
             <div>
-              <h4 className="font-bold mb-6 text-white">Company</h4>
-              <ul className="space-y-3 text-gray-400 text-sm">
+              <h4 className="font-bold mb-6 text-gray-900">Company</h4>
+              <ul className="space-y-3 text-gray-600 text-sm">
                 {['About', 'Blog', 'Careers', 'Contact'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="hover:text-white transition-colors duration-300">
+                    <a href="#" className="hover:text-blue-600 transition-colors duration-300">
                       {link}
                     </a>
                   </li>
@@ -664,11 +708,11 @@ export default function LandingPage() {
 
             {/* Resources Links */}
             <div>
-              <h4 className="font-bold mb-6 text-white">Resources</h4>
-              <ul className="space-y-3 text-gray-400 text-sm">
+              <h4 className="font-bold mb-6 text-gray-900">Resources</h4>
+              <ul className="space-y-3 text-gray-600 text-sm">
                 {['Documentation', 'API Reference', 'Community', 'Support'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="hover:text-white transition-colors duration-300">
+                    <a href="#" className="hover:text-blue-600 transition-colors duration-300">
                       {link}
                     </a>
                   </li>
@@ -678,10 +722,10 @@ export default function LandingPage() {
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-8" />
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8" />
 
           {/* Bottom Footer */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-gray-400 text-sm">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-gray-600 text-sm">
             <p>&copy; 2024 ZenCode AI by MVK Solutions. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-white transition-colors duration-300">

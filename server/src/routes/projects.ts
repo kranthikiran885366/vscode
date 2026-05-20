@@ -1,218 +1,249 @@
 import express, { Router, Response } from 'express'
-import Project from '../models/Project'
-import File from '../models/File'
-import { AuthRequest } from '../server'
+import { projectService } from '../services/ProjectService'
+import { permissionService } from '../services/PermissionService'
+import { asyncHandler } from '../middleware/errorHandler'
+import { AuthRequest } from '../middleware/auth'
 
 const router: Router = express.Router()
 
 // Get all user projects
-router.get('/', async (req: AuthRequest, res: Response) => {
-  try {
-    const projects = await Project.find({
-      $or: [
-        { owner: req.user?.id },
-        { collaborators: req.user?.id },
-      ],
-    })
-      .populate('owner', 'name email avatar')
-      .populate('collaborators', 'name email avatar')
-      .sort({ lastModified: -1 })
+router.get(
+  '/',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const limit = Math.min(parseInt(req.query.limit as string) || 50, 100)
+    const offset = parseInt(req.query.offset as string) || 0
 
-    res.json({ projects })
-  } catch (error) {
-    console.error('Get projects error:', error)
-    res.status(500).json({ message: 'Failed to fetch projects' })
-  }
-})
+    const { projects, total } = await projectService.getUserProjects(req.user!.id, {
+      limit,
+      offset,
+    })
+
+    res.json({
+      success: true,
+      data: { projects, total },
+      pagination: { limit, offset, total },
+    })
+  })
+)
 
 // Get single project
-router.get('/:projectId', async (req: AuthRequest, res: Response) => {
-  try {
+router.get(
+  '/:projectId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const { projectId } = req.params
+    const project = await projectService.getProject(projectId, req.user!.id)
 
-    const project = await Project.findById(projectId)
-      .populate('owner', 'name email avatar')
-      .populate('collaborators', 'name email avatar')
-      .populate('files')
+    const permissions = await permissionService.getProjectPermissions(req.user!.id, projectId)
 
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
-    }
-
-    // Check access
-    if (!project.isPublic && 
-        project.owner._id.toString() !== req.user?.id && 
-        !project.collaborators.some(c => c._id.toString() === req.user?.id)) {
-      return res.status(403).json({ message: 'Access denied' })
-    }
-
-    res.json({ project })
-  } catch (error) {
-    console.error('Get project error:', error)
-    res.status(500).json({ message: 'Failed to fetch project' })
-  }
-})
+    res.json({
+      success: true,
+      data: {
+        project,
+        permissions,
+      },
+    })
+  })
+)
 
 // Create new project
-router.post('/', async (req: AuthRequest, res: Response) => {
-  try {
-    const { name, description = '', language = 'javascript' } = req.body
+router.post(
+  '/',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { name, description, language } = req.body
+    const project = await projectService.createProject(req.user!.id, name, description, language)
 
-    if (!name) {
-      return res.status(400).json({ message: 'Project name required' })
-    }
-
-    const project = new Project({
-      name,
-      description,
-      owner: req.user?.id,
-      language,
+    res.status(201).json({
+      success: true,
+      message: 'Project created successfully',
+      data: { project },
     })
-
-    // Create default README file
-    const readmeFile = new File({
-      name: 'README.md',
-      path: `/${project._id}/README.md`,
-      project: project._id,
-      owner: req.user?.id,
-      content: `# ${name}\n\n${description}\n`,
-      language: 'markdown',
-    })
-
-    await readmeFile.save()
-    project.files.push(readmeFile._id as any)
-
-    await project.save()
-
-    res.status(201).json({ message: 'Project created', project })
-  } catch (error) {
-    console.error('Create project error:', error)
-    res.status(500).json({ message: 'Failed to create project' })
-  }
-})
+  })
+)
 
 // Update project
-router.put('/:projectId', async (req: AuthRequest, res: Response) => {
-  try {
+router.put(
+  '/:projectId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const { projectId } = req.params
-    const { name, description, isPublic, language } = req.body
+    const updates = req.body
 
-    const project = await Project.findById(projectId)
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
-    }
+    const project = await projectService.updateProject(projectId, req.user!.id, updates)
 
-    // Check ownership
-    if (project.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: 'Access denied' })
-    }
-
-    // Update fields
-    if (name) project.name = name
-    if (description !== undefined) project.description = description
-    if (isPublic !== undefined) project.isPublic = isPublic
-    if (language) project.language = language
-
-    project.lastModified = new Date()
-    await project.save()
-
-    res.json({ message: 'Project updated', project })
-  } catch (error) {
-    console.error('Update project error:', error)
-    res.status(500).json({ message: 'Failed to update project' })
-  }
-})
+    res.json({
+      success: true,
+      message: 'Project updated successfully',
+      data: { project },
+    })
+  })
+)
 
 // Delete project
-router.delete('/:projectId', async (req: AuthRequest, res: Response) => {
-  try {
+router.delete(
+  '/:projectId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const { projectId } = req.params
+    await projectService.deleteProject(projectId, req.user!.id)
 
-    const project = await Project.findById(projectId)
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
-    }
-
-    // Check ownership
-    if (project.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: 'Access denied' })
-    }
-
-    // Delete all files in project
-    await File.deleteMany({ project: projectId })
-
-    // Delete project
-    await Project.findByIdAndDelete(projectId)
-
-    res.json({ message: 'Project deleted' })
-  } catch (error) {
-    console.error('Delete project error:', error)
-    res.status(500).json({ message: 'Failed to delete project' })
-  }
-})
+    res.json({
+      success: true,
+      message: 'Project deleted successfully',
+    })
+  })
+)
 
 // Add collaborator
-router.post('/:projectId/collaborators', async (req: AuthRequest, res: Response) => {
-  try {
+router.post(
+  '/:projectId/collaborators',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const { projectId } = req.params
-    const { email } = req.body
+    const { email, role = 'contributor' } = req.body
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email required' })
-    }
+    const project = await projectService.addCollaborator(
+      projectId,
+      req.user!.id,
+      email,
+      role
+    )
 
-    const project = await Project.findById(projectId)
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
-    }
+    res.json({
+      success: true,
+      message: 'Collaborator added successfully',
+      data: { project },
+    })
+  })
+)
 
-    // Check ownership
-    if (project.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: 'Access denied' })
-    }
+// Update collaborator role
+router.put(
+  '/:projectId/collaborators/:collaboratorId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId, collaboratorId } = req.params
+    const { role } = req.body
 
-    // Find user by email
-    const { User } = await import('../models/User')
-    const collaborator = await User.findOne({ email })
-    if (!collaborator) {
-      return res.status(404).json({ message: 'User not found' })
-    }
+    await permissionService.updateCollaboratorRole(projectId, req.user!.id, collaboratorId, role)
 
-    if (!project.collaborators.includes(collaborator._id)) {
-      project.collaborators.push(collaborator._id)
-      await project.save()
-    }
+    const project = await projectService.getProject(projectId, req.user!.id)
 
-    res.json({ message: 'Collaborator added', project })
-  } catch (error) {
-    console.error('Add collaborator error:', error)
-    res.status(500).json({ message: 'Failed to add collaborator' })
-  }
-})
+    res.json({
+      success: true,
+      message: 'Collaborator role updated',
+      data: { project },
+    })
+  })
+)
 
 // Remove collaborator
-router.delete('/:projectId/collaborators/:userId', async (req: AuthRequest, res: Response) => {
-  try {
-    const { projectId, userId } = req.params
+router.delete(
+  '/:projectId/collaborators/:collaboratorId',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId, collaboratorId } = req.params
 
-    const project = await Project.findById(projectId)
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
-    }
+    const project = await projectService.removeCollaborator(projectId, req.user!.id, collaboratorId)
 
-    // Check ownership
-    if (project.owner.toString() !== req.user?.id) {
-      return res.status(403).json({ message: 'Access denied' })
-    }
+    res.json({
+      success: true,
+      message: 'Collaborator removed successfully',
+      data: { project },
+    })
+  })
+)
 
-    project.collaborators = project.collaborators.filter(c => c.toString() !== userId)
-    await project.save()
+// Archive project
+router.post(
+  '/:projectId/archive',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
 
-    res.json({ message: 'Collaborator removed', project })
-  } catch (error) {
-    console.error('Remove collaborator error:', error)
-    res.status(500).json({ message: 'Failed to remove collaborator' })
-  }
-})
+    const project = await projectService.archiveProject(projectId, req.user!.id)
+
+    res.json({
+      success: true,
+      message: 'Project archived successfully',
+      data: { project },
+    })
+  })
+)
+
+// Restore archived project
+router.post(
+  '/:projectId/restore',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const project = await projectService.restoreProject(projectId, req.user!.id)
+
+    res.json({
+      success: true,
+      message: 'Project restored successfully',
+      data: { project },
+    })
+  })
+)
+
+// Search projects
+router.get(
+  '/search/:query',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { query } = req.params
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100)
+    const offset = parseInt(req.query.offset as string) || 0
+
+    const { projects, total } = await projectService.searchProjects(req.user!.id, query, {
+      limit,
+      offset,
+    })
+
+    res.json({
+      success: true,
+      data: { projects, total },
+      pagination: { limit, offset, total },
+    })
+  })
+)
+
+// Export project
+router.get(
+  '/:projectId/export',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const exportData = await projectService.exportProject(projectId, req.user!.id)
+
+    res.set('Content-Type', 'application/json')
+    res.set('Content-Disposition', `attachment; filename="project-${projectId}.json"`)
+    res.send(exportData)
+  })
+)
+
+// Duplicate project
+router.post(
+  '/:projectId/duplicate',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const project = await projectService.duplicateProject(projectId, req.user!.id)
+
+    res.status(201).json({
+      success: true,
+      message: 'Project duplicated successfully',
+      data: { project },
+    })
+  })
+)
+
+// Update project stats
+router.post(
+  '/:projectId/update-stats',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    await projectService.updateProjectStats(projectId)
+
+    res.json({
+      success: true,
+      message: 'Project stats updated',
+    })
+  })
+)
 
 export default router
