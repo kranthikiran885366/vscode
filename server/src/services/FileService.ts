@@ -4,6 +4,7 @@ import AuditLog from '../models/AuditLog'
 import { ValidationError, AuthorizationError, NotFoundError } from '../utils/errors'
 import { isValidFileName, isValidObjectId, isValidLanguage } from '../utils/validators'
 import { logger } from '../utils/logger'
+import * as diff from 'diff'
 
 export class FileService {
   /**
@@ -411,6 +412,287 @@ export class FileService {
         throw error
       }
       logger.error('Restore version error', 'FILE_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get diff between two versions
+   */
+  async getVersionDiff(
+    fileId: string,
+    userId: string,
+    version1: number,
+    version2: number
+  ): Promise<any> {
+    try {
+      const file = await this.getFile(fileId, userId)
+
+      const v1 = file.versions.find((v) => v.versionNumber === version1)
+      const v2 = file.versions.find((v) => v.versionNumber === version2)
+
+      if (!v1 || !v2) {
+        throw new ValidationError('Version not found')
+      }
+
+      const diffResult = diff.diffLines(v1.content, v2.content)
+
+      logger.info('Version diff retrieved', 'FILE_SERVICE', { fileId })
+
+      return {
+        version1,
+        version2,
+        diff: diffResult,
+      }
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof NotFoundError) {
+        throw error
+      }
+      logger.error('Get diff error', 'FILE_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Search in files
+   */
+  async searchFiles(
+    projectId: string,
+    userId: string,
+    query: string,
+    options: { includeContent?: boolean; limit?: number } = {}
+  ): Promise<IFile[]> {
+    try {
+      const { includeContent = true, limit = 100 } = options
+
+      if (!isValidObjectId(projectId)) {
+        throw new ValidationError('Invalid project ID')
+      }
+
+      // Check project access
+      const project = await Project.findById(projectId)
+      if (!project) {
+        throw new NotFoundError('Project')
+      }
+
+      const hasAccess =
+        project.owner.toString() === userId ||
+        project.collaborators.some((c: any) => c.userId.toString() === userId)
+
+      if (!hasAccess && !project.isPublic) {
+        throw new AuthorizationError('Access denied')
+      }
+
+      const searchQuery: any = {
+        project: projectId,
+        isDeleted: false,
+        $or: [
+          { name: { $regex: query, $options: 'i' } },
+          { tags: { $in: [new RegExp(query, 'i')] } },
+        ],
+      }
+
+      if (includeContent) {
+        searchQuery.$or.push({ content: { $regex: query, $options: 'i' } })
+      }
+
+      const files = await File.find(searchQuery)
+        .populate('owner', 'name email')
+        .populate('lastModifiedBy', 'name email')
+        .limit(limit)
+
+      logger.info('Files searched', 'FILE_SERVICE', { projectId, query, count: files.length })
+
+      return files
+    } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof AuthorizationError ||
+        error instanceof NotFoundError
+      ) {
+        throw error
+      }
+      logger.error('Search files error', 'FILE_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Bulk delete files
+   */
+  async bulkDeleteFiles(projectId: string, userId: string, fileIds: string[]): Promise<number> {
+    try {
+      if (!isValidObjectId(projectId)) {
+        throw new ValidationError('Invalid project ID')
+      }
+
+      // Check project access
+      const project = await Project.findById(projectId)
+      if (!project) {
+        throw new NotFoundError('Project')
+      }
+
+      const hasAccess =
+        project.owner.toString() === userId ||
+        project.collaborators.some((c: any) => c.userId.toString() === userId)
+
+      if (!hasAccess) {
+        throw new AuthorizationError('Access denied')
+      }
+
+      // Soft delete all files
+      const result = await File.updateMany(
+        {
+          _id: { $in: fileIds },
+          project: projectId,
+        },
+        {
+          isDeleted: true,
+          deletedAt: new Date(),
+        }
+      )
+
+      // Update project stats
+      if (result.modifiedCount > 0) {
+        project.stats.totalFiles = Math.max(0, (project.stats.totalFiles || 0) - result.modifiedCount)
+        await project.save()
+
+        await this.logAudit(userId, 'BULK_DELETE', 'FILE', projectId, {
+          fileCount: result.modifiedCount,
+        })
+
+        logger.info('Files bulk deleted', 'FILE_SERVICE', {
+          projectId,
+          count: result.modifiedCount,
+        })
+      }
+
+      return result.modifiedCount
+    } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof AuthorizationError ||
+        error instanceof NotFoundError
+      ) {
+        throw error
+      }
+      logger.error('Bulk delete error', 'FILE_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Bulk update tags
+   */
+  async bulkUpdateTags(
+    projectId: string,
+    userId: string,
+    fileIds: string[],
+    tags: string[]
+  ): Promise<number> {
+    try {
+      if (!isValidObjectId(projectId)) {
+        throw new ValidationError('Invalid project ID')
+      }
+
+      // Check project access
+      const project = await Project.findById(projectId)
+      if (!project) {
+        throw new NotFoundError('Project')
+      }
+
+      const hasAccess =
+        project.owner.toString() === userId ||
+        project.collaborators.some((c: any) => c.userId.toString() === userId)
+
+      if (!hasAccess) {
+        throw new AuthorizationError('Access denied')
+      }
+
+      const result = await File.updateMany(
+        {
+          _id: { $in: fileIds },
+          project: projectId,
+        },
+        {
+          tags,
+        }
+      )
+
+      logger.info('Files tags bulk updated', 'FILE_SERVICE', {
+        projectId,
+        count: result.modifiedCount,
+      })
+
+      return result.modifiedCount
+    } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof AuthorizationError ||
+        error instanceof NotFoundError
+      ) {
+        throw error
+      }
+      logger.error('Bulk update tags error', 'FILE_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Restore deleted file
+   */
+  async restoreDeletedFile(fileId: string, userId: string): Promise<IFile> {
+    try {
+      if (!isValidObjectId(fileId)) {
+        throw new ValidationError('Invalid file ID')
+      }
+
+      const file = await File.findById(fileId)
+      if (!file) {
+        throw new NotFoundError('File')
+      }
+
+      if (!file.isDeleted) {
+        throw new ValidationError('File is not deleted')
+      }
+
+      // Check access
+      const project = await Project.findById(file.project)
+      if (!project) {
+        throw new NotFoundError('Project')
+      }
+
+      const hasAccess =
+        project.owner.toString() === userId ||
+        project.collaborators.some((c: any) => c.userId.toString() === userId)
+
+      if (!hasAccess) {
+        throw new AuthorizationError('Access denied')
+      }
+
+      file.isDeleted = false
+      file.deletedAt = undefined as any
+      await file.save()
+
+      // Add back to project
+      if (!project.files.includes(file._id as any)) {
+        project.files.push(file._id as any)
+        project.stats.totalFiles = (project.stats.totalFiles || 0) + 1
+        await project.save()
+      }
+
+      logger.info('File restored', 'FILE_SERVICE', { fileId, userId })
+
+      return file
+    } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof AuthorizationError ||
+        error instanceof NotFoundError
+      ) {
+        throw error
+      }
+      logger.error('Restore file error', 'FILE_SERVICE', error)
       throw error
     }
   }

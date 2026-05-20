@@ -361,6 +361,245 @@ export class ProjectService {
   }
 
   /**
+   * Archive project
+   */
+  async archiveProject(projectId: string, userId: string): Promise<IProject> {
+    try {
+      const project = await this.getProject(projectId, userId)
+
+      if (project.owner._id.toString() !== userId) {
+        throw new AuthorizationError('Only project owner can archive project')
+      }
+
+      project.isArchived = true
+      await project.save()
+
+      await this.logAudit(userId, 'ARCHIVE', 'PROJECT', projectId)
+
+      logger.info('Project archived', 'PROJECT_SERVICE', { projectId, userId })
+
+      return project
+    } catch (error) {
+      if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+        throw error
+      }
+      logger.error('Archive project error', 'PROJECT_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Restore archived project
+   */
+  async restoreProject(projectId: string, userId: string): Promise<IProject> {
+    try {
+      if (!isValidObjectId(projectId)) {
+        throw new ValidationError('Invalid project ID')
+      }
+
+      const project = await Project.findById(projectId)
+      if (!project) {
+        throw new NotFoundError('Project')
+      }
+
+      if (project.owner.toString() !== userId) {
+        throw new AuthorizationError('Only project owner can restore project')
+      }
+
+      project.isArchived = false
+      await project.save()
+
+      await this.logAudit(userId, 'RESTORE', 'PROJECT', projectId)
+
+      logger.info('Project restored', 'PROJECT_SERVICE', { projectId, userId })
+
+      return project
+    } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof AuthorizationError ||
+        error instanceof NotFoundError
+      ) {
+        throw error
+      }
+      logger.error('Restore project error', 'PROJECT_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Search projects
+   */
+  async searchProjects(
+    userId: string,
+    query: string,
+    options: { limit?: number; offset?: number } = {}
+  ): Promise<{ projects: IProject[]; total: number }> {
+    try {
+      const { limit = 20, offset = 0 } = options
+
+      const searchQuery = {
+        $or: [
+          { name: { $regex: query, $options: 'i' } },
+          { description: { $regex: query, $options: 'i' } },
+          { tags: { $in: [new RegExp(query, 'i')] } },
+        ],
+        $and: [
+          {
+            $or: [
+              { owner: userId },
+              { 'collaborators.userId': userId },
+            ],
+          },
+        ],
+      }
+
+      const projects = await Project.find(searchQuery)
+        .populate('owner', 'name email avatar')
+        .sort({ lastModified: -1 })
+        .limit(limit)
+        .skip(offset)
+
+      const total = await Project.countDocuments(searchQuery)
+
+      logger.info('Projects searched', 'PROJECT_SERVICE', { userId, query, total })
+
+      return { projects, total }
+    } catch (error) {
+      logger.error('Search projects error', 'PROJECT_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Export project data
+   */
+  async exportProject(projectId: string, userId: string): Promise<string> {
+    try {
+      const project = await this.getProject(projectId, userId)
+
+      const files = await File.find({ project: projectId })
+
+      const exportData = {
+        project: {
+          name: project.name,
+          description: project.description,
+          language: project.language,
+          tags: project.tags,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+        },
+        files: files.map((f) => ({
+          name: f.name,
+          path: f.path,
+          content: f.content,
+          language: f.language,
+          lineCount: f.lineCount,
+        })),
+      }
+
+      await this.logAudit(userId, 'EXPORT', 'PROJECT', projectId)
+
+      logger.info('Project exported', 'PROJECT_SERVICE', { projectId, userId })
+
+      return JSON.stringify(exportData, null, 2)
+    } catch (error) {
+      if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+        throw error
+      }
+      logger.error('Export project error', 'PROJECT_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Duplicate project
+   */
+  async duplicateProject(projectId: string, userId: string): Promise<IProject> {
+    try {
+      const originalProject = await this.getProject(projectId, userId)
+
+      // Create new project
+      const newProject = new Project({
+        name: `${originalProject.name} (Copy)`,
+        description: originalProject.description,
+        owner: userId,
+        language: originalProject.language,
+        visibility: 'private',
+        tags: originalProject.tags,
+      })
+
+      await newProject.save()
+
+      // Copy files
+      const originalFiles = await File.find({ project: projectId })
+      for (const file of originalFiles) {
+        const newFile = new File({
+          name: file.name,
+          path: file.path,
+          project: newProject._id,
+          owner: userId,
+          content: file.content,
+          language: file.language,
+          lastModifiedBy: userId,
+        })
+
+        await newFile.save()
+        newProject.files.push(newFile._id as any)
+      }
+
+      newProject.stats.totalFiles = originalFiles.length
+      await newProject.save()
+
+      await this.logAudit(userId, 'DUPLICATE', 'PROJECT', projectId, {
+        newProjectId: newProject._id,
+      })
+
+      logger.info('Project duplicated', 'PROJECT_SERVICE', {
+        originalProjectId: projectId,
+        newProjectId: newProject._id,
+        userId,
+      })
+
+      return newProject
+    } catch (error) {
+      if (error instanceof AuthorizationError || error instanceof NotFoundError) {
+        throw error
+      }
+      logger.error('Duplicate project error', 'PROJECT_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Update project stats
+   */
+  async updateProjectStats(projectId: string): Promise<void> {
+    try {
+      const files = await File.find({ project: projectId, isDeleted: false })
+
+      let totalLines = 0
+      for (const file of files) {
+        totalLines += file.lineCount || 0
+      }
+
+      await Project.findByIdAndUpdate(
+        projectId,
+        {
+          'stats.totalFiles': files.length,
+          'stats.totalLines': totalLines,
+          'stats.lastActivity': new Date(),
+        },
+        { new: true }
+      )
+
+      logger.debug('Project stats updated', 'PROJECT_SERVICE', { projectId })
+    } catch (error) {
+      logger.error('Update project stats error', 'PROJECT_SERVICE', error)
+    }
+  }
+
+  /**
    * Log audit trail
    */
   private async logAudit(
