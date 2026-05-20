@@ -1,194 +1,50 @@
 version: '3.8'
 
 services:
-  # Databases
-  mongodb:
-    image: mongo:7
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongodb:27017/zencode
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - zencode-network
     restart: unless-stopped
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    ports:
-      - "27017:27017"
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: zencode
     volumes:
       - mongodb_data:/data/db
     networks:
-      - backend
+      - zencode-network
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
-      - backend
-
-  rabbitmq:
-    image: rabbitmq:3-management
+      - zencode-network
     restart: unless-stopped
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: password
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - backend
-
-  # API Gateway
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - auth-service
-      - project-service
-      - ai-service
-      - execution-service
-      - collaboration-service
-    networks:
-      - backend
-      - frontend
-
-  # Backend Services
-  auth-service:
-    build:
-      context: ./services/auth-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3001
-      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: your-super-secret-jwt-key
-      GOOGLE_CLIENT_ID: your-google-client-id
-      GOOGLE_CLIENT_SECRET: your-google-client-secret
-      GITHUB_CLIENT_ID: your-github-client-id
-      GITHUB_CLIENT_SECRET: your-github-client-secret
-    ports:
-      - "3001:3001"
-    depends_on:
-      - mongodb
-      - redis
-    networks:
-      - backend
-
-  project-service:
-    build:
-      context: ./services/project-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3002
-      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
-      REDIS_URL: redis://redis:6379
-      AUTH_SERVICE_URL: http://auth-service:3001
-    ports:
-      - "3002:3002"
-    depends_on:
-      - mongodb
-      - redis
-      - auth-service
-    volumes:
-      - project_data:/app/data
-    networks:
-      - backend
-
-  collaboration-service:
-    build:
-      context: ./services/collaboration-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3003
-      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
-      REDIS_URL: redis://redis:6379
-      AUTH_SERVICE_URL: http://auth-service:3001
-    ports:
-      - "3003:3003"
-    depends_on:
-      - mongodb
-      - redis
-      - auth-service
-    networks:
-      - backend
-
-  ai-service:
-    build:
-      context: ./services/ai-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      ENVIRONMENT: development
-      PORT: 8001
-      MONGODB_URI: mongodb://admin:password@mongodb:27017/codeplatform?authSource=admin
-      REDIS_URL: redis://redis:6379
-      OPENAI_API_KEY: your-openai-api-key
-      ANTHROPIC_API_KEY: your-anthropic-api-key
-      GOOGLE_API_KEY: your-google-api-key
-    ports:
-      - "8001:8001"
-    depends_on:
-      - mongodb
-      - redis
-    networks:
-      - backend
-
-  execution-service:
-    build:
-      context: ./services/execution-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      ENVIRONMENT: development
-      PORT: 8002
-      REDIS_URL: redis://redis:6379
-    ports:
-      - "8002:8002"
-    depends_on:
-      - redis
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - backend
-
-  terminal-service:
-    build:
-      context: ./services/terminal-service
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 3004
-      REDIS_URL: redis://redis:6379
-      AUTH_SERVICE_URL: http://auth-service:3001
-    ports:
-      - "3004:3004"
-    depends_on:
-      - redis
-      - auth-service
-    networks:
-      - backend
 
 volumes:
   mongodb_data:
   redis_data:
-  rabbitmq_data:
-  project_data:
 
 networks:
-  backend:
-    driver: bridge
-  frontend:
+  zencode-network:
     driver: bridge
