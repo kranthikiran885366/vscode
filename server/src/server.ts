@@ -141,6 +141,152 @@ app.get('/api/admin/db-status', requireAuth, async (req: Request, res: Response)
   }
 })
 
+// API Features Endpoint - Documents all available services and endpoints
+app.get('/api/features', (req: Request, res: Response) => {
+  res.json({
+    success: true,
+    version: '1.0.0',
+    features: {
+      authentication: {
+        description: 'Complete authentication system with JWT, 2FA, and email verification',
+        endpoints: [
+          'POST /api/auth/signup - User registration',
+          'POST /api/auth/login - User login with JWT',
+          'POST /api/auth/refresh - Refresh access token',
+          'POST /api/auth/verify-email - Email verification',
+          'POST /api/auth/change-password - Change user password',
+          'POST /api/auth/2fa/setup - Setup 2FA',
+          'POST /api/auth/2fa/enable - Enable 2FA',
+          'POST /api/auth/2fa/verify - Verify 2FA token',
+          'GET /api/auth/me - Get current user info',
+        ],
+        count: 9,
+      },
+      projects: {
+        description: 'Project management with collaboration, archiving, and export',
+        endpoints: [
+          'GET /api/projects - List user projects',
+          'POST /api/projects - Create new project',
+          'GET /api/projects/:id - Get project details',
+          'PUT /api/projects/:id - Update project',
+          'DELETE /api/projects/:id - Delete project',
+          'POST /api/projects/:id/archive - Archive project',
+          'POST /api/projects/:id/duplicate - Duplicate project',
+          'GET /api/projects/:id/export - Export project',
+        ],
+        count: 8,
+      },
+      files: {
+        description: 'File management with versioning, diffs, and bulk operations',
+        endpoints: [
+          'GET /api/files - List project files',
+          'POST /api/files - Create file',
+          'PUT /api/files/:id - Update file',
+          'DELETE /api/files/:id - Delete file',
+          'GET /api/files/:id/versions - File version history',
+          'POST /api/files/:id/restore - Restore file version',
+          'GET /api/files/:id/diff - Get file diff',
+          'POST /api/files/bulk/create - Bulk create files',
+        ],
+        count: 8,
+      },
+      collaboration: {
+        description: 'Real-time collaboration with WebSocket support',
+        endpoints: [
+          'WebSocket Events: user:presence, file:edit, cursor:move',
+          'Operational Transform for conflict-free editing',
+          'User cursor tracking and awareness',
+        ],
+        count: 3,
+      },
+      git: {
+        description: 'Git integration for version control',
+        endpoints: [
+          'GET /api/git/:projectId/status - Git status',
+          'POST /api/git/:projectId/commit - Create commit',
+          'POST /api/git/:projectId/push - Push to remote',
+          'GET /api/git/:projectId/log - Commit history',
+          'POST /api/git/:projectId/merge - Merge branches',
+        ],
+        count: 5,
+      },
+      execution: {
+        description: 'Code execution in sandboxed environments',
+        endpoints: [
+          'POST /api/execute - Execute code (Node, Python, JS)',
+          'Timeout protection (configurable)',
+          'Real-time output streaming',
+          'Resource limits enforced',
+        ],
+        count: 4,
+      },
+      formatter: {
+        description: 'Code formatting with Prettier and ESLint',
+        endpoints: [
+          'POST /api/formatter/format - Format code',
+          'GET /api/formatter/presets - Available presets',
+          'POST /api/formatter/config - Save custom config',
+        ],
+        count: 3,
+      },
+      snippets: {
+        description: 'Code snippet management and sharing',
+        endpoints: [
+          'GET /api/snippets - List snippets',
+          'POST /api/snippets - Create snippet',
+          'GET /api/snippets/:id - Get snippet',
+          'DELETE /api/snippets/:id - Delete snippet',
+        ],
+        count: 4,
+      },
+      organization: {
+        description: 'Organization and team management',
+        endpoints: [
+          'POST /api/organization - Create organization',
+          'GET /api/organization/:id - Get org details',
+          'POST /api/organization/:id/members - Add member',
+          'DELETE /api/organization/:id/members/:memberId - Remove member',
+        ],
+        count: 4,
+      },
+      apiKeys: {
+        description: 'API key management for programmatic access',
+        endpoints: [
+          'POST /api/api-keys - Generate API key',
+          'GET /api/api-keys - List API keys',
+          'DELETE /api/api-keys/:keyId - Revoke API key',
+          'POST /api/api-keys/:keyId/rotate - Rotate key',
+        ],
+        count: 4,
+      },
+      analytics: {
+        description: 'Activity tracking and analytics',
+        endpoints: [
+          'GET /api/analytics/activity - User activity',
+          'GET /api/analytics/team-stats - Team statistics',
+          'GET /api/analytics/code-stats - Code metrics',
+          'GET /api/analytics/organization - Org analytics',
+        ],
+        count: 4,
+      },
+      ai: {
+        description: 'AI-powered code assistance',
+        endpoints: [
+          'POST /api/ai/complete - Code completion',
+          'POST /api/ai/generate - Generate code',
+          'POST /api/ai/explain - Explain code',
+          'POST /api/ai/refactor - Suggest refactoring',
+        ],
+        count: 4,
+      },
+    },
+    totalServices: 12,
+    totalEndpoints: 55,
+    totalFeatures: 60,
+    description: 'ZenCode AI - Enterprise IDE with 40+ features and real-time collaboration',
+  })
+})
+
 // 404 handler
 app.use(notFoundHandler)
 
