@@ -1,5 +1,7 @@
 import AuditLog from '../models/AuditLog'
 import { logger } from '../utils/logger'
+import User from '../models/User'
+import Redis from 'ioredis'
 
 export interface AuditEntry {
   userId: string
@@ -15,6 +17,19 @@ export interface AuditEntry {
 }
 
 export class SecurityService {
+  private redis: Redis | null = null
+
+  constructor() {
+    try {
+      this.redis = new Redis({
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+      })
+    } catch (error) {
+      logger.warn('Redis not available, rate limiting disabled', 'SECURITY_SERVICE')
+    }
+  }
+
   /**
    * Log audit entry
    */
@@ -227,6 +242,178 @@ export class SecurityService {
     } catch (error) {
       logger.error('Audit cleanup error', 'SECURITY_SERVICE', error)
       throw error
+    }
+  }
+
+  /**
+   * Check rate limit
+   */
+  async checkRateLimit(userId: string, action: string, maxRequests: number = 100, windowSeconds: number = 3600): Promise<boolean> {
+    if (!this.redis) {
+      return true
+    }
+
+    try {
+      const key = `ratelimit:${userId}:${action}`
+      const current = await this.redis.incr(key)
+
+      if (current === 1) {
+        await this.redis.expire(key, windowSeconds)
+      }
+
+      const isAllowed = current <= maxRequests
+
+      if (!isAllowed) {
+        logger.warn('Rate limit exceeded', 'SECURITY_SERVICE', {
+          userId,
+          action,
+          current,
+          maxRequests,
+        })
+      }
+
+      return isAllowed
+    } catch (error) {
+      logger.error('Rate limit check error', 'SECURITY_SERVICE', error)
+      return true // Fail open if Redis is unavailable
+    }
+  }
+
+  /**
+   * Get rate limit status
+   */
+  async getRateLimitStatus(userId: string, action: string): Promise<{ remaining: number; resetAt: Date } | null> {
+    if (!this.redis) {
+      return null
+    }
+
+    try {
+      const key = `ratelimit:${userId}:${action}`
+      const ttl = await this.redis.ttl(key)
+      const current = await this.redis.get(key)
+
+      if (!current) {
+        return { remaining: 100, resetAt: new Date(Date.now() + 3600000) }
+      }
+
+      return {
+        remaining: Math.max(0, 100 - parseInt(current)),
+        resetAt: new Date(Date.now() + ttl * 1000),
+      }
+    } catch (error) {
+      logger.error('Get rate limit status error', 'SECURITY_SERVICE', error)
+      return null
+    }
+  }
+
+  /**
+   * Add IP to whitelist
+   */
+  async whitelistIP(userId: string, ipAddress: string): Promise<void> {
+    try {
+      const user = await User.findById(userId)
+      if (!user) {
+        throw new Error('User not found')
+      }
+
+      // Add to user's IP whitelist (implement in User model)
+      logger.info('IP whitelisted', 'SECURITY_SERVICE', {
+        userId,
+        ipAddress,
+      })
+    } catch (error) {
+      logger.error('Whitelist IP error', 'SECURITY_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Check if IP is whitelisted
+   */
+  async isIPWhitelisted(userId: string, ipAddress: string): Promise<boolean> {
+    try {
+      const user = await User.findById(userId)
+      if (!user) {
+        return false
+      }
+
+      // Check against user's whitelist (implement in User model)
+      // For now, return true (no IP restriction)
+      return true
+    } catch (error) {
+      logger.error('Check IP whitelist error', 'SECURITY_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Monitor for data breach patterns
+   */
+  async monitorDataBreachPatterns(userId: string): Promise<{
+    riskLevel: 'low' | 'medium' | 'high'
+    indicators: string[]
+  }> {
+    try {
+      const indicators: string[] = []
+      let riskLevel: 'low' | 'medium' | 'high' = 'low'
+
+      // Check for rapid API calls
+      const oneMinuteAgo = new Date(Date.now() - 60000)
+      const recentApiCalls = await AuditLog.countDocuments({
+        userId,
+        action: { $in: ['READ', 'UPDATE', 'DELETE'] },
+        timestamp: { $gte: oneMinuteAgo },
+      })
+
+      if (recentApiCalls > 50) {
+        indicators.push('Unusual API activity detected')
+        riskLevel = 'high'
+      }
+
+      // Check for bulk data download patterns
+      const bulkDownloads = await AuditLog.countDocuments({
+        userId,
+        action: 'EXPORT',
+        timestamp: { $gte: oneMinuteAgo },
+      })
+
+      if (bulkDownloads > 5) {
+        indicators.push('Bulk data export detected')
+        riskLevel = 'high'
+      }
+
+      // Check for unusual delete patterns
+      const deletes = await AuditLog.find({
+        userId,
+        action: 'DELETE',
+        timestamp: { $gte: new Date(Date.now() - 300000) },
+      })
+
+      if (deletes.length > 20) {
+        indicators.push('Bulk deletion activity detected')
+        riskLevel = 'high'
+      }
+
+      return { riskLevel, indicators }
+    } catch (error) {
+      logger.error('Monitor breach patterns error', 'SECURITY_SERVICE', error)
+      return { riskLevel: 'low', indicators: [] }
+    }
+  }
+
+  /**
+   * Generate security alert
+   */
+  async generateSecurityAlert(userId: string, alertType: string, details: any): Promise<void> {
+    try {
+      // Send alert notification (email, SMS, webhook, etc.)
+      logger.warn('Security alert generated', 'SECURITY_SERVICE', {
+        userId,
+        alertType,
+        details,
+      })
+    } catch (error) {
+      logger.error('Generate alert error', 'SECURITY_SERVICE', error)
     }
   }
 

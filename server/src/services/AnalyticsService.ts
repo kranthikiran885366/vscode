@@ -174,6 +174,186 @@ export class AnalyticsService {
   }
 
   /**
+   * Track performance metric
+   */
+  async trackPerformance(
+    userId: string,
+    metric: string,
+    value: number,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    try {
+      const event = new Analytics({
+        userId,
+        action: 'PERFORMANCE',
+        resource: metric,
+        resourceId: metric,
+        metadata: { value, ...metadata },
+        timestamp: new Date(),
+      })
+
+      await event.save()
+
+      logger.debug('Performance metric tracked', 'ANALYTICS_SERVICE', {
+        userId,
+        metric,
+        value,
+      })
+    } catch (error) {
+      logger.error('Track performance error', 'ANALYTICS_SERVICE', error)
+    }
+  }
+
+  /**
+   * Get performance report
+   */
+  async getPerformanceReport(userId: string, days: number = 7): Promise<any> {
+    try {
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+
+      const events = await Analytics.find({
+        userId,
+        action: 'PERFORMANCE',
+        timestamp: { $gte: startDate },
+      })
+
+      const metrics: Record<string, any> = {}
+
+      events.forEach((event) => {
+        const metric = event.resource
+        if (!metrics[metric]) {
+          metrics[metric] = []
+        }
+        metrics[metric].push((event.metadata as any)?.value || 0)
+      })
+
+      const report: Record<string, any> = {}
+      Object.entries(metrics).forEach(([metric, values]: [string, any]) => {
+        const nums = values as number[]
+        report[metric] = {
+          count: nums.length,
+          average: nums.length > 0 ? (nums.reduce((a: number, b: number) => a + b) / nums.length).toFixed(2) : 0,
+          max: Math.max(...nums),
+          min: Math.min(...nums),
+        }
+      })
+
+      return {
+        userId,
+        period: `${days} days`,
+        metrics: report,
+      }
+    } catch (error) {
+      logger.error('Get performance report error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get dashboard summary
+   */
+  async getDashboardSummary(userId: string): Promise<any> {
+    try {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      const todayEvents = await Analytics.find({
+        userId,
+        timestamp: { $gte: today },
+      })
+
+      const thisWeek = new Date()
+      thisWeek.setDate(thisWeek.getDate() - 7)
+
+      const weekEvents = await Analytics.find({
+        userId,
+        timestamp: { $gte: thisWeek },
+      })
+
+      const thisMonth = new Date()
+      thisMonth.setDate(thisMonth.getDate() - 30)
+
+      const monthEvents = await Analytics.find({
+        userId,
+        timestamp: { $gte: thisMonth },
+      })
+
+      return {
+        today: {
+          eventCount: todayEvents.length,
+          topAction: this.getTopItems(todayEvents, 'action', 1)[0]?.name,
+        },
+        thisWeek: {
+          eventCount: weekEvents.length,
+          avgPerDay: (weekEvents.length / 7).toFixed(2),
+        },
+        thisMonth: {
+          eventCount: monthEvents.length,
+          avgPerDay: (monthEvents.length / 30).toFixed(2),
+        },
+      }
+    } catch (error) {
+      logger.error('Get dashboard summary error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Track feature usage
+   */
+  async trackFeatureUsage(userId: string, feature: string, metadata?: Record<string, any>): Promise<void> {
+    try {
+      const event = new Analytics({
+        userId,
+        action: 'FEATURE_USE',
+        resource: feature,
+        resourceId: feature,
+        metadata,
+        timestamp: new Date(),
+      })
+
+      await event.save()
+
+      logger.debug('Feature usage tracked', 'ANALYTICS_SERVICE', {
+        userId,
+        feature,
+      })
+    } catch (error) {
+      logger.error('Track feature usage error', 'ANALYTICS_SERVICE', error)
+    }
+  }
+
+  /**
+   * Get feature adoption
+   */
+  async getFeatureAdoption(feature: string, days: number = 30): Promise<any> {
+    try {
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+
+      const events = await Analytics.find({
+        resource: feature,
+        action: 'FEATURE_USE',
+        timestamp: { $gte: startDate },
+      })
+
+      const uniqueUsers = new Set(events.map((e) => e.userId))
+
+      return {
+        feature,
+        period: `${days} days`,
+        totalUsage: events.length,
+        uniqueUsers: uniqueUsers.size,
+        adoptionRate: `${((uniqueUsers.size / (await Analytics.distinct('userId'))) * 100).toFixed(2)}%`,
+      }
+    } catch (error) {
+      logger.error('Get feature adoption error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
    * Helper: Count item occurrences
    */
   private getItemCounts(events: any[], field: string): Record<string, number> {
