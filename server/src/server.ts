@@ -1,9 +1,8 @@
-import express, { Express, Request, Response, NextFunction } from 'express'
+import express, { Express, Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import jwt from 'jsonwebtoken'
 import http from 'http'
 
 // Route imports
@@ -15,7 +14,17 @@ import executionRoutes from './routes/execution'
 import gitRoutes from './routes/git'
 import formatterRoutes from './routes/formatter'
 import snippetsRoutes from './routes/snippets'
+
+// Middleware imports
+import { authMiddleware, requireAuth } from './middleware/auth'
+import { errorHandler, notFoundHandler } from './middleware/errorHandler'
+import { requestLogger } from './middleware/logging'
+
+// WebSocket
 import { initializeWebSocket } from './websocket'
+
+// Logger
+import { logger } from './utils/logger'
 
 // Load environment variables
 dotenv.config()
@@ -24,49 +33,27 @@ const app: Express = express()
 const httpServer = http.createServer(app)
 const PORT = process.env.PORT || 5000
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/zencode'
+const NODE_ENV = process.env.NODE_ENV || 'development'
 
 // Initialize WebSocket
 initializeWebSocket(httpServer)
 
-// Middleware
+// Security Middleware
 app.use(helmet())
-app.use(cors())
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true,
+}))
+
+// Body Parser Middleware
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
-// Auth middleware
-export interface AuthRequest extends Request {
-  user?: {
-    id: string
-    email: string
-    name: string
-  }
-}
+// Request Logging Middleware
+app.use(requestLogger)
 
-app.use((req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1]
-
-  if (!token) {
-    return next()
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any
-    req.user = decoded
-  } catch (err) {
-    console.error('Invalid token:', err)
-  }
-
-  next()
-})
-
-// Protected route middleware
-export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' })
-  }
-  next()
-}
+// Authentication Middleware
+app.use(authMiddleware)
 
 // Routes
 app.use('/api/auth', authRoutes)
@@ -78,41 +65,64 @@ app.use('/api/git', requireAuth, gitRoutes)
 app.use('/api/formatter', requireAuth, formatterRoutes)
 app.use('/api/snippets', requireAuth, snippetsRoutes)
 
-// Health check
+// Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date() })
-})
-
-// Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err)
-  res.status(500).json({
-    message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  res.json({
+    success: true,
+    status: 'ok',
+    timestamp: new Date(),
+    environment: NODE_ENV,
   })
 })
 
 // 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: 'Not found' })
-})
+app.use(notFoundHandler)
 
-// Connect to MongoDB
+// Global Error Handler (must be last)
+app.use(errorHandler)
+
+// MongoDB Connection
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    maxPoolSize: 10,
+    minPoolSize: 5,
+    socketTimeoutMS: 45000,
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => {
-    console.log('✅ Connected to MongoDB')
+    logger.info('Connected to MongoDB', 'DATABASE', {
+      uri: MONGODB_URI.replace(/:[^:]*@/, ':***@'), // Hide password
+    })
 
     // Start server with HTTP
     httpServer.listen(PORT, () => {
-      console.log(`✅ Server running on port ${PORT}`)
-      console.log(`✅ WebSocket server initialized`)
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
+      logger.info(`Server running on port ${PORT}`, 'SERVER', {
+        environment: NODE_ENV,
+        websocket: 'initialized',
+      })
+
+      console.log('\n=================================')
+      console.log('✅ ZenCode AI Server Started')
+      console.log(`📍 Port: ${PORT}`)
+      console.log(`🌍 Environment: ${NODE_ENV}`)
+      console.log(`🔗 MongoDB: Connected`)
+      console.log('=================================\n')
     })
   })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:', err)
+    logger.error('MongoDB connection error', 'DATABASE', err)
+    console.error('❌ Failed to start server:', err.message)
     process.exit(1)
   })
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully', 'SERVER')
+  httpServer.close(() => {
+    mongoose.connection.close()
+    logger.info('Server shutdown complete', 'SERVER')
+    process.exit(0)
+  })
+})
 
 export default httpServer
