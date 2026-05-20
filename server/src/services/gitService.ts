@@ -302,4 +302,183 @@ export class GitService {
       return false
     }
   }
+
+  /**
+   * Get commit history with stats
+   */
+  getCommitHistory(limit: number = 50): CommitInfo[] {
+    try {
+      const logOutput = execSync(
+        `git log -${limit} --pretty=format:"%H|%an|%s|%ai|%b"`,
+        { cwd: this.projectPath }
+      )
+        .toString()
+        .split('\n')
+        .filter(Boolean)
+
+      return logOutput.map((line) => {
+        const [hash, author, message, date] = line.split('|')
+        return { hash: hash.substring(0, 7), author, message, date }
+      })
+    } catch (error) {
+      logger.error('Get commit history error', 'GIT_SERVICE', error)
+      return []
+    }
+  }
+
+  /**
+   * Get detailed commit info
+   */
+  getCommitDetail(hash: string): any {
+    try {
+      const detail = execSync(`git show ${hash} --stat`, { cwd: this.projectPath })
+        .toString()
+
+      return {
+        hash: hash.substring(0, 7),
+        detail,
+      }
+    } catch (error) {
+      logger.error('Get commit detail error', 'GIT_SERVICE', error)
+      return null
+    }
+  }
+
+  /**
+   * Revert a commit
+   */
+  revertCommit(hash: string): boolean {
+    try {
+      execSync(`git revert ${hash} --no-edit`, { cwd: this.projectPath })
+      logger.info('Commit reverted', 'GIT_SERVICE', { hash })
+      return true
+    } catch (error) {
+      logger.error('Revert commit error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Reset to commit
+   */
+  resetToCommit(hash: string, hard: boolean = false): boolean {
+    try {
+      const flag = hard ? '--hard' : '--soft'
+      execSync(`git reset ${flag} ${hash}`, { cwd: this.projectPath })
+      logger.info('Reset to commit', 'GIT_SERVICE', { hash, hard })
+      return true
+    } catch (error) {
+      logger.error('Reset commit error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Get repository statistics
+   */
+  getRepoStats(): any {
+    try {
+      const commits = execSync('git rev-list --all --count', { cwd: this.projectPath })
+        .toString()
+        .trim()
+
+      const branches = this.listBranches().length
+
+      const authors = execSync(
+        'git log --format=%an | sort -u | wc -l',
+        { cwd: this.projectPath }
+      )
+        .toString()
+        .trim()
+
+      const latestTag = execSync('git describe --tags --abbrev=0 2>/dev/null || echo "none"', {
+        cwd: this.projectPath,
+      })
+        .toString()
+        .trim()
+
+      return {
+        totalCommits: parseInt(commits),
+        totalBranches: branches,
+        totalAuthors: parseInt(authors),
+        latestTag,
+      }
+    } catch (error) {
+      logger.error('Get repo stats error', 'GIT_SERVICE', error)
+      return null
+    }
+  }
+
+  /**
+   * Create a tag
+   */
+  createTag(tagName: string, message?: string): boolean {
+    try {
+      if (message) {
+        execSync(`git tag -a ${tagName} -m "${message}"`, { cwd: this.projectPath })
+      } else {
+        execSync(`git tag ${tagName}`, { cwd: this.projectPath })
+      }
+      logger.info('Tag created', 'GIT_SERVICE', { tagName })
+      return true
+    } catch (error) {
+      logger.error('Create tag error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * List tags
+   */
+  listTags(): string[] {
+    try {
+      const output = execSync('git tag', { cwd: this.projectPath }).toString()
+      return output.split('\n').filter(Boolean)
+    } catch (error) {
+      logger.error('List tags error', 'GIT_SERVICE', error)
+      return []
+    }
+  }
+
+  /**
+   * Delete a tag
+   */
+  deleteTag(tagName: string): boolean {
+    try {
+      execSync(`git tag -d ${tagName}`, { cwd: this.projectPath })
+      logger.info('Tag deleted', 'GIT_SERVICE', { tagName })
+      return true
+    } catch (error) {
+      logger.error('Delete tag error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Cherry-pick a commit
+   */
+  cherryPick(hash: string): boolean {
+    try {
+      execSync(`git cherry-pick ${hash}`, { cwd: this.projectPath })
+      logger.info('Cherry-pick applied', 'GIT_SERVICE', { hash })
+      return true
+    } catch (error) {
+      logger.error('Cherry-pick error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Squash commits
+   */
+  squashCommits(count: number): boolean {
+    try {
+      execSync(`git reset --soft HEAD~${count} && git commit`, { cwd: this.projectPath })
+      logger.info('Commits squashed', 'GIT_SERVICE', { count })
+      return true
+    } catch (error) {
+      logger.error('Squash commits error', 'GIT_SERVICE', error)
+      return false
+    }
+  }
 }

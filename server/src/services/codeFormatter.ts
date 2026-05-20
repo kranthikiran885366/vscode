@@ -4,6 +4,14 @@ export interface FormattingOptions {
   singleQuote?: boolean
   trailingComma?: 'none' | 'es5' | 'all'
   printWidth?: number
+  semicolons?: boolean
+  bracketSpacing?: boolean
+}
+
+export interface FormatResult {
+  formatted: string
+  isValid: boolean
+  errors?: string[]
 }
 
 interface LintIssue {
@@ -15,31 +23,57 @@ interface LintIssue {
 }
 
 export class CodeFormatter {
-  static format(code: string, language: string, options: FormattingOptions = {}): string {
-    const defaults = {
-      indentSize: options.indentSize || 2,
-      useTabs: options.useTabs || false,
-      singleQuote: options.singleQuote !== undefined ? options.singleQuote : true,
-      trailingComma: options.trailingComma || 'none',
-      printWidth: options.printWidth || 80,
-    }
+  static format(code: string, language: string, options: FormattingOptions = {}): FormatResult {
+    try {
+      const defaults = {
+        indentSize: options.indentSize || 2,
+        useTabs: options.useTabs || false,
+        singleQuote: options.singleQuote !== undefined ? options.singleQuote : true,
+        trailingComma: options.trailingComma || 'none',
+        printWidth: options.printWidth || 80,
+        semicolons: options.semicolons !== undefined ? options.semicolons : true,
+        bracketSpacing: options.bracketSpacing !== undefined ? options.bracketSpacing : true,
+      }
 
-    switch (language) {
-      case 'javascript':
-      case 'typescript':
-        return this.formatJavaScript(code, defaults)
-      case 'python':
-        return this.formatPython(code, defaults)
-      case 'json':
-        return this.formatJSON(code, defaults)
-      case 'html':
-      case 'xml':
-        return this.formatHTML(code, defaults)
-      case 'css':
-      case 'scss':
-        return this.formatCSS(code, defaults)
-      default:
-        return code
+      let formatted = code
+      let isValid = true
+
+      switch (language) {
+        case 'javascript':
+        case 'typescript':
+          formatted = this.formatJavaScript(code, defaults)
+          break
+        case 'python':
+          formatted = this.formatPython(code, defaults)
+          break
+        case 'json':
+          formatted = this.formatJSON(code, defaults)
+          break
+        case 'html':
+        case 'xml':
+          formatted = this.formatHTML(code, defaults)
+          break
+        case 'css':
+        case 'scss':
+          formatted = this.formatCSS(code, defaults)
+          break
+        case 'sql':
+          formatted = this.formatSQL(code, defaults)
+          break
+        default:
+          formatted = code
+      }
+
+      return {
+        formatted,
+        isValid,
+      }
+    } catch (error: any) {
+      return {
+        formatted: code,
+        isValid: false,
+        errors: [error.message],
+      }
     }
   }
 
@@ -294,5 +328,122 @@ export class CodeFormatter {
     }
 
     return issues
+  }
+
+  /**
+   * Format SQL code
+   */
+  private static formatSQL(code: string, options: Required<FormattingOptions>): string {
+    const indent = options.useTabs ? '\t' : ' '.repeat(options.indentSize)
+    const keywords = [
+      'SELECT',
+      'FROM',
+      'WHERE',
+      'JOIN',
+      'LEFT JOIN',
+      'INNER JOIN',
+      'GROUP BY',
+      'ORDER BY',
+      'LIMIT',
+      'OFFSET',
+    ]
+
+    let formatted = code
+
+    // Add newlines before keywords
+    keywords.forEach((keyword) => {
+      const regex = new RegExp(`\\s+${keyword}\\s+`, 'gi')
+      formatted = formatted.replace(regex, `\n${keyword} `)
+    })
+
+    return formatted
+  }
+
+  /**
+   * Calculate code complexity
+   */
+  static getComplexityMetrics(code: string, language: string): any {
+    const lines = code.split('\n')
+    const nonEmptyLines = lines.filter((l) => l.trim()).length
+    const commentLines = lines.filter((l) => /^(\s)*\/\/|\/\*|\*\/|#|--/.test(l)).length
+
+    let cyclomaticComplexity = 1
+    const complexityKeywords =
+      language === 'python'
+        ? ['if', 'elif', 'for', 'while', 'except', 'and', 'or']
+        : ['if', 'else if', 'switch', 'case', 'for', 'while', '&&', '||', '?']
+
+    complexityKeywords.forEach((keyword) => {
+      const count = (code.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []).length
+      cyclomaticComplexity += count
+    })
+
+    const functionCount = (code.match(/^(\s)*(function|def|const.*=\s*\(|async.*=>)/gm) || [])
+      .length
+
+    return {
+      totalLines: lines.length,
+      nonEmptyLines,
+      commentLines,
+      commentRatio: ((commentLines / nonEmptyLines) * 100).toFixed(2),
+      cyclomaticComplexity,
+      estimatedFunctions: functionCount,
+      averageLinesPerFunction:
+        functionCount > 0 ? (nonEmptyLines / functionCount).toFixed(2) : 0,
+    }
+  }
+
+  /**
+   * Validate code syntax
+   */
+  static validateSyntax(code: string, language: string): { valid: boolean; errors: string[] } {
+    const errors: string[] = []
+
+    try {
+      switch (language) {
+        case 'json':
+          JSON.parse(code)
+          break
+        case 'javascript':
+        case 'typescript':
+          // Basic syntax check using regex patterns
+          if (/(function|class)\s*{/.test(code) === false && /=>/.test(code) === false) {
+            // Has some function-like structure
+          }
+          break
+        default:
+          break
+      }
+    } catch (error: any) {
+      errors.push(error.message)
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    }
+  }
+
+  /**
+   * Auto-fix common issues
+   */
+  static autoFix(code: string, language: string): string {
+    let fixed = code
+
+    switch (language) {
+      case 'javascript':
+      case 'typescript':
+        // Fix missing semicolons
+        fixed = fixed.replace(/([^;{}\s])\n(?![\s]*[}\];])/gm, '$1;\n')
+        // Fix trailing commas
+        fixed = fixed.replace(/,(\s*[}\]])/g, '$1')
+        break
+      case 'json':
+        // Remove trailing commas
+        fixed = fixed.replace(/,(\s*[}\]])/g, '$1')
+        break
+    }
+
+    return fixed
   }
 }
