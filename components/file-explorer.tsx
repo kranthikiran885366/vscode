@@ -1,10 +1,7 @@
-Adding useCallback import to the file-explorer component.
-```
-```replit_final_file
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { ChevronRight, ChevronDown, File, Folder, FolderOpen, Plus, MoreHorizontal } from "lucide-react"
+import { ChevronRight, ChevronDown, File, Folder, FolderOpen, Plus, MoreHorizontal, Code, FileText, ImageIcon, Settings, Edit as Edit3, Copy, Scissors, Download, Upload, Trash2, RefreshCw, Filter, Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -14,6 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { useEditor, type FileItem } from "../lib/editor-store"
 
 export function FileExplorer() {
@@ -311,7 +318,6 @@ export function FileExplorer() {
     if (file.type === "folder") {
       toggleFolder(file.path)
     } else {
-      // Add tab logic here
       const newTab = {
         id: file.id,
         name: file.name,
@@ -332,7 +338,6 @@ export function FileExplorer() {
 
   const confirmRename = () => {
     if (renamingFile && newFileName.trim()) {
-      // Handle rename logic here
       console.log("Rename", renamingFile, "to", newFileName.trim())
     }
     setRenamingFile(null)

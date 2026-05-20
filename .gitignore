@@ -1,27 +1,181 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
 
-# dependencies
-/node_modules
+# Testing
+/coverage
+.nyc_output
 
-# next.js
-/.next/
-/out/
-
-# production
+# Production
 /build
+/dist
+/.next
+/out
+*.tsbuildinfo
 
-# debug
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+lerna-debug.log*
+*.log
 
-# env files
-.env*
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# vercel
-.vercel
+# Generated files
+.generated/
 
-# typescript
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# OS
+Thumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+.#*
+
+# Build outputs
+dist/
+build/
+*.bundle.js
+*.map
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+mongodb/
+postgresql/
+
+# Cache
+.cache/
+.vuepress/dist/
+.docusaurus/
+
+# CDK
+cdk.out/
+
+# Docker
+docker-compose.override.yml
+
+# AWS
+.aws/
+
+# Local development
+.env.*.local
+.local/
+
+# Certificates
+*.pem
+*.crt
+*.key
+*.pub
+
+# Backups
+*.bak
+*.backup
+backups/
+*.sql.gz
+
+# Node
+npm-debug.log
+.npm
+yarn-error.log
+.yarn
+
+# Package manager lockfiles (optional - uncomment if you want to commit them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# TypeScript
 *.tsbuildinfo
-next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Storybook
+storybook-static/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Jest
+jest-coverage/
+
+# Next.js
+.next/
+out/
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierignore
+
+# Coverage
+lcov.info
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.*.example
+
+# Private keys
+*.key
+*.pem
+!public/*.pem
+
+# Temporary data
+/tmp
+/temp
+.tmp/
+
+# IDE settings (user-specific)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# History
+.history/
+
+# Misc
+.DS_Store
+Thumbs.db
