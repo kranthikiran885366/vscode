@@ -270,6 +270,102 @@ export class CollaborationService {
   }
 
   /**
+   * Transform operations for conflict resolution (OT algorithm)
+   */
+  transformOperation(
+    op1: EditOperation,
+    op2: EditOperation
+  ): { transformed1: EditOperation; transformed2: EditOperation } {
+    const t1 = { ...op1 }
+    const t2 = { ...op2 }
+
+    // Simple OT transformation: if two operations don't overlap, no transformation needed
+    if (op1.position <= op2.position) {
+      if (op1.type === 'insert') {
+        t2.position += op1.content.length
+      }
+    } else {
+      if (op2.type === 'insert') {
+        t1.position += op2.content.length
+      }
+    }
+
+    return { transformed1: t1, transformed2: t2 }
+  }
+
+  /**
+   * Detect conflicts between operations
+   */
+  detectConflict(op1: EditOperation, op2: EditOperation): boolean {
+    const op1End = op1.position + (op1.type === 'insert' ? op1.content.length : 1)
+    const op2End = op2.position + (op2.type === 'insert' ? op2.content.length : 1)
+
+    // Check if operations overlap
+    return !(op1End <= op2.position || op2End <= op1.position)
+  }
+
+  /**
+   * Merge remote changes
+   */
+  mergeRemoteChanges(baseContent: string, remoteOps: EditOperation[]): string {
+    let content = baseContent
+
+    // Sort operations by position for predictable application
+    const sorted = remoteOps.sort((a, b) => a.position - b.position)
+
+    // Apply operations in reverse order to maintain positions
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      const op = sorted[i]
+      if (op.type === 'insert') {
+        content = content.slice(0, op.position) + op.content + content.slice(op.position)
+      } else if (op.type === 'delete') {
+        content = content.slice(0, op.position) + content.slice(op.position + op.content.length)
+      }
+    }
+
+    return content
+  }
+
+  /**
+   * Get collaborative session state
+   */
+  getSessionState(fileId: string): any {
+    return {
+      fileId,
+      cursors: this.getCursorPositions(fileId),
+      onlineUsers: this.getOnlineUsers(),
+      activities: this.getActivityHistory(fileId, 20),
+    }
+  }
+
+  /**
+   * Award badges for collaboration
+   */
+  getCollaborationMetrics(userId: string): any {
+    let collaborations = 0
+    let editsCount = 0
+
+    // Count collaborations (files worked on with others)
+    this.activities.forEach((activities) => {
+      const userActivities = activities.filter((a) => a.userId === userId)
+      const otherUsers = activities
+        .filter((a) => a.userId !== userId)
+        .map((a) => a.userId)
+      if (userActivities.length > 0 && new Set(otherUsers).size > 0) {
+        collaborations++
+      }
+      editsCount += userActivities.filter((a) => a.action === 'edit').length
+    })
+
+    return {
+      userId,
+      collaborations,
+      totalEdits: editsCount,
+      collaborationScore: (collaborations + editsCount) * 10,
+    }
+  }
+
+  /**
    * Clean up stale data
    */
   cleanup(maxAge: number = 60 * 60 * 1000): void {

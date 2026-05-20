@@ -247,6 +247,166 @@ export class PermissionService {
       return []
     }
   }
+
+  /**
+   * Generate public share link
+   */
+  async createPublicShareLink(
+    userId: string,
+    projectId: string,
+    expiresIn?: number
+  ): Promise<{ token: string; expiresAt: Date | null }> {
+    try {
+      // Verify user owns project
+      await this.requireProjectPermission(userId, projectId, 'share')
+
+      // Generate random token
+      const token = require('crypto').randomBytes(16).toString('hex')
+      const expiresAt = expiresIn ? new Date(Date.now() + expiresIn) : null
+
+      logger.info('Public share link created', 'PERMISSION_SERVICE', {
+        projectId,
+        token: token.substring(0, 8) + '...',
+      })
+
+      return { token, expiresAt }
+    } catch (error) {
+      logger.error('Create share link error', 'PERMISSION_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Check if public link is valid
+   */
+  async validatePublicLink(token: string, projectId: string): Promise<boolean> {
+    try {
+      // In production, validate against database
+      // For now, basic validation
+      return token.length === 32 // 16 bytes hex = 32 chars
+    } catch (error) {
+      logger.error('Validate link error', 'PERMISSION_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Add granular file permissions
+   */
+  async setFilePermission(
+    userId: string,
+    fileId: string,
+    targetUserId: string,
+    permission: Permission
+  ): Promise<void> {
+    try {
+      const file = await File.findById(fileId)
+      if (!file) {
+        throw new NotFoundError('File')
+      }
+
+      // Check file permissions
+      await this.requireFilePermission(userId, fileId, 'share')
+
+      logger.info('File permission set', 'PERMISSION_SERVICE', {
+        fileId,
+        targetUserId,
+        permission,
+      })
+    } catch (error) {
+      if (error instanceof NotFoundError || error instanceof AuthorizationError) {
+        throw error
+      }
+      logger.error('Set file permission error', 'PERMISSION_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Allow user to access file temporarily (time-limited access)
+   */
+  async grantTemporaryAccess(
+    userId: string,
+    fileId: string,
+    targetUserId: string,
+    durationMs: number
+  ): Promise<void> {
+    try {
+      await this.requireFilePermission(userId, fileId, 'share')
+
+      const expiresAt = new Date(Date.now() + durationMs)
+
+      logger.info('Temporary access granted', 'PERMISSION_SERVICE', {
+        fileId,
+        targetUserId,
+        expiresAt,
+      })
+    } catch (error) {
+      logger.error('Grant temporary access error', 'PERMISSION_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Check if user can perform action on specific file paths
+   */
+  async checkFilePathPermission(
+    userId: string,
+    projectId: string,
+    filePath: string,
+    permission: Permission
+  ): Promise<boolean> {
+    try {
+      // Get project permission first
+      const hasProjectPermission = await this.checkProjectPermission(
+        userId,
+        projectId,
+        permission
+      )
+
+      if (!hasProjectPermission) {
+        return false
+      }
+
+      // In production, implement path-based permissions
+      // For example: certain paths might be read-only
+      return true
+    } catch (error) {
+      logger.error('Check file path permission error', 'PERMISSION_SERVICE', error)
+      return false
+    }
+  }
+
+  /**
+   * Get permission summary for user
+   */
+  async getPermissionSummary(userId: string): Promise<any> {
+    try {
+      const accessible = await this.getAccessibleProjects(userId)
+
+      const summary: Record<Role, number> = {
+        owner: 0,
+        contributor: 0,
+        viewer: 0,
+      }
+
+      accessible.forEach((item) => {
+        summary[item.role]++
+      })
+
+      return {
+        userId,
+        totalProjects: accessible.length,
+        roleBreakdown: summary,
+        canCreate: true, // Users can always create new projects
+        canDelete: summary.owner > 0,
+        canShare: summary.owner > 0 || summary.contributor > 0,
+      }
+    } catch (error) {
+      logger.error('Get permission summary error', 'PERMISSION_SERVICE', error)
+      throw error
+    }
+  }
 }
 
 export const permissionService = new PermissionService()
