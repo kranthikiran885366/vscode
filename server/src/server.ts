@@ -14,11 +14,19 @@ import executionRoutes from './routes/execution'
 import gitRoutes from './routes/git'
 import formatterRoutes from './routes/formatter'
 import snippetsRoutes from './routes/snippets'
+import organizationRoutes from './routes/organization'
+import apiKeysRoutes from './routes/apiKeys'
+import analyticsRoutes from './routes/analytics'
 
 // Middleware imports
 import { authMiddleware, requireAuth } from './middleware/auth'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
 import { requestLogger } from './middleware/logging'
+import { apiLimiter, authLimiter, signupLimiter } from './middleware/rateLimiter'
+
+// Config imports
+import { getCorsConfig } from './config/cors'
+import { initializePostgres, initializeMongoDB, healthCheck } from './config/database'
 
 // WebSocket
 import { initializeWebSocket } from './websocket'
@@ -38,12 +46,30 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 // Initialize WebSocket
 initializeWebSocket(httpServer)
 
-// Security Middleware
-app.use(helmet())
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
-  credentials: true,
+// Enhanced Security Middleware with Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+    },
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true,
+  },
+  frameguard: {
+    action: 'deny',
+  },
+  noSniff: true,
+  xssFilter: true,
 }))
+
+// Enhanced CORS with custom configuration
+app.use(cors(getCorsConfig()))
 
 // Body Parser Middleware
 app.use(express.json({ limit: '50mb' }))
@@ -52,10 +78,15 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }))
 // Request Logging Middleware
 app.use(requestLogger)
 
+// General API Rate Limiting
+app.use('/api/', apiLimiter)
+
 // Authentication Middleware
 app.use(authMiddleware)
 
-// Routes
+// Routes with specific rate limiters
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/signup', signupLimiter)
 app.use('/api/auth', authRoutes)
 app.use('/api/files', requireAuth, fileRoutes)
 app.use('/api/projects', requireAuth, projectRoutes)
@@ -64,15 +95,50 @@ app.use('/api/execute', requireAuth, executionRoutes)
 app.use('/api/git', requireAuth, gitRoutes)
 app.use('/api/formatter', requireAuth, formatterRoutes)
 app.use('/api/snippets', requireAuth, snippetsRoutes)
+app.use('/api/organization', requireAuth, organizationRoutes)
+app.use('/api/api-keys', requireAuth, apiKeysRoutes)
+app.use('/api/analytics', requireAuth, analyticsRoutes)
 
-// Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({
-    success: true,
-    status: 'ok',
-    timestamp: new Date(),
-    environment: NODE_ENV,
-  })
+// Enhanced Health check endpoint with database status
+app.get('/api/health', async (req: Request, res: Response) => {
+  try {
+    const dbHealth = await healthCheck()
+    
+    res.json({
+      success: true,
+      status: 'ok',
+      timestamp: new Date(),
+      environment: NODE_ENV,
+      database: dbHealth,
+      uptime: process.uptime(),
+      memoryUsage: process.memoryUsage(),
+    })
+  } catch (error) {
+    logger.error('Health check error', 'HEALTH', error)
+    res.status(503).json({
+      success: false,
+      status: 'unhealthy',
+      error: 'Health check failed',
+    })
+  }
+})
+
+// Database status endpoint (admin only)
+app.get('/api/admin/db-status', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const dbHealth = await healthCheck()
+    
+    res.json({
+      success: true,
+      database: dbHealth,
+    })
+  } catch (error) {
+    logger.error('Database status error', 'DATABASE', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get database status',
+    })
+  }
 })
 
 // 404 handler

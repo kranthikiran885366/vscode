@@ -66,6 +66,42 @@ export default function LandingPage() {
       description: 'Built-in version control and deployment',
       gradient: 'from-red-500 to-pink-500',
     },
+    {
+      icon: <Shield className="w-8 h-8" />,
+      title: 'Enterprise Security',
+      description: '2FA, API keys, SSO/SAML, encryption & compliance',
+      gradient: 'from-indigo-500 to-purple-500',
+    },
+    {
+      icon: <Users className="w-8 h-8" />,
+      title: 'Team Management',
+      description: 'Organizations, roles, permissions & audit logs',
+      gradient: 'from-teal-500 to-cyan-500',
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: 'Advanced Analytics',
+      description: 'Comprehensive dashboards & productivity metrics',
+      gradient: 'from-yellow-500 to-red-500',
+    },
+    {
+      icon: <Cpu className="w-8 h-8" />,
+      title: 'Sandbox Execution',
+      description: 'Secure Docker-based code execution with timeouts',
+      gradient: 'from-green-500 to-teal-500',
+    },
+    {
+      icon: <Share2 className="w-8 h-8" />,
+      title: 'Project Sharing',
+      description: 'Share, archive & export projects with ease',
+      gradient: 'from-pink-500 to-orange-500',
+    },
+    {
+      icon: <Star className="w-8 h-8" />,
+      title: 'API-First Platform',
+      description: 'RESTful API with rate limiting & webhooks',
+      gradient: 'from-purple-500 to-pink-500',
+    },
   ]
 
   const testimonials = [

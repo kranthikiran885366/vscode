@@ -368,4 +368,100 @@ export class AnalyticsService {
   }
 }
 
+  /**
+   * Get organization analytics
+   */
+  async getOrganizationAnalytics(organizationId: string, days: number = 30): Promise<any> {
+    try {
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+
+      const events = await Analytics.find({
+        timestamp: { $gte: startDate },
+      })
+
+      // Filter events from organization members
+      const orgEvents = events.filter((e) => e.metadata?.organizationId === organizationId)
+
+      return {
+        organizationId,
+        period: `${days} days`,
+        totalEvents: orgEvents.length,
+        uniqueUsers: new Set(orgEvents.map((e) => e.userId)).size,
+        actionBreakdown: this.getItemCounts(orgEvents, 'action'),
+      }
+    } catch (error) {
+      logger.error('Get organization analytics error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get team productivity stats
+   */
+  async getTeamProductivityStats(organizationId: string, days: number = 30): Promise<any> {
+    try {
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+
+      const events = await Analytics.find({
+        timestamp: { $gte: startDate },
+      }).limit(10000)
+
+      const orgEvents = events.filter((e) => e.metadata?.organizationId === organizationId)
+
+      const userMetrics: Record<string, any> = {}
+      orgEvents.forEach((event) => {
+        if (!userMetrics[event.userId]) {
+          userMetrics[event.userId] = { count: 0, actions: {} }
+        }
+        userMetrics[event.userId].count++
+        userMetrics[event.userId].actions[event.action] = (userMetrics[event.userId].actions[event.action] || 0) + 1
+      })
+
+      return {
+        organizationId,
+        period: `${days} days`,
+        teamSize: Object.keys(userMetrics).length,
+        totalActivity: orgEvents.length,
+        averageActivityPerMember: (orgEvents.length / Object.keys(userMetrics).length).toFixed(2),
+        memberMetrics: userMetrics,
+      }
+    } catch (error) {
+      logger.error('Get team productivity stats error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get project code statistics
+   */
+  async getProjectCodeStats(projectId: string): Promise<any> {
+    try {
+      const events = await Analytics.find({
+        resourceId: projectId,
+        action: { $in: ['FILE_UPDATE', 'FILE_CREATE', 'FILE_DELETE'] },
+      })
+
+      const fileStats = events.reduce(
+        (acc, event) => {
+          acc.totalChanges++
+          acc[event.action] = (acc[event.action] || 0) + 1
+          return acc
+        },
+        { totalChanges: 0, FILE_UPDATE: 0, FILE_CREATE: 0, FILE_DELETE: 0 }
+      )
+
+      return {
+        projectId,
+        ...fileStats,
+        lastActivity: events.length > 0 ? events[events.length - 1].timestamp : null,
+      }
+    } catch (error) {
+      logger.error('Get project code stats error', 'ANALYTICS_SERVICE', error)
+      throw error
+    }
+  }
+}
+
 export const analyticsService = new AnalyticsService()

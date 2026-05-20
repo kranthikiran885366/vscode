@@ -148,4 +148,102 @@ router.delete(
   })
 )
 
+// Archive project
+router.post(
+  '/:projectId/archive',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const project = await projectService.archiveProject(projectId, req.user!.id)
+
+    res.json({
+      success: true,
+      message: 'Project archived successfully',
+      data: { project },
+    })
+  })
+)
+
+// Restore archived project
+router.post(
+  '/:projectId/restore',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const project = await projectService.restoreProject(projectId, req.user!.id)
+
+    res.json({
+      success: true,
+      message: 'Project restored successfully',
+      data: { project },
+    })
+  })
+)
+
+// Search projects
+router.get(
+  '/search/:query',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { query } = req.params
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100)
+    const offset = parseInt(req.query.offset as string) || 0
+
+    const { projects, total } = await projectService.searchProjects(req.user!.id, query, {
+      limit,
+      offset,
+    })
+
+    res.json({
+      success: true,
+      data: { projects, total },
+      pagination: { limit, offset, total },
+    })
+  })
+)
+
+// Export project
+router.get(
+  '/:projectId/export',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const exportData = await projectService.exportProject(projectId, req.user!.id)
+
+    res.set('Content-Type', 'application/json')
+    res.set('Content-Disposition', `attachment; filename="project-${projectId}.json"`)
+    res.send(exportData)
+  })
+)
+
+// Duplicate project
+router.post(
+  '/:projectId/duplicate',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    const project = await projectService.duplicateProject(projectId, req.user!.id)
+
+    res.status(201).json({
+      success: true,
+      message: 'Project duplicated successfully',
+      data: { project },
+    })
+  })
+)
+
+// Update project stats
+router.post(
+  '/:projectId/update-stats',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+
+    await projectService.updateProjectStats(projectId)
+
+    res.json({
+      success: true,
+      message: 'Project stats updated',
+    })
+  })
+)
+
 export default router

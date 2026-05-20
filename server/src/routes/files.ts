@@ -126,4 +126,79 @@ router.post(
   })
 )
 
+// Bulk create files
+router.post(
+  '/bulk/create',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId, files } = req.body
+
+    const createdFiles = await Promise.all(
+      files.map((file: any) =>
+        fileService.createFile(projectId, req.user!.id, file.name, file.language, file.content)
+      )
+    )
+
+    res.status(201).json({
+      success: true,
+      message: 'Files created successfully',
+      data: { files: createdFiles },
+    })
+  })
+)
+
+// Bulk delete files
+router.post(
+  '/bulk/delete',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { fileIds } = req.body
+
+    await Promise.all(
+      fileIds.map((fileId: string) =>
+        fileService.deleteFile(fileId, req.user!.id)
+      )
+    )
+
+    res.json({
+      success: true,
+      message: 'Files deleted successfully',
+    })
+  })
+)
+
+// Get file diff
+router.get(
+  '/:fileId/diff/:fromVersion/:toVersion',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { fileId, fromVersion, toVersion } = req.params
+
+    const diff = await fileService.getVersionDiff(
+      fileId,
+      req.user!.id,
+      parseInt(fromVersion),
+      parseInt(toVersion)
+    )
+
+    res.json({
+      success: true,
+      data: { diff },
+    })
+  })
+)
+
+// Search in project files
+router.get(
+  '/project/:projectId/search',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { projectId } = req.params
+    const { query } = req.query
+
+    const files = await fileService.searchFilesInProject(projectId, req.user!.id, query as string)
+
+    res.json({
+      success: true,
+      data: { files },
+    })
+  })
+)
+
 export default router

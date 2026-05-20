@@ -2,16 +2,21 @@ import { spawn } from 'child_process'
 import { writeFileSync, unlinkSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import { logger } from '../utils/logger'
 
-interface ExecutionResult {
+export interface ExecutionResult {
   success: boolean
   output: string
   error: string
   duration: number
+  language: string
+  memoryUsed?: number
+  executionId: string
 }
 
-const TIMEOUT = 5000 // 5 seconds timeout
-const TEMP_DIR = '/tmp/zencode_execution'
+const TIMEOUT = parseInt(process.env.EXECUTION_TIMEOUT || '5000') // 5 seconds timeout
+const MAX_OUTPUT_SIZE = parseInt(process.env.MAX_OUTPUT_SIZE || '10485760') // 10MB
+const TEMP_DIR = process.env.TEMP_DIR || '/tmp/zencode_execution'
 
 export class CodeExecutor {
   static async execute(
@@ -24,6 +29,18 @@ export class CodeExecutor {
     const tempFile = join(TEMP_DIR, `${executionId}.${this.getFileExtension(language)}`)
 
     try {
+      // Validate input
+      if (!code || code.trim().length === 0) {
+        return {
+          success: false,
+          output: '',
+          error: 'Code cannot be empty',
+          duration: 0,
+          language,
+          executionId,
+        }
+      }
+
       // Ensure temp directory exists
       mkdirSync(TEMP_DIR, { recursive: true })
 
@@ -33,25 +50,42 @@ export class CodeExecutor {
       // Execute based on language
       const result = await this.executeFile(language, tempFile, timeout)
 
+      logger.info('Code executed', 'CODE_EXECUTOR', {
+        executionId,
+        language,
+        duration: Date.now() - startTime,
+        success: !result.error,
+      })
+
       return {
         success: !result.error,
-        output: result.output,
+        output: result.output.substring(0, MAX_OUTPUT_SIZE),
         error: result.error,
         duration: Date.now() - startTime,
+        language,
+        executionId,
       }
     } catch (error: any) {
+      logger.error('Code execution error', 'CODE_EXECUTOR', {
+        executionId,
+        language,
+        error: error.message,
+      })
+
       return {
         success: false,
         output: '',
         error: error.message || 'Execution failed',
         duration: Date.now() - startTime,
+        language,
+        executionId,
       }
     } finally {
       // Cleanup temp file
       try {
         unlinkSync(tempFile)
       } catch (e) {
-        // Ignore cleanup errors
+        logger.warn('Failed to cleanup temp file', 'CODE_EXECUTOR', { file: tempFile })
       }
     }
   }

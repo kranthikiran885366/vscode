@@ -2,16 +2,33 @@ import mongoose, { Connection } from 'mongoose'
 import { Pool } from 'pg'
 import { logger } from '../utils/logger'
 
-// PostgreSQL Pool Configuration
+// PostgreSQL Pool Configuration with optimized settings for production
 const pgPool = new Pool({
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'postgres',
   host: process.env.POSTGRES_HOST || 'localhost',
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
   database: process.env.POSTGRES_DB || 'zencode',
-  max: 20,
+  max: parseInt(process.env.DB_POOL_MAX || '20'),
+  min: parseInt(process.env.DB_POOL_MIN || '5'),
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 5000,
+  statementTimeoutMillis: 30000,
+  statement_timeout: 30000,
+  application_name: 'zencode-ai',
+})
+
+// Track pool events
+pgPool.on('error', (err) => {
+  logger.error('Unexpected error on idle client', 'DATABASE_POOL', err)
+})
+
+pgPool.on('connect', () => {
+  logger.debug('New PostgreSQL connection established', 'DATABASE_POOL')
+})
+
+pgPool.on('remove', () => {
+  logger.debug('PostgreSQL connection removed from pool', 'DATABASE_POOL')
 })
 
 // MongoDB Connection
@@ -125,8 +142,9 @@ export async function closeConnections(): Promise<void> {
 export async function healthCheck(): Promise<{
   postgres: boolean
   mongodb: boolean
+  poolStats?: any
 }> {
-  const health = {
+  const health: any = {
     postgres: false,
     mongodb: false,
   }
@@ -136,6 +154,11 @@ export async function healthCheck(): Promise<{
     await pgClient.query('SELECT 1')
     pgClient.release()
     health.postgres = true
+    health.poolStats = {
+      totalCount: pgPool.totalCount,
+      idleCount: pgPool.idleCount,
+      waitingCount: pgPool.waitingCount,
+    }
   } catch (error) {
     logger.warn('PostgreSQL health check failed', 'DATABASE', error)
   }
@@ -150,4 +173,40 @@ export async function healthCheck(): Promise<{
   }
 
   return health
+}
+
+/**
+ * Get Pool Statistics
+ */
+export function getPoolStats(): {
+  totalCount: number
+  idleCount: number
+  waitingCount: number
+} {
+  return {
+    totalCount: pgPool.totalCount,
+    idleCount: pgPool.idleCount,
+    waitingCount: pgPool.waitingCount,
+  }
+}
+
+/**
+ * Database transaction helper for PostgreSQL
+ */
+export async function withTransaction<T>(
+  callback: (client: any) => Promise<T>
+): Promise<T> {
+  const client = await pgPool.connect()
+  try {
+    await client.query('BEGIN')
+    const result = await callback(client)
+    await client.query('COMMIT')
+    return result
+  } catch (error) {
+    await client.query('ROLLBACK')
+    logger.error('Transaction error', 'DATABASE_TRANSACTION', error)
+    throw error
+  } finally {
+    client.release()
+  }
 }
