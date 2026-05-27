@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useAuth } from '@/lib/hooks/useAuth'
 import {
   Code2,
   ArrowRight,
@@ -21,15 +22,15 @@ import {
 
 export default function LoginPage() {
   const router = useRouter()
+  const auth = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const [error, setError] = useState('')
+  const [localError, setLocalError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
@@ -77,49 +78,30 @@ export default function LoginPage() {
     } else if (name === 'password') {
       setPasswordError('')
     }
-    setError('')
+    setLocalError('')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
+    setLocalError('')
     setSuccess(false)
 
     if (!validateForm()) {
       return
     }
 
-    setLoading(true)
+    const result = await auth.login(formData.email, formData.password)
 
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.message || 'Failed to log in. Please check your credentials.')
-        return
-      }
-
-      localStorage.setItem('token', data.token)
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true')
-      }
-
-      setSuccess(true)
-      // Small delay for success animation
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 500)
-    } catch (err) {
-      setError('An error occurred. Please try again later.')
-    } finally {
-      setLoading(false)
+    if (!result.success) {
+      setLocalError(result.error || 'Failed to log in')
+      return
     }
+
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true')
+    }
+
+    setSuccess(true)
   }
 
   return (
