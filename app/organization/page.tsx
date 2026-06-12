@@ -131,7 +131,7 @@ export default function OrganizationPage() {
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case 'enterprise':
-        return 'bg-purple-900 text-purple-200'
+        return 'bg-teal-900 text-teal-200'
       case 'pro':
         return 'bg-blue-900 text-blue-200'
       case 'free':

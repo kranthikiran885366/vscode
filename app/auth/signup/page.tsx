@@ -563,14 +563,14 @@ export default function SignUpPage() {
                     I agree to the{' '}
                     <a
                       href="#"
-                      className="text-teal-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+                      className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
                     >
                       Terms of Service
                     </a>{' '}
                     and{' '}
                     <a
                       href="#"
-                      className="text-teal-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+                      className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
                     >
                       Privacy Policy
                     </a>
@@ -640,7 +640,7 @@ export default function SignUpPage() {
             Already have an account?{' '}
             <Link
               href="/auth/login"
-              className="text-teal-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+              className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
             >
               Sign In
             </Link>

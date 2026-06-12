@@ -600,7 +600,7 @@ export default function MarketplacePage() {
                           {categoryIcons[extension.category]}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
+                          <h3 className="font-bold text-white group-hover:text-teal-300 transition-colors duration-300">
                             {extension.name}
                           </h3>
                           <p className="text-xs text-gray-500 mt-1">v{extension.version}</p>
