@@ -105,11 +105,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse animation-delay-2000" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
@@ -118,11 +118,11 @@ export default function LoginPage() {
           href="/"
           className="flex items-center justify-center gap-2 mb-12 group transition-all duration-300"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 group-hover:shadow-lg group-hover:shadow-emerald-500/50 transition-all duration-300">
             <Code2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               ZenCode AI
             </span>
             <span className="text-xs text-gray-500">by MVK Solutions</span>
@@ -130,21 +130,21 @@ export default function LoginPage() {
         </Link>
 
         {/* Form Container */}
-        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl hover:border-slate-600 transition-all duration-300">
+        <div className="bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl p-8 shadow-xl hover:border-emerald-200 transition-all duration-300">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-400">Sign in to your ZenCode account to continue</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Sign in to your ZenCode account to continue</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-300">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
                 <Input
                   id="email"
                   type="email"

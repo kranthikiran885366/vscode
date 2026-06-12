@@ -69,10 +69,10 @@ export default function SignUpPage() {
       : passwordStrength <= 2
         ? 'bg-orange-500'
         : passwordStrength <= 3
-          ? 'bg-yellow-500'
+          ? 'bg-amber-500'
           : passwordStrength <= 4
-            ? 'bg-blue-500'
-            : 'bg-green-500'
+            ? 'bg-emerald-500'
+            : 'bg-teal-500'
 
   // Email validation
   const validateEmail = (email: string): boolean => {
