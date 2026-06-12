@@ -144,7 +144,7 @@ export default function APIPage() {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-4 mb-2">
-                <Key className="w-8 h-8 text-blue-400" />
+                <Key className="w-8 h-8 text-emerald-400" />
                 <h1 className="text-4xl font-bold text-white">API Management</h1>
               </div>
               <p className="text-slate-400">Manage API tokens and monitor usage</p>
@@ -360,7 +360,7 @@ export default function APIPage() {
           <TabsContent value="docs" className="space-y-6">
             <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
               <div className="flex items-start gap-4 mb-6">
-                <Code className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <Code className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-1" />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-white mb-2">API Documentation</h3>
                   <p className="text-slate-400">

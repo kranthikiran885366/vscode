@@ -40,8 +40,8 @@ interface Project {
 // Language badges
 const languageBadges: Record<string, { bg: string; text: string; icon: string }> = {
   javascript: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', icon: '⚡' },
-  typescript: { bg: 'bg-blue-500/20', text: 'text-blue-400', icon: '📘' },
-  python: { bg: 'bg-blue-600/20', text: 'text-blue-300', icon: '🐍' },
+  typescript: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', icon: '📘' },
+  python: { bg: 'bg-emerald-600/20', text: 'text-blue-300', icon: '🐍' },
   react: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', icon: '⚛️' },
   nodejs: { bg: 'bg-green-500/20', text: 'text-green-400', icon: '🟢' },
   html: { bg: 'bg-orange-500/20', text: 'text-orange-400', icon: '🌐' },
@@ -232,11 +232,11 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center gap-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 group-hover:shadow-lg group-hover:shadow-emerald-500/50 transition-all duration-300">
                 <Code2 className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
                   ZenCode AI
                 </span>
                 <span className="text-xs text-gray-500">Dashboard</span>
@@ -246,7 +246,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3 ml-auto">
               <Button
                 onClick={() => setShowNewProjectModal(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 New Project
@@ -270,13 +270,13 @@ export default function Dashboard() {
         <div className="space-y-6 mb-12">
           {/* Search */}
           <div className="relative group">
-            <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+            <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
             <Input
               type="text"
               placeholder="Search projects by name or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+              className="pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
             />
           </div>
 
@@ -347,7 +347,7 @@ export default function Dashboard() {
                     onClick={() => setSortBy(option.value)}
                     className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-300 ${
                       sortBy === option.value
-                        ? 'bg-blue-600/20 text-blue-300'
+                        ? 'bg-emerald-600/20 text-blue-300'
                         : 'text-gray-300 hover:bg-slate-700'
                     }`}
                   >
@@ -370,8 +370,8 @@ export default function Dashboard() {
         {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
           <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 mb-6">
-              <FolderOpen className="w-10 h-10 text-blue-400" />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 mb-6">
+              <FolderOpen className="w-10 h-10 text-emerald-400" />
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">No Projects Found</h3>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
@@ -381,7 +381,7 @@ export default function Dashboard() {
             </p>
             <Button
               onClick={() => setShowNewProjectModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 inline-flex items-center gap-2"
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 inline-flex items-center gap-2"
             >
               <Plus className="w-5 h-5" />
               Create Your First Project
@@ -394,17 +394,17 @@ export default function Dashboard() {
               return (
                 <div
                   key={project._id}
-                  className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 overflow-hidden cursor-pointer"
+                  className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 overflow-hidden cursor-pointer"
                 >
                   {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                   {/* Content */}
                   <div className="relative z-10 space-y-4">
                     {/* Header */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-blue-300 transition-colors duration-300">
+                        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-emerald-300 transition-colors duration-300">
                           {project.name}
                         </h3>
                         <p className="text-sm text-gray-400 line-clamp-2">
@@ -477,14 +477,14 @@ export default function Dashboard() {
                     <div className="flex gap-2 pt-4 border-t border-slate-700">
                       <button
                         onClick={() => router.push(`/editor-enhanced?projectId=${project._id}`)}
-                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-blue-300 rounded-lg hover:from-blue-600/40 hover:to-purple-600/40 hover:border-blue-500/50 transition-all duration-300 font-medium text-sm group/btn"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border border-emerald-500/30 text-blue-300 rounded-lg hover:from-emerald-600/40 hover:to-teal-600/40 hover:border-emerald-500/50 transition-all duration-300 font-medium text-sm group/btn"
                       >
                         <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                         Open
                       </button>
                       <button
                         onClick={() => router.push(`/editor-enhanced?projectId=${project._id}`)}
-                        className="p-2.5 text-gray-400 hover:text-blue-300 hover:bg-slate-700/50 rounded-lg transition-all duration-300"
+                        className="p-2.5 text-gray-400 hover:text-emerald-300 hover:bg-slate-700/50 rounded-lg transition-all duration-300"
                         title="Quick open"
                       >
                         <Zap className="w-4 h-4" />
@@ -515,7 +515,7 @@ export default function Dashboard() {
                   placeholder="My Awesome Project"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+                  className="bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                   autoFocus
                 />
               </div>
@@ -529,7 +529,7 @@ export default function Dashboard() {
                   placeholder="What's this project about?"
                   value={newProjectDescription}
                   onChange={(e) => setNewProjectDescription(e.target.value)}
-                  className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 resize-none"
+                  className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 resize-none"
                   rows={3}
                 />
               </div>
@@ -542,7 +542,7 @@ export default function Dashboard() {
                 <select
                   value={newProjectLanguage}
                   onChange={(e) => setNewProjectLanguage(e.target.value)}
-                  className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+                  className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                 >
                   {['JavaScript', 'TypeScript', 'Python', 'React', 'HTML', 'CSS'].map((lang) => (
                     <option key={lang} value={lang.toLowerCase()}>
@@ -557,7 +557,7 @@ export default function Dashboard() {
                 <Button
                   onClick={handleCreateProject}
                   disabled={!newProjectName.trim() || creating}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
                 >
                   {creating ? 'Creating...' : 'Create'}
                 </Button>

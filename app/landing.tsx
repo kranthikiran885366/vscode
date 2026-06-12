@@ -220,13 +220,13 @@ export default function LandingPage() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
+              <a href="#features" className="text-gray-700 hover:text-emerald-600 transition-colors duration-300 font-medium">
                 Features
               </a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
+              <a href="#pricing" className="text-gray-700 hover:text-emerald-600 transition-colors duration-300 font-medium">
                 Pricing
               </a>
-              <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium">
+              <a href="#testimonials" className="text-gray-700 hover:text-emerald-600 transition-colors duration-300 font-medium">
                 Testimonials
               </a>
             </div>
@@ -236,13 +236,13 @@ export default function LandingPage() {
               <Link href="/auth/login">
                 <Button
                   variant="ghost"
-                  className="text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-300"
+                  className="text-gray-700 hover:text-emerald-600 hover:bg-gray-100 transition-all duration-300"
                 >
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                   Get Started
                 </Button>
               </Link>
@@ -264,13 +264,13 @@ export default function LandingPage() {
           {/* Mobile Menu */}
           {isMenuOpen && (
             <div className="md:hidden pb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-              <a href="#features" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
+              <a href="#features" className="block py-2 text-gray-700 hover:text-emerald-600 hover:pl-2 transition-all duration-300">
                 Features
               </a>
-              <a href="#pricing" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
+              <a href="#pricing" className="block py-2 text-gray-700 hover:text-emerald-600 hover:pl-2 transition-all duration-300">
                 Pricing
               </a>
-              <a href="#testimonials" className="block py-2 text-gray-700 hover:text-blue-600 hover:pl-2 transition-all duration-300">
+              <a href="#testimonials" className="block py-2 text-gray-700 hover:text-emerald-600 hover:pl-2 transition-all duration-300">
                 Testimonials
               </a>
             </div>
@@ -282,9 +282,9 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-24 px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-6 py-2 mb-8 hover:border-blue-300 hover:bg-blue-100 transition-all duration-300 cursor-pointer group">
+          <div className="inline-flex items-center gap-2 bg-blue-50 border border-emerald-200 rounded-full px-6 py-2 mb-8 hover:border-emerald-300 hover:bg-blue-100 transition-all duration-300 cursor-pointer group">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-blue-600" />
+              <Zap className="w-4 h-4 text-emerald-600" />
               <span className="text-sm text-gray-700 font-medium">
                 Powered by GPT-4 & Claude AI
               </span>
@@ -294,7 +294,7 @@ export default function LandingPage() {
           {/* Main Headline */}
           <h1 className="text-5xl sm:text-7xl font-bold mb-8 leading-tight text-gray-900">
             The Enterprise IDE
-            <span className="block bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
               for Modern Development
             </span>
           </h1>
@@ -302,7 +302,7 @@ export default function LandingPage() {
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
             VS Code-like experience with real-time collaboration, AI-powered assistance, and enterprise-grade security. 
-            <span className="text-blue-600 font-semibold"> 40+ features built for teams.</span>
+            <span className="text-emerald-600 font-semibold"> 40+ features built for teams.</span>
           </p>
 
           {/* CTA Buttons */}
@@ -316,7 +316,7 @@ export default function LandingPage() {
             <a href="#features">
               <Button
                 variant="outline"
-                className="border-gray-300 hover:border-blue-600 hover:bg-blue-50 text-gray-900 text-lg px-10 py-6 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto"
+                className="border-gray-300 hover:border-emerald-600 hover:bg-blue-50 text-gray-900 text-lg px-10 py-6 rounded-lg font-semibold transition-all duration-300 w-full sm:w-auto"
               >
                 View Features
               </Button>
@@ -483,7 +483,7 @@ export default function LandingPage() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="p-8 rounded-2xl bg-white border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group"
+                className="p-8 rounded-2xl bg-white border border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 group"
               >
                 {/* Stars */}
                 <div className="flex gap-1 mb-6">
@@ -645,7 +645,7 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/signup">
-                  <Button className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-10 py-6 rounded-lg font-semibold shadow-xl transition-all duration-300 group">
+                  <Button className="bg-white text-emerald-600 hover:bg-gray-100 text-lg px-10 py-6 rounded-lg font-semibold shadow-xl transition-all duration-300 group">
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>

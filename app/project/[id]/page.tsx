@@ -75,7 +75,7 @@ export default function ProjectPage() {
               onClick={() => setCurrentFile(file)}
               className={`px-4 py-2 text-sm border-b-2 transition ${
                 currentFile?._id === file._id
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400'
               }`}
             >
@@ -84,7 +84,7 @@ export default function ProjectPage() {
           ))}
           <button
             onClick={handleCreateFile}
-            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400"
           >
             + New File
           </button>
@@ -102,7 +102,7 @@ export default function ProjectPage() {
             <div className="border-t border-gray-200 dark:border-gray-800 px-4 py-2 flex justify-end gap-2">
               <button
                 onClick={handleSaveFile}
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                className="rounded bg-emerald-600 px-4 py-2 text-white hover:bg-blue-700"
               >
                 Save
               </button>

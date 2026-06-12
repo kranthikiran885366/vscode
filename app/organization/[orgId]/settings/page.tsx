@@ -67,7 +67,7 @@ export default function SettingsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div>
             <div className="flex items-center gap-4 mb-2">
-              <Settings className="w-8 h-8 text-blue-400" />
+              <Settings className="w-8 h-8 text-emerald-400" />
               <h1 className="text-4xl font-bold text-white">Organization Settings</h1>
             </div>
             <p className="text-slate-400">Manage organization details and preferences</p>
@@ -91,7 +91,7 @@ export default function SettingsPage() {
             <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-white mb-4">Organization Logo</h2>
               <div className="flex items-start gap-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
                   <span className="text-3xl font-bold text-white">AC</span>
                 </div>
                 <div>

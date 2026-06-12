@@ -153,7 +153,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className={`w-full pl-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                  className={`w-full pl-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
                     emailError ? 'border-red-500' : 'border-slate-600'
                   }`}
                 />
@@ -172,7 +172,7 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+                <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -181,7 +181,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="••••••••"
                   required
-                  className={`w-full pl-10 pr-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                  className={`w-full pl-10 pr-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
                     passwordError ? 'border-red-500' : 'border-slate-600'
                   }`}
                 />
@@ -212,7 +212,7 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600 focus:ring-2 focus:ring-blue-500/20 cursor-pointer group-hover:border-blue-400 transition-colors duration-300"
+                  className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-emerald-600 focus:ring-2 focus:ring-blue-500/20 cursor-pointer group-hover:border-emerald-400 transition-colors duration-300"
                 />
                 <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                   Remember me
@@ -220,7 +220,7 @@ export default function LoginPage() {
               </label>
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300"
+                className="text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-300"
               >
                 Forgot password?
               </Link>
@@ -249,7 +249,7 @@ export default function LoginPage() {
               className={`w-full py-3 font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2 mt-6 ${
                 success
                   ? 'bg-green-600 hover:bg-green-600'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                  : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl'
               }`}
             >
               {loading ? (
@@ -308,7 +308,7 @@ export default function LoginPage() {
             Don't have an account?{' '}
             <Link
               href="/auth/signup"
-              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-300"
+              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors duration-300"
             >
               Sign Up
             </Link>

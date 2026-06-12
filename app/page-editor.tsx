@@ -105,7 +105,7 @@ Get started by exploring the features or opening a file from the explorer!
               <div className="h-full flex items-center justify-center">
                 <div className="text-center max-w-2xl mx-auto p-8">
                   <div className="mb-8">
-                    <Code2 className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+                    <Code2 className="w-16 h-16 mx-auto mb-4 text-emerald-500" />
                     <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
                       Welcome to Advanced Code Editor
                     </h1>
@@ -116,7 +116,7 @@ Get started by exploring the features or opening a file from the explorer!
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Bot className="w-8 h-8 mb-3 text-purple-500" />
+                      <Bot className="w-8 h-8 mb-3 text-teal-500" />
                       <h3 className="font-semibold mb-2">AI-Powered</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         Intelligent code completion, AI assistance, and automated refactoring
@@ -132,7 +132,7 @@ Get started by exploring the features or opening a file from the explorer!
                     </div>
 
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <Monitor className="w-8 h-8 mb-3 text-blue-500" />
+                      <Monitor className="w-8 h-8 mb-3 text-emerald-500" />
                       <h3 className="font-semibold mb-2">Live Preview</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         Instant preview of web applications and real-time updates

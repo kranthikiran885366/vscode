@@ -125,7 +125,7 @@ export default function SecurityPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div>
             <div className="flex items-center gap-4 mb-2">
-              <Shield className="w-8 h-8 text-blue-400" />
+              <Shield className="w-8 h-8 text-emerald-400" />
               <h1 className="text-4xl font-bold text-white">Security & Access</h1>
             </div>
             <p className="text-slate-400">Manage passwords, sessions, and authentication</p>
@@ -201,7 +201,7 @@ export default function SecurityPage() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
-                        <Icon className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
+                        <Icon className="w-6 h-6 text-emerald-400 mt-1 flex-shrink-0" />
                         <div className="flex-1">
                           <h3 className="font-semibold text-white capitalize mb-1">
                             {method.type === 'totp'
@@ -254,9 +254,9 @@ export default function SecurityPage() {
               })}
             </div>
 
-            <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
+            <div className="bg-blue-900/20 border border-emerald-700/50 rounded-lg p-4">
               <div className="flex gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-blue-300">
                   We recommend enabling at least two authentication methods for better security.
                 </p>
@@ -347,7 +347,7 @@ export default function SecurityPage() {
                   'Custom metadata',
                 ].map((feature) => (
                   <div key={feature} className="flex items-center gap-2 text-slate-300">
-                    <Lock className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                    <Lock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     {feature}
                   </div>
                 ))}
