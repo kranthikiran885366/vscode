@@ -148,7 +148,7 @@ export default function TeamPage() {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'owner':
-        return 'bg-purple-900 text-purple-200'
+        return 'bg-teal-900 text-teal-200'
       case 'admin':
         return 'bg-red-900 text-red-200'
       case 'editor':
@@ -178,7 +178,7 @@ export default function TeamPage() {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-4 mb-2">
-                <Users className="w-8 h-8 text-blue-400" />
+                <Users className="w-8 h-8 text-emerald-400" />
                 <h1 className="text-4xl font-bold text-white">Team Management</h1>
               </div>
               <p className="text-slate-400">Manage team members and permissions</p>
@@ -207,7 +207,7 @@ export default function TeamPage() {
                 className="flex items-center justify-between p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-600 group"
               >
                 <div className="flex items-center gap-4 flex-1">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold">
                     {member.name.charAt(0)}
                   </div>
 

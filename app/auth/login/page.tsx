@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useAuth } from '@/lib/hooks/useAuth'
 import {
   Code2,
   ArrowRight,
@@ -21,15 +22,15 @@ import {
 
 export default function LoginPage() {
   const router = useRouter()
+  const auth = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const [error, setError] = useState('')
+  const [localError, setLocalError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
@@ -77,57 +78,38 @@ export default function LoginPage() {
     } else if (name === 'password') {
       setPasswordError('')
     }
-    setError('')
+    setLocalError('')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
+    setLocalError('')
     setSuccess(false)
 
     if (!validateForm()) {
       return
     }
 
-    setLoading(true)
+    const result = await auth.login(formData.email, formData.password)
 
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.message || 'Failed to log in. Please check your credentials.')
-        return
-      }
-
-      localStorage.setItem('token', data.token)
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true')
-      }
-
-      setSuccess(true)
-      // Small delay for success animation
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 500)
-    } catch (err) {
-      setError('An error occurred. Please try again later.')
-    } finally {
-      setLoading(false)
+    if (!result.success) {
+      setLocalError(result.error || 'Failed to log in')
+      return
     }
+
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true')
+    }
+
+    setSuccess(true)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse animation-delay-2000" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
@@ -136,11 +118,11 @@ export default function LoginPage() {
           href="/"
           className="flex items-center justify-center gap-2 mb-12 group transition-all duration-300"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 group-hover:shadow-lg group-hover:shadow-emerald-500/50 transition-all duration-300">
             <Code2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               ZenCode AI
             </span>
             <span className="text-xs text-gray-500">by MVK Solutions</span>
@@ -148,21 +130,21 @@ export default function LoginPage() {
         </Link>
 
         {/* Form Container */}
-        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl hover:border-slate-600 transition-all duration-300">
+        <div className="bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl p-8 shadow-xl hover:border-emerald-200 transition-all duration-300">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-400">Sign in to your ZenCode account to continue</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Sign in to your ZenCode account to continue</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-300">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-900">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+                <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-emerald-600 transition-colors duration-300" />
                 <Input
                   id="email"
                   type="email"
@@ -171,7 +153,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="you@example.com"
                   required
-                  className={`w-full pl-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                  className={`w-full pl-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
                     emailError ? 'border-red-500' : 'border-slate-600'
                   }`}
                 />
@@ -190,7 +172,7 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+                <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -199,7 +181,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="••••••••"
                   required
-                  className={`w-full pl-10 pr-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                  className={`w-full pl-10 pr-10 bg-slate-700/50 border rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
                     passwordError ? 'border-red-500' : 'border-slate-600'
                   }`}
                 />
@@ -230,7 +212,7 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600 focus:ring-2 focus:ring-blue-500/20 cursor-pointer group-hover:border-blue-400 transition-colors duration-300"
+                  className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-emerald-600 focus:ring-2 focus:ring-blue-500/20 cursor-pointer group-hover:border-emerald-400 transition-colors duration-300"
                 />
                 <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                   Remember me
@@ -238,7 +220,7 @@ export default function LoginPage() {
               </label>
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300"
+                className="text-sm text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-300"
               >
                 Forgot password?
               </Link>
@@ -267,7 +249,7 @@ export default function LoginPage() {
               className={`w-full py-3 font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2 mt-6 ${
                 success
                   ? 'bg-green-600 hover:bg-green-600'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                  : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl'
               }`}
             >
               {loading ? (
@@ -326,7 +308,7 @@ export default function LoginPage() {
             Don't have an account?{' '}
             <Link
               href="/auth/signup"
-              className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-300"
+              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors duration-300"
             >
               Sign Up
             </Link>

@@ -312,11 +312,11 @@ export default function MarketplacePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 group-hover:shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 group-hover:shadow-lg group-hover:shadow-emerald-500/50 transition-all duration-300">
                 <Code2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
                   ZenCode Marketplace
                 </span>
               </div>
@@ -336,7 +336,7 @@ export default function MarketplacePage() {
         <div className="mb-12 space-y-6">
           <div className="text-center space-y-3 mb-8">
             <h1 className="text-4xl md:text-5xl font-bold">
-              Explore <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Templates & Extensions</span>
+              Explore <span className="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Templates & Extensions</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               Discover powerful templates and extensions to accelerate your development
@@ -345,13 +345,13 @@ export default function MarketplacePage() {
 
           {/* Search Bar */}
           <div className="relative group">
-            <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300" />
+            <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
             <Input
               type="text"
               placeholder="Search templates, extensions, authors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+              className="pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
             />
           </div>
 
@@ -382,7 +382,7 @@ export default function MarketplacePage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'popular' | 'rating' | 'newest')}
-                className="px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 font-medium text-sm"
+                className="px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white focus:border-emerald-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 font-medium text-sm"
               >
                 <option value="popular">Most Popular</option>
                 <option value="rating">Highest Rated</option>
@@ -407,7 +407,7 @@ export default function MarketplacePage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`p-3 rounded-lg font-medium text-sm transition-all duration-300 flex items-center justify-between ${
                   !selectedCategory
-                    ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300'
+                    ? 'bg-emerald-600/20 border border-emerald-500/50 text-blue-300'
                     : 'bg-slate-700/50 border border-slate-600 text-gray-400 hover:border-slate-500'
                 }`}
               >
@@ -422,7 +422,7 @@ export default function MarketplacePage() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`p-3 rounded-lg font-medium text-sm transition-all duration-300 flex items-center justify-between ${
                       selectedCategory === cat
-                        ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300'
+                        ? 'bg-emerald-600/20 border border-emerald-500/50 text-blue-300'
                         : 'bg-slate-700/50 border border-slate-600 text-gray-400 hover:border-slate-500'
                     }`}
                   >
@@ -449,7 +449,7 @@ export default function MarketplacePage() {
                 {(filteredItems as Template[]).map((template) => (
                   <div
                     key={template.id}
-                    className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 flex flex-col"
+                    className="group relative bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col"
                   >
                     {/* Trending Badge */}
                     {template.trending && (
@@ -477,11 +477,11 @@ export default function MarketplacePage() {
                     <div className="p-6 flex-1 flex flex-col gap-4">
                       <div>
                         <div className="flex items-start gap-3 mb-3">
-                          <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+                          <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
                             {categoryIcons[template.category]}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-bold text-white group-hover:text-blue-300 transition-colors duration-300">
+                            <h3 className="font-bold text-white group-hover:text-emerald-300 transition-colors duration-300">
                               {template.name}
                             </h3>
                             <p className="text-xs text-gray-500 mt-1">{template.author}</p>
@@ -532,7 +532,7 @@ export default function MarketplacePage() {
                             </span>
                           </div>
                         </div>
-                        <span className="text-lg font-bold text-blue-400">
+                        <span className="text-lg font-bold text-emerald-400">
                           ${template.price}
                         </span>
                       </div>
@@ -540,7 +540,7 @@ export default function MarketplacePage() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 p-6 border-t border-slate-700 bg-slate-900/20">
-                      <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center justify-center gap-2">
+                      <Button className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 flex items-center justify-center gap-2">
                         <ShoppingCart className="w-4 h-4" />
                         Add to Cart
                       </Button>
@@ -596,11 +596,11 @@ export default function MarketplacePage() {
                     {/* Content */}
                     <div className="space-y-4 flex-1">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
+                        <div className="p-2 rounded-lg bg-teal-500/20 text-teal-400">
                           {categoryIcons[extension.category]}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
+                          <h3 className="font-bold text-white group-hover:text-teal-300 transition-colors duration-300">
                             {extension.name}
                           </h3>
                           <p className="text-xs text-gray-500 mt-1">v{extension.version}</p>

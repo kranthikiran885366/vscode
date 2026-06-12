@@ -182,7 +182,7 @@ export default function BillingPage() {
       <div className="border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-4 mb-2">
-            <CreditCard className="w-8 h-8 text-blue-400" />
+            <CreditCard className="w-8 h-8 text-emerald-400" />
             <h1 className="text-4xl font-bold text-white">Billing & Subscription</h1>
           </div>
           <p className="text-slate-400">Manage your plan, payments, and invoices</p>
@@ -231,12 +231,12 @@ export default function BillingPage() {
                   key={plan.id}
                   className={`rounded-lg border-2 p-8 transition-all ${
                     currentPlan === plan.id
-                      ? 'border-blue-500 bg-slate-700/50'
+                      ? 'border-emerald-500 bg-slate-700/50'
                       : 'border-slate-700 hover:border-slate-600'
                   } ${plan.popular ? 'ring-2 ring-blue-500 relative' : ''}`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
                       Most Popular
                     </div>
                   )}
@@ -336,7 +336,7 @@ export default function BillingPage() {
                     className="flex items-center justify-between p-4 bg-slate-800 rounded-lg border border-slate-700 hover:border-slate-600"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-400 rounded flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-emerald-400 rounded flex items-center justify-center">
                         <CreditCard className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -431,7 +431,7 @@ export default function BillingPage() {
                   <p className="text-2xl font-bold text-white mb-2">{stat.value}</p>
                   <div className="w-full bg-slate-700 rounded-full h-2 mb-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full"
+                      className="bg-emerald-600 h-2 rounded-full"
                       style={{ width: `${stat.percent}%` }}
                     />
                   </div>

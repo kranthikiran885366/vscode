@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-4 mb-2">
-                <BarChart3 className="w-8 h-8 text-blue-400" />
+                <BarChart3 className="w-8 h-8 text-emerald-400" />
                 <h1 className="text-4xl font-bold text-white">Analytics</h1>
               </div>
               <p className="text-slate-400">Monitor usage and performance metrics</p>
@@ -96,7 +96,7 @@ export default function AnalyticsPage() {
             return (
               <div key={metric.label} className="bg-slate-800 border border-slate-700 rounded-lg p-6">
                 <div className="flex items-start justify-between mb-2">
-                  <Icon className="w-6 h-6 text-blue-400" />
+                  <Icon className="w-6 h-6 text-emerald-400" />
                   <span className="text-xs text-green-400">{metric.change}</span>
                 </div>
                 <p className="text-slate-400 text-sm mb-1">{metric.label}</p>
@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
                     <div
-                      className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t hover:from-blue-500 hover:to-blue-300 transition"
+                      className="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t hover:from-emerald-500 hover:to-emerald-300 transition"
                       style={{ height: `${height}%`, minHeight: '4px' }}
                     />
                     <p className="text-xs text-slate-400 mt-2 text-center truncate">{data.date}</p>
@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="w-full bg-slate-700 rounded-full h-3">
                     <div
-                      className="bg-blue-600 h-3 rounded-full"
+                      className="bg-emerald-600 h-3 rounded-full"
                       style={{ width: `${item.percent}%` }}
                     />
                   </div>

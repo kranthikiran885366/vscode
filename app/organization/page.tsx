@@ -131,7 +131,7 @@ export default function OrganizationPage() {
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case 'enterprise':
-        return 'bg-purple-900 text-purple-200'
+        return 'bg-teal-900 text-teal-200'
       case 'pro':
         return 'bg-blue-900 text-blue-200'
       case 'free':
@@ -200,14 +200,14 @@ export default function OrganizationPage() {
             {filteredOrgs.map((org) => (
               <div
                 key={org.id}
-                className="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-blue-500 transition-all cursor-pointer group"
+                className="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-emerald-500 transition-all cursor-pointer group"
                 onClick={() => router.push(`/organization/${org.id}/dashboard`)}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-xl font-bold text-white group-hover:text-blue-400">
+                      <h3 className="text-xl font-bold text-white group-hover:text-emerald-400">
                         {org.name}
                       </h3>
                       {getStatusIcon(org.status)}

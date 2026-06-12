@@ -69,10 +69,10 @@ export default function SignUpPage() {
       : passwordStrength <= 2
         ? 'bg-orange-500'
         : passwordStrength <= 3
-          ? 'bg-yellow-500'
+          ? 'bg-amber-500'
           : passwordStrength <= 4
-            ? 'bg-blue-500'
-            : 'bg-green-500'
+            ? 'bg-emerald-500'
+            : 'bg-teal-500'
 
   // Email validation
   const validateEmail = (email: string): boolean => {
@@ -210,8 +210,8 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
@@ -220,11 +220,11 @@ export default function SignUpPage() {
           href="/"
           className="flex items-center justify-center gap-2 mb-10 group transition-all duration-300"
         >
-          <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 group-hover:shadow-lg group-hover:shadow-purple-500/50 transition-all duration-300">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-emerald-600 group-hover:shadow-lg group-hover:shadow-purple-500/50 transition-all duration-300">
             <Code2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-emerald-500 bg-clip-text text-transparent">
               ZenCode AI
             </span>
             <span className="text-xs text-gray-500">by MVK Solutions</span>
@@ -241,7 +241,7 @@ export default function SignUpPage() {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                       currentStep >= 1
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                        ? 'bg-gradient-to-r from-purple-600 to-emerald-600 text-white'
                         : 'bg-slate-700 text-gray-400'
                     }`}
                   >
@@ -260,7 +260,7 @@ export default function SignUpPage() {
               <div
                 className={`flex-1 h-1 mx-2 rounded-full transition-all duration-300 ${
                   currentStep >= 2
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600'
+                    ? 'bg-gradient-to-r from-purple-600 to-emerald-600'
                     : 'bg-slate-700'
                 }`}
               />
@@ -270,7 +270,7 @@ export default function SignUpPage() {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                       currentStep >= 2
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                        ? 'bg-gradient-to-r from-purple-600 to-emerald-600 text-white'
                         : 'bg-slate-700 text-gray-400'
                     }`}
                   >
@@ -317,7 +317,7 @@ export default function SignUpPage() {
                     Full Name
                   </label>
                   <div className="relative group">
-                    <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-purple-400 transition-colors duration-300" />
+                    <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-teal-400 transition-colors duration-300" />
                     <Input
                       id="name"
                       type="text"
@@ -345,7 +345,7 @@ export default function SignUpPage() {
                     Email Address
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-purple-400 transition-colors duration-300" />
+                    <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-teal-400 transition-colors duration-300" />
                     <Input
                       id="email"
                       type="email"
@@ -371,7 +371,7 @@ export default function SignUpPage() {
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="w-full py-3 font-semibold rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 mt-8 group"
+                  className="w-full py-3 font-semibold rounded-lg bg-gradient-to-r from-purple-600 to-emerald-600 hover:from-purple-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 mt-8 group"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
@@ -388,7 +388,7 @@ export default function SignUpPage() {
                     Password
                   </label>
                   <div className="relative group">
-                    <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-purple-400 transition-colors duration-300" />
+                    <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-teal-400 transition-colors duration-300" />
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
@@ -494,7 +494,7 @@ export default function SignUpPage() {
                     Confirm Password
                   </label>
                   <div className="relative group">
-                    <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-purple-400 transition-colors duration-300" />
+                    <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-teal-400 transition-colors duration-300" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -557,20 +557,20 @@ export default function SignUpPage() {
                       setAgreeToTerms(e.target.checked)
                       if (e.target.checked) setError('')
                     }}
-                    className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-purple-600 focus:ring-2 focus:ring-purple-500/20 cursor-pointer mt-1 group-hover:border-purple-400 transition-colors duration-300"
+                    className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-teal-600 focus:ring-2 focus:ring-purple-500/20 cursor-pointer mt-1 group-hover:border-purple-400 transition-colors duration-300"
                   />
                   <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300 leading-relaxed">
                     I agree to the{' '}
                     <a
                       href="#"
-                      className="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+                      className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
                     >
                       Terms of Service
                     </a>{' '}
                     and{' '}
                     <a
                       href="#"
-                      className="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+                      className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
                     >
                       Privacy Policy
                     </a>
@@ -610,7 +610,7 @@ export default function SignUpPage() {
                     className={`flex-1 py-3 font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2 ${
                       success
                         ? 'bg-green-600 hover:bg-green-600'
-                        : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl'
+                        : 'bg-gradient-to-r from-purple-600 to-emerald-600 hover:from-purple-700 hover:to-emerald-700 shadow-lg hover:shadow-xl'
                     }`}
                   >
                     {loading ? (
@@ -640,7 +640,7 @@ export default function SignUpPage() {
             Already have an account?{' '}
             <Link
               href="/auth/login"
-              className="text-purple-400 hover:text-purple-300 font-semibold transition-colors duration-300"
+              className="text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-300"
             >
               Sign In
             </Link>

@@ -341,7 +341,7 @@ export default function EditorPage() {
               onClick={() =>
                 setEditor((prev) => ({ ...prev, activePanel: 'files' }))
               }
-              className={`p-2 rounded ${editor.activePanel === 'files' ? 'bg-blue-600' : 'hover:bg-gray-700'}`}
+              className={`p-2 rounded ${editor.activePanel === 'files' ? 'bg-emerald-600' : 'hover:bg-gray-700'}`}
             >
               <Code2 className="w-6 h-6" />
             </button>
@@ -373,7 +373,7 @@ export default function EditorPage() {
                     key={file._id}
                     onClick={() => handleFileSelect(file)}
                     className={`p-2 rounded cursor-pointer ${
-                      editor.activeTab === file._id ? 'bg-blue-600' : 'hover:bg-gray-700'
+                      editor.activeTab === file._id ? 'bg-emerald-600' : 'hover:bg-gray-700'
                     }`}
                   >
                     <p className="text-sm">{file.name}</p>
