@@ -345,7 +345,7 @@ export class AnalyticsService {
         period: `${days} days`,
         totalUsage: events.length,
         uniqueUsers: uniqueUsers.size,
-        adoptionRate: `${((uniqueUsers.size / (await Analytics.distinct('userId'))) * 100).toFixed(2)}%`,
+        adoptionRate: `${((uniqueUsers.size / (await Analytics.distinct('userId')).length) * 100).toFixed(2)}%`,
       }
     } catch (error) {
       logger.error('Get feature adoption error', 'ANALYTICS_SERVICE', error)
@@ -366,7 +366,6 @@ export class AnalyticsService {
       {} as Record<string, number>
     )
   }
-}
 
   /**
    * Get organization analytics
@@ -449,7 +448,7 @@ export class AnalyticsService {
           acc[event.action] = (acc[event.action] || 0) + 1
           return acc
         },
-        { totalChanges: 0, FILE_UPDATE: 0, FILE_CREATE: 0, FILE_DELETE: 0 }
+        { totalChanges: 0, FILE_UPDATE: 0, FILE_CREATE: 0, FILE_DELETE: 0 } as Record<string, number>
       )
 
       return {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { api, getToken, setToken } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import {
   Plus,
@@ -87,16 +88,11 @@ export default function Dashboard() {
 
   const fetchProjects = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/projects', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to load projects')
+      if (!getToken()) {
+        router.push('/auth/login')
+        return
       }
-
-      const { projects } = await response.json()
+      const { projects } = await api<{ projects: Project[] }>('/projects')
       setProjects(projects)
     } catch (error) {
       console.error('Load projects error:', error)
@@ -110,25 +106,14 @@ export default function Dashboard() {
     setCreating(true)
 
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/projects', {
+      const { project } = await api<{ project: Project }>('/projects', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+        json: {
           name: newProjectName,
           description: newProjectDescription,
           language: newProjectLanguage,
-        }),
+        },
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to create project')
-      }
-
-      const { project } = await response.json()
       setProjects([project, ...projects])
       setNewProjectName('')
       setNewProjectDescription('')
@@ -145,15 +130,7 @@ export default function Dashboard() {
     if (!confirm('Are you sure? This action cannot be undone.')) return
 
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`/api/projects/${projectId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete project')
-      }
+      await api(`/projects/${projectId}`, { method: 'DELETE' })
 
       setProjects(projects.filter((p) => p._id !== projectId))
       setActiveMenu(null)
@@ -163,7 +140,7 @@ export default function Dashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    setToken(null)
     router.push('/auth/login')
   }
 
@@ -299,7 +276,7 @@ export default function Dashboard() {
                     <div>
                       <p className="text-xs font-semibold text-gray-400 mb-2 uppercase">Language</p>
                       <div className="space-y-2">
-                        {['All', 'JavaScript', 'TypeScript', 'Python', 'React'].map((lang) => (
+                        {['All', 'JavaScript', 'TypeScript', 'Python', 'Java'].map((lang) => (
                           <label key={lang} className="flex items-center gap-2 cursor-pointer group">
                             <input
                               type="radio"
@@ -544,7 +521,7 @@ export default function Dashboard() {
                   onChange={(e) => setNewProjectLanguage(e.target.value)}
                   className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                 >
-                  {['JavaScript', 'TypeScript', 'Python', 'React', 'HTML', 'CSS'].map((lang) => (
+                  {['JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'HTML', 'CSS'].map((lang) => (
                     <option key={lang} value={lang.toLowerCase()}>
                       {lang}
                     </option>

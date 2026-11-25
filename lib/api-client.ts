@@ -39,7 +39,7 @@ export class ApiClient {
    */
   private loadToken(): void {
     if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('authToken')
+      this.token = localStorage.getItem('token')
     }
   }
 
@@ -49,7 +49,7 @@ export class ApiClient {
   setToken(token: string): void {
     this.token = token
     if (typeof window !== 'undefined') {
-      localStorage.setItem('authToken', token)
+      localStorage.setItem('token', token)
     }
   }
 
@@ -59,7 +59,7 @@ export class ApiClient {
   clearToken(): void {
     this.token = null
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken')
+      localStorage.removeItem('token')
     }
   }
 

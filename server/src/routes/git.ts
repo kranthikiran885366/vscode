@@ -1,7 +1,7 @@
 import express, { Router, Response } from 'express'
 import { GitService } from '../services/gitService'
 import Project from '../models/Project'
-import { AuthRequest } from '../server'
+import { AuthRequest } from '../middleware/auth'
 import { join } from 'path'
 
 const router: Router = express.Router()

@@ -11,15 +11,15 @@ export interface FileVersion {
 export interface IFile extends Document {
   name: string
   path: string
-  project: string
-  owner: string
+  project: any
+  owner: any
   content: string
   language: string
   size: number
   isDirty: boolean
   versions: FileVersion[]
   currentVersion: number
-  lastModifiedBy: string
+  lastModifiedBy: any
   lineCount: number
   encoding: string
   isDeleted: boolean

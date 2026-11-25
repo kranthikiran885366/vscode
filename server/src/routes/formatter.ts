@@ -1,6 +1,6 @@
 import express, { Router, Response } from 'express'
 import { CodeFormatter } from '../services/codeFormatter'
-import { AuthRequest } from '../server'
+import { AuthRequest } from '../middleware/auth'
 
 const router: Router = express.Router()
 

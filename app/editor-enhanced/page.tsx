@@ -1,14 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { Suspense, useState, useEffect, useRef, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { io, Socket } from "socket.io-client"
-import { useEditor } from "@/lib/editor-store"
-import { MonacoEditor } from "@/components/monaco-editor"
-import { FileExplorer } from "@/components/file-explorer"
+import { EditorProvider, useEditor } from "@/lib/editor-store"
+import dynamic from "next/dynamic"
 import { EnhancedTerminal } from "@/components/enhanced-terminal"
 import { MenuBar } from "@/components/menu-bar"
-import { TabBar } from "@/components/tab-bar"
 import { StatusBar } from "@/components/status-bar"
 import { AIAssistant } from "@/components/ai-assistant"
 import { ProblemsPanel } from "@/components/problems-panel"
@@ -21,8 +19,14 @@ import { CommandPalette } from "@/components/command-palette"
 import { AdvancedSearch } from "@/components/advanced-search"
 import { ActivityBar } from "@/components/activity-bar"
 import { Button } from "@/components/ui/button"
-import { Play, Save, GitBranch, Code2, Terminal } from "lucide-react"
+import { api, getToken, languageFromFileName } from "@/lib/api"
+import { Play, Save, FileCode, FilePlus, Trash2, X, ArrowLeft, Sparkles } from "lucide-react"
 import { ZenMode } from "@/components/zen-mode"
+
+const MonacoEditor = dynamic(() => import("@/components/monaco-editor").then((m) => m.MonacoEditor), {
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center text-gray-400">Loading editor...</div>,
+})
 import { AdvancedFormatter } from "@/components/advanced-formatter"
 import { ThemesManager } from "@/components/themes-manager"
 import { OutlineNavigator } from "@/components/outline-navigator"
@@ -48,6 +52,16 @@ interface Project {
 }
 
 export default function EnhancedEditorPage() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center text-gray-400">Loading...</div>}>
+      <EditorProvider>
+        <EnhancedEditor />
+      </EditorProvider>
+    </Suspense>
+  )
+}
+
+function EnhancedEditor() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const projectId = searchParams.get("projectId")
@@ -62,6 +76,7 @@ export default function EnhancedEditorPage() {
   const [activeTab, setActiveTab] = useState("")
   const [isExecuting, setIsExecuting] = useState(false)
   const [terminalOutput, setTerminalOutput] = useState("")
+  const [outputVisible, setOutputVisible] = useState(false)
 
   // Fetch project and files
   useEffect(() => {
@@ -72,16 +87,11 @@ export default function EnhancedEditorPage() {
       }
 
       try {
-        const token = localStorage.getItem("token")
-        const response = await fetch(`/api/projects/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to load project")
+        if (!getToken()) {
+          router.push("/auth/login")
+          return
         }
-
-        const data = await response.json()
+        const data = await api<{ project: Project }>(`/projects/${projectId}`)
         setProject(data.project)
 
         if (data.project.files && data.project.files.length > 0) {
@@ -98,19 +108,18 @@ export default function EnhancedEditorPage() {
     }
 
     fetchProject()
-  }, [projectId])
+  }, [projectId, router])
 
   // Initialize WebSocket
   useEffect(() => {
     if (!projectId) return
 
-    const token = localStorage.getItem("token")
-    if (!token) {
-      setError("Not authenticated")
-      return
-    }
+    const token = getToken()
+    if (!token) return
 
-    const socket = io(process.env.NEXT_PUBLIC_WS_URL || "http://localhost:5000", {
+    const wsUrl =
+      process.env.NEXT_PUBLIC_WS_URL || `${window.location.protocol}//${window.location.hostname}:5000`
+    const socket = io(wsUrl, {
       auth: { token },
     })
 
@@ -139,6 +148,7 @@ export default function EnhancedEditorPage() {
     if (!currentFile) return
 
     setCurrentFile((prev) => prev ? { ...prev, content, isDirty: true } : null)
+    setOpenTabs((prev) => prev.map((t) => (t._id === currentFile._id ? { ...t, content, isDirty: true } : t)))
 
     if (socketRef.current) {
       socketRef.current.emit("editor-update", {
@@ -152,21 +162,14 @@ export default function EnhancedEditorPage() {
     if (!currentFile) return
 
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`/api/files/${currentFile._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ content: currentFile.content }),
-      })
+      await api(`/files/${currentFile._id}`, { method: "PUT", json: { content: currentFile.content } })
 
-      if (!response.ok) {
-        throw new Error("Failed to save file")
-      }
-
-      setCurrentFile((prev) => prev ? { ...prev, isDirty: false } : null)
+      const saved = { ...currentFile, isDirty: false }
+      setCurrentFile(saved)
+      setOpenTabs((prev) => prev.map((t) => (t._id === saved._id ? saved : t)))
+      setProject((prev) =>
+        prev ? { ...prev, files: prev.files.map((f) => (f._id === saved._id ? saved : f)) } : prev
+      )
 
       if (socketRef.current) {
         socketRef.current.emit("file-save", {
@@ -175,7 +178,8 @@ export default function EnhancedEditorPage() {
         })
       }
     } catch (err: any) {
-      console.error("Save error:", err)
+      setTerminalOutput(`Save failed: ${err.message}\n`)
+      setOutputVisible(true)
     }
   }, [currentFile])
 
@@ -183,24 +187,17 @@ export default function EnhancedEditorPage() {
     if (!currentFile) return
 
     setIsExecuting(true)
-    setTerminalOutput("Executing...\n")
+    setOutputVisible(true)
+    setTerminalOutput(`$ run ${currentFile.name}\n`)
 
     try {
-      const response = await fetch("/api/execute", {
+      const result = await api<{ output: string; error: string; duration: number }>("/execute", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          code: currentFile.content,
-          language: currentFile.language,
-        }),
+        json: { code: currentFile.content, language: currentFile.language },
       })
-
-      const result = await response.json()
       setTerminalOutput(
-        `${terminalOutput}${result.output || result.error}\nExecution time: ${result.duration}ms`
+        (prev) =>
+          `${prev}${result.output || ""}${result.error ? `${result.error}\n` : ""}\n[finished in ${result.duration}ms]`
       )
       setIsExecuting(false)
 
@@ -211,44 +208,47 @@ export default function EnhancedEditorPage() {
         })
       }
     } catch (err: any) {
-      setTerminalOutput(`${terminalOutput}Error: ${err.message}`)
+      setTerminalOutput((prev) => `${prev}Error: ${err.message}`)
       setIsExecuting(false)
     }
-  }, [currentFile, terminalOutput])
+  }, [currentFile])
 
   const handleCreateNewFile = useCallback(async () => {
     const fileName = prompt("Enter file name:")
     if (!fileName || !projectId) return
 
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch("/api/files", {
+      const { file } = await api<{ file: File }>("/files", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          projectId,
-          name: fileName,
-          language: "plaintext",
-          content: "",
-        }),
+        json: { projectId, name: fileName, language: languageFromFileName(fileName), content: "" },
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to create file")
-      }
-
-      const { file } = await response.json()
       setProject((prev) => {
         if (!prev) return null
         return { ...prev, files: [...prev.files, file] }
       })
+      handleFileSelect(file)
     } catch (err: any) {
-      console.error("Create file error:", err)
+      alert(err.message)
     }
-  }, [projectId])
+  }, [projectId, handleFileSelect])
+
+  const handleDeleteFile = useCallback(
+    async (file: File) => {
+      if (!confirm(`Delete ${file.name}?`)) return
+      try {
+        await api(`/files/${file._id}`, { method: "DELETE" })
+        setProject((prev) => (prev ? { ...prev, files: prev.files.filter((f) => f._id !== file._id) } : prev))
+        setOpenTabs((prev) => prev.filter((t) => t._id !== file._id))
+        if (currentFile?._id === file._id) {
+          setCurrentFile(null)
+          setActiveTab("")
+        }
+      } catch (err: any) {
+        alert(err.message)
+      }
+    },
+    [currentFile]
+  )
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -330,10 +330,53 @@ export default function EnhancedEditorPage() {
     )
   }
 
+  const renderExplorer = () => (
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 truncate">
+                {project.name}
+              </span>
+              <button
+                onClick={handleCreateNewFile}
+                title="New file"
+                aria-label="New file"
+                className="p-1 rounded hover:bg-gray-700"
+              >
+                <FilePlus className="w-4 h-4" />
+              </button>
+            </div>
+            <ul className="py-1">
+              {project.files.map((file) => (
+                <li
+                  key={file._id}
+                  className={`group flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-gray-700 ${
+                    activeTab === file._id ? "bg-gray-700 text-white" : "text-gray-300"
+                  }`}
+                  onClick={() => handleFileSelect(openTabs.find((t) => t._id === file._id) || file)}
+                >
+                  <FileCode className="w-4 h-4 shrink-0 text-blue-400" />
+                  <span className="truncate flex-1">{file.name}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteFile(file)
+                    }}
+                    title="Delete file"
+                    aria-label={`Delete ${file.name}`}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-gray-600"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+
   const renderLeftPanel = () => {
     switch (state.activeLeftPanel) {
       case "explorer":
-        return <FileExplorer />
+        return renderExplorer()
       case "search":
         return <AdvancedSearch />
       case "git":
@@ -347,7 +390,7 @@ export default function EnhancedEditorPage() {
       case "outline":
         return <OutlineNavigator />
       default:
-        return <FileExplorer />
+        return renderExplorer()
     }
   }
 
@@ -384,28 +427,38 @@ export default function EnhancedEditorPage() {
           {/* Editor */}
           <div className="flex-1 flex flex-col">
             {/* Tab Bar */}
-            <TabBar
-              tabs={openTabs}
-              activeTab={activeTab}
-              onTabClick={(fileId) => {
-                setActiveTab(fileId)
-                const tab = openTabs.find((t) => t._id === fileId)
-                if (tab) setCurrentFile(tab)
-              }}
-              onTabClose={(fileId) => {
-                setOpenTabs((prev) => prev.filter((t) => t._id !== fileId))
-                if (activeTab === fileId) {
-                  const remaining = openTabs.filter((t) => t._id !== fileId)
-                  if (remaining.length > 0) {
-                    setActiveTab(remaining[0]._id)
-                    setCurrentFile(remaining[0])
-                  } else {
-                    setActiveTab("")
-                    setCurrentFile(null)
-                  }
-                }
-              }}
-            />
+            <div className="h-9 bg-gray-800 border-b border-gray-700 flex items-center overflow-x-auto">
+              {openTabs.map((tab) => (
+                <div
+                  key={tab._id}
+                  onClick={() => {
+                    setActiveTab(tab._id)
+                    setCurrentFile(tab)
+                  }}
+                  className={`group h-full flex items-center gap-2 px-3 text-sm cursor-pointer border-r border-gray-700 ${
+                    activeTab === tab._id ? "bg-gray-900 text-white" : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <span className="truncate">{tab.name}</span>
+                  {tab.isDirty && <span className="w-2 h-2 rounded-full bg-blue-400" />}
+                  <button
+                    aria-label={`Close ${tab.name}`}
+                    className="opacity-60 hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      const remaining = openTabs.filter((t) => t._id !== tab._id)
+                      setOpenTabs(remaining)
+                      if (activeTab === tab._id) {
+                        setActiveTab(remaining[0]?._id || "")
+                        setCurrentFile(remaining[0] || null)
+                      }
+                    }}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
 
             {/* Editor Content */}
             <div className="flex-1 overflow-hidden">
@@ -433,6 +486,20 @@ export default function EnhancedEditorPage() {
           )}
         </div>
 
+        {outputVisible && (
+          <div className="h-48 bg-gray-950 border-t border-gray-700 flex flex-col">
+            <div className="flex items-center justify-between px-3 py-1 border-b border-gray-800 text-xs uppercase text-gray-400">
+              <span>Output</span>
+              <button onClick={() => setOutputVisible(false)} aria-label="Close output" className="p-1 hover:text-white">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <pre data-testid="execution-output" className="flex-1 overflow-auto p-3 text-sm font-mono text-green-300 whitespace-pre-wrap">
+              {terminalOutput}
+            </pre>
+          </div>
+        )}
+
         {/* Bottom Panel - Terminal/Problems */}
         {(state.terminalVisible || state.problemsPanelVisible) && (
           <div className="h-64 bg-gray-800 border-t border-gray-700 overflow-auto">
@@ -451,6 +518,10 @@ export default function EnhancedEditorPage() {
 
         {/* Toolbar */}
         <div className="bg-gray-800 border-t border-gray-700 p-4 flex gap-4">
+          <Button variant="ghost" onClick={() => router.push("/dashboard")} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Dashboard
+          </Button>
           <Button
             onClick={handleSaveFile}
             disabled={!currentFile?.isDirty}
@@ -466,6 +537,14 @@ export default function EnhancedEditorPage() {
           >
             <Play className="w-4 h-4" />
             {isExecuting ? "Executing..." : "Execute"}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => dispatch({ type: "TOGGLE_AI_CHAT" })}
+            className="flex items-center gap-2 ml-auto"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI Assistant
           </Button>
         </div>
       </div>

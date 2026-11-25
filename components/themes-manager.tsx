@@ -129,7 +129,7 @@ export function ThemesManager() {
   const [editingTheme, setEditingTheme] = useState<Theme | null>(null)
   const [newTheme, setNewTheme] = useState<Partial<Theme>>({
     type: "dark",
-    colors: {},
+    colors: {} as Theme["colors"],
   })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -290,7 +290,7 @@ export function ThemesManager() {
                             colors: {
                               ...(newTheme.colors || {}),
                               [key]: e.target.value,
-                            },
+                            } as Theme["colors"],
                           })
                         }
                         className="w-12 h-10 rounded cursor-pointer"
@@ -306,7 +306,7 @@ export function ThemesManager() {
                             colors: {
                               ...(newTheme.colors || {}),
                               [key]: e.target.value,
-                            },
+                            } as Theme["colors"],
                           })
                         }
                         className="flex-1 bg-gray-700 border-gray-600 text-white text-sm"

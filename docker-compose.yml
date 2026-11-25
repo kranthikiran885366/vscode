@@ -1,50 +1,38 @@
-version: '3.8'
-
 services:
-  app:
-    build: .
+  web:
+    build:
+      context: .
+      args:
+        BACKEND_URL: http://api:5000
     ports:
       - '3000:3000'
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  api:
+    build: ./server
+    ports:
+      - '5000:5000'
     environment:
       NODE_ENV: production
+      PORT: 5000
       MONGODB_URI: mongodb://mongodb:27017/zencode
-      JWT_SECRET: ${JWT_SECRET}
-      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-me-jwt-secret}
+      REFRESH_SECRET: ${REFRESH_SECRET:-change-me-refresh-secret}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
       - mongodb
-      - redis
-    networks:
-      - zencode-network
     restart: unless-stopped
 
   mongodb:
-    image: mongo:6
+    image: mongo:7
     ports:
       - '27017:27017'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: zencode
     volumes:
       - mongodb_data:/data/db
-    networks:
-      - zencode-network
-    restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
-    networks:
-      - zencode-network
     restart: unless-stopped
 
 volumes:
   mongodb_data:
-  redis_data:
-
-networks:
-  zencode-network:
-    driver: bridge

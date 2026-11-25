@@ -13,7 +13,6 @@ const pgPool = new Pool({
   min: parseInt(process.env.DB_POOL_MIN || '5'),
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  statementTimeoutMillis: 30000,
   statement_timeout: 30000,
   application_name: 'zencode-ai',
 })
@@ -149,7 +148,7 @@ export async function healthCheck(): Promise<{
     mongodb: false,
   }
 
-  try {
+  if (process.env.POSTGRES_HOST) try {
     const pgClient = await pgPool.connect()
     await pgClient.query('SELECT 1')
     pgClient.release()
@@ -164,7 +163,7 @@ export async function healthCheck(): Promise<{
   }
 
   try {
-    if (mongoConnection) {
+    if (mongoose.connection.readyState === 1) {
       await mongoose.connection.db?.admin().ping()
       health.mongodb = true
     }

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 export interface Collaborator {
-  userId: string
+  userId: any
   role: 'owner' | 'contributor' | 'viewer'
   addedAt: Date
 }
@@ -9,7 +9,7 @@ export interface Collaborator {
 export interface IProject extends Document {
   name: string
   description: string
-  owner: string
+  owner: any
   collaborators: Collaborator[]
   files: string[]
   isPublic: boolean

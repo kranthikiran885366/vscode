@@ -1,12 +1,13 @@
 import express, { Router, Response } from 'express'
-import { AuthRequest } from '../server'
+import { AuthRequest } from '../middleware/auth'
+import { chatCompletion } from '../services/llm'
 
 const router: Router = express.Router()
 
-// Mock OpenAI API for demonstration
-// In production, integrate real OpenAI API with process.env.OPENAI_API_KEY
+// Uses an OpenAI-compatible API when OPENAI_API_KEY is set; otherwise canned replies.
 
 interface AIRequest {
+  message?: string
   code?: string
   prompt?: string
   context?: string
@@ -181,8 +182,11 @@ router.post('/chat', async (req: AuthRequest, res: Response) => {
       'refactor': 'I can help with refactoring! Please share:\n\n1. The code you want to refactor\n2. What you\'re trying to improve\n3. Any constraints or requirements\n\nThen I can provide specific suggestions.',
     }
 
-    let response = 'How can I help you with your code?'
-    for (const [key, value] of Object.entries(responses)) {
+    const prompt = context ? `${message}\n\nCurrent ${language || ''} code:\n\`\`\`\n${context}\n\`\`\`` : message
+    const llmResponse = await chatCompletion('You are ZenCode AI, a concise coding assistant inside a web IDE.', prompt)
+
+    let response = llmResponse || 'How can I help you with your code?'
+    for (const [key, value] of llmResponse ? [] : Object.entries(responses)) {
       if (message.toLowerCase().includes(key)) {
         response = value
         break

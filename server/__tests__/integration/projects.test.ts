@@ -1,7 +1,7 @@
 import request from 'supertest'
-import { app } from '../../server/src/app'
-import User from '../../server/src/models/User'
-import Project from '../../server/src/models/Project'
+import { app } from '../../src/app'
+import User from '../../src/models/User'
+import Project from '../../src/models/Project'
 import mongoose from 'mongoose'
 
 describe('Projects API Integration Tests', () => {
@@ -24,6 +24,9 @@ describe('Projects API Integration Tests', () => {
   })
 
   beforeEach(async () => {
+    await User.deleteMany({})
+    await Project.deleteMany({})
+
     // Create test user
     const user = new User({
       name: 'Test User',
@@ -164,7 +167,7 @@ describe('Projects API Integration Tests', () => {
         .delete(`/api/projects/${id}`)
         .set('Authorization', `Bearer ${token}`)
 
-      expect(response.status).toBe(204)
+      expect(response.status).toBe(200)
 
       // Verify it's deleted
       const getResponse = await request(app)

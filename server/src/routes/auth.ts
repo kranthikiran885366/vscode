@@ -22,7 +22,7 @@ router.post(
       success: true,
       message: 'Account created successfully',
       data: {
-        user: user.toJSON(),
+        user: user,
         tokens,
       },
     })
@@ -41,7 +41,7 @@ router.post(
       success: true,
       message: 'Login successful',
       data: {
-        user: user.toJSON(),
+        user: user,
         tokens,
       },
     })
@@ -57,7 +57,7 @@ router.get(
 
     res.json({
       success: true,
-      data: { user: user?.toJSON() },
+      data: { user: user },
     })
   })
 )
@@ -78,7 +78,7 @@ router.put(
     res.json({
       success: true,
       message: 'Profile updated',
-      data: { user: user.toJSON() },
+      data: { user: user },
     })
   })
 )
@@ -159,7 +159,7 @@ router.post(
     res.json({
       success: true,
       message: 'Email verified successfully',
-      data: { user: user.toJSON() },
+      data: { user: user },
     })
   })
 )

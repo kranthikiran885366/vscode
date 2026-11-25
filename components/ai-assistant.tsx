@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useEditor, type ChatMessage } from "../lib/editor-store"
+import { api } from "../lib/api"
 
 export function AIAssistant() {
   const { state, dispatch } = useEditor()
@@ -52,27 +53,21 @@ export function AIAssistant() {
     setInputMessage("")
     setIsTyping(true)
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: "ai",
-        content: generateAIResponse(inputMessage),
-        timestamp: new Date(),
-      }
-      dispatch({ type: "ADD_CHAT_MESSAGE", payload: aiResponse })
-      setIsTyping(false)
-    }, 1500)
-  }
-
-  const generateAIResponse = (userInput: string): string => {
-    const responses = [
-      "I can help you with that! Here's what I suggest:\n\n```javascript\nconst solution = () => {\n  // Your optimized code here\n  return result;\n};\n```\n\nThis approach is more efficient because it reduces complexity.",
-      "Great question! Let me break this down for you:\n\n1. First, consider the data structure\n2. Then optimize for performance\n3. Finally, add error handling\n\nWould you like me to show you a specific implementation?",
-      "I notice you're working on a React component. Here are some best practices:\n\n```tsx\nconst MyComponent = ({ data }: Props) => {\n  const [state, setState] = useState(initialState);\n  \n  useEffect(() => {\n    // Side effects here\n  }, [dependencies]);\n  \n  return <div>{/* Your JSX */}</div>;\n};\n```",
-      "This looks like a perfect use case for a custom hook! Here's how you could refactor it:\n\n```typescript\nconst useCustomLogic = () => {\n  // Extract your logic here\n  return { data, loading, error };\n};\n```",
-    ]
-    return responses[Math.floor(Math.random() * responses.length)]
+    let content: string
+    try {
+      const result = await api<{ response: string }>("/ai/chat", {
+        method: "POST",
+        json: { message: userMessage.content, context: userMessage.codeContext },
+      })
+      content = result.response
+    } catch (err: any) {
+      content = `Sorry, the AI service is unavailable: ${err.message}`
+    }
+    dispatch({
+      type: "ADD_CHAT_MESSAGE",
+      payload: { id: (Date.now() + 1).toString(), type: "assistant", content, timestamp: new Date() },
+    })
+    setIsTyping(false)
   }
 
   const handleQuickAction = (action: string) => {
@@ -115,7 +110,7 @@ export function AIAssistant() {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-sm">{isUser ? state.user?.name || "You" : "AI Assistant"}</span>
+            <span className="font-medium text-sm">{isUser ? "You" : "AI Assistant"}</span>
             <span className="text-xs text-gray-500">{message.timestamp.toLocaleTimeString()}</span>
           </div>
 

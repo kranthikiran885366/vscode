@@ -246,41 +246,42 @@ zencode-ai/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- npm or pnpm
-- Git
-- Docker (for microservices)
+- Node.js 20+ and pnpm 10 (`corepack enable`)
+- MongoDB 6+ (e.g. `docker run -d -p 27017:27017 --name zencode-mongo mongo:7`)
+- Python 3 (optional, for running Python code in the editor)
 
-### Installation
-
+### Local development
 ```bash
-# Clone repository
-git clone https://github.com/kranthikiran885366/zencode-ai.git
-cd zencode-ai
+pnpm install                     # also installs server/ dependencies
+cp server/.env.example server/.env
+pnpm dev:all                     # Next.js on :3000, Express API on :5000
+```
+Open http://localhost:3000, sign up, create a project and start editing.
 
-# Install dependencies
-npm install
-# or
-pnpm install
+The frontend calls `/api/*`, which Next.js rewrites to the API at `BACKEND_URL`
+(default `http://localhost:5000`). Socket.IO connects to `NEXT_PUBLIC_WS_URL`
+(default: same host, port 5000).
 
-# Set up environment variables
-cp .env.example .env.local
+Set `OPENAI_API_KEY` in `server/.env` for real AI answers; without it the AI
+assistant returns canned replies. PostgreSQL and Redis are not required.
 
-# Start dev server
-npm run dev
+### Scripts
+| Command | Description |
+| --- | --- |
+| `pnpm dev:all` | Run frontend and backend together |
+| `pnpm dev` / `pnpm dev:server` | Run frontend / backend only |
+| `pnpm build` / `pnpm build:server` | Production builds |
+| `pnpm type-check` | TypeScript check for frontend and backend |
+| `pnpm test` | Backend unit tests |
+| `pnpm test:integration` | Backend integration tests (needs MongoDB) |
 
-# Open browser
-# http://localhost:3000
+### Docker
+```bash
+docker compose up --build        # web :3000, api :5000, mongodb :27017
 ```
 
-### Docker Setup
-
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
-
-# Access on http://localhost:3000
-```
+> **Security note:** `/api/execute` runs submitted code in a child process on the
+> API host without sandboxing. Only expose it to trusted users.
 
 ## 📚 Usage
 

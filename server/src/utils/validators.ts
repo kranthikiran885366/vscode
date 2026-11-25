@@ -1,3 +1,5 @@
+import { validatePasswordStrength } from './password'
+
 /**
  * Email validation
  */
@@ -10,7 +12,7 @@ export const isValidEmail = (email: string): boolean => {
  * Project name validation
  */
 export const isValidProjectName = (name: string): boolean => {
-  return name && name.trim().length > 0 && name.length <= 255
+  return !!name && name.trim().length >= 2 && name.length <= 255
 }
 
 /**
@@ -19,7 +21,7 @@ export const isValidProjectName = (name: string): boolean => {
 export const isValidFileName = (name: string): boolean => {
   // Disallow special characters but allow dots for file extensions
   const validNameRegex = /^[a-zA-Z0-9_\-\.]+$/
-  return name && name.trim().length > 0 && validNameRegex.test(name)
+  return !!name && name.trim().length > 0 && validNameRegex.test(name)
 }
 
 /**
@@ -89,3 +91,7 @@ export const validateEmails = (emails: string[]): { valid: string[]; invalid: st
 
   return { valid, invalid }
 }
+
+export const validateEmail = isValidEmail
+export const validateProjectName = isValidProjectName
+export const validatePassword = (password: string): boolean => validatePasswordStrength(password).isValid

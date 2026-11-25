@@ -13,7 +13,7 @@ export default function Home() {
 
     if (token) {
       // Redirect to editor if logged in
-      router.push('/editor')
+      router.push('/dashboard')
     }
   }, [router])
 
