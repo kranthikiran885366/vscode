@@ -601,7 +601,7 @@ if (typeof window !== "undefined") {
   )
 
   // Setup JavaScript defaults
-  ;(monaco.languages as any).javascript.javascriptDefaults.setCompilerOptions({
+  ;(monaco.languages as any).typescript.javascriptDefaults.setCompilerOptions({
     target: (monaco.languages as any).typescript.ScriptTarget.Latest,
     allowJs: true,
     allowNonTsExtensions: true,
