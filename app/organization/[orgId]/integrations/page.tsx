@@ -28,7 +28,7 @@ import {
 interface Integration {
   id: string
   name: string
-  category: 'vcs' | 'package' | 'database' | 'deployment' | 'communication'
+  category: 'vcs' | 'package' | 'database' | 'deployment' | 'communication' | 'cloud'
   description: string
   icon: string
   status: 'connected' | 'available' | 'coming-soon'

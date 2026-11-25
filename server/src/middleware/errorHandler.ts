@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { logger } from '../utils/logger'
-import { ApiError } from '../types'
+import { AppError as ApiError } from '../utils/errors'
 
 /**
  * Error handling middleware
@@ -20,6 +20,7 @@ export function errorHandler(err: Error | ApiError, req: Request, res: Response,
   // Send error response
   res.status(status).json({
     success: false,
+    message,
     error: {
       message,
       code: err instanceof ApiError ? err.code : 'INTERNAL_ERROR',
@@ -44,6 +45,7 @@ export function asyncHandler(fn: (req: Request, res: Response, next: NextFunctio
 export function notFoundHandler(req: Request, res: Response) {
   res.status(404).json({
     success: false,
+    message: 'Route not found',
     error: {
       message: 'Route not found',
       code: 'NOT_FOUND',

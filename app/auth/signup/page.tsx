@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { api, setToken } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import {
   Code2,
@@ -173,34 +174,21 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/auth/signup', {
+      const data = await api<{ tokens: { accessToken: string; refreshToken: string } }>('/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+        json: { name: formData.name, email: formData.email, password: formData.password },
       })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(
-          data.message || 'Failed to sign up. This email may already be registered.'
-        )
-        return
-      }
-
-      localStorage.setItem('token', data.token)
+      setToken(data.tokens.accessToken)
+      localStorage.setItem('refreshToken', data.tokens.refreshToken)
       setSuccess(true)
 
       // Small delay for success animation
       setTimeout(() => {
         router.push('/dashboard')
       }, 500)
-    } catch (err) {
-      setError('An error occurred. Please try again later.')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to sign up. This email may already be registered.')
     } finally {
       setLoading(false)
     }

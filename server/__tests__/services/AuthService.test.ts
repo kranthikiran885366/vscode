@@ -1,9 +1,9 @@
-import { authService } from '../../server/src/services/AuthService'
-import User from '../../server/src/models/User'
+import { authService } from '../../src/services/AuthService'
+import User from '../../src/models/User'
 import mongoose from 'mongoose'
 
 // Mock User model
-jest.mock('../../server/src/models/User')
+jest.mock('../../src/models/User')
 
 describe('AuthService', () => {
   beforeEach(() => {
@@ -81,6 +81,7 @@ describe('AuthService', () => {
 
     it('should throw error for invalid password', async () => {
       const mockUser = {
+        isLocked: jest.fn().mockReturnValue(false),
         comparePassword: jest.fn().mockResolvedValue(false),
         incLoginAttempts: jest.fn(),
       }
@@ -106,7 +107,7 @@ describe('AuthService', () => {
         save: jest.fn().mockResolvedValue(true),
       }
 
-      ;(User as any).findById = jest.fn().mockResolvedValue(mockUser)
+      ;(User as any).findById = jest.fn().mockReturnValue({ select: jest.fn().mockResolvedValue(mockUser) })
 
       await expect(
         authService.changePassword('user_id', 'OldPassword123!', 'NewPassword456!')
@@ -122,7 +123,7 @@ describe('AuthService', () => {
         comparePassword: jest.fn().mockResolvedValue(false),
       }
 
-      ;(User as any).findById = jest.fn().mockResolvedValue(mockUser)
+      ;(User as any).findById = jest.fn().mockReturnValue({ select: jest.fn().mockResolvedValue(mockUser) })
 
       await expect(
         authService.changePassword('user_id', 'WrongPassword', 'NewPassword456!')

@@ -1,4 +1,4 @@
-import { validateEmail, validatePassword, validateProjectName } from '../../server/src/utils/validators'
+import { validateEmail, validatePassword, validateProjectName } from '../../src/utils/validators'
 
 describe('Validators', () => {
   describe('validateEmail', () => {

@@ -192,7 +192,7 @@ router.get(
     const { projectId } = req.params
     const { query } = req.query
 
-    const files = await fileService.searchFilesInProject(projectId, req.user!.id, query as string)
+    const files = await fileService.searchFiles(projectId, req.user!.id, (query as string) || '')
 
     res.json({
       success: true,

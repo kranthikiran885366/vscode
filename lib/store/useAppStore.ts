@@ -291,7 +291,7 @@ export interface UIState {
 
   toggleSidebar: () => void
   setTheme: (theme: 'light' | 'dark' | 'auto') => void
-  addNotification: (type: string, message: string) => void
+  addNotification: (type: 'success' | 'error' | 'info' | 'warning', message: string) => void
   removeNotification: (id: string) => void
   clearNotifications: () => void
 }

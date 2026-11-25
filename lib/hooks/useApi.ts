@@ -71,7 +71,7 @@ export function useAuth() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await apiClient.get('/auth/me')
+        const response: any = await apiClient.get('/auth/me')
         if (response.success) {
           setUser(response.data?.user)
         }
@@ -88,7 +88,7 @@ export function useAuth() {
   const login = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true)
-      const response = await apiClient.post('/auth/login', { email, password })
+      const response: any = await apiClient.post('/auth/login', { email, password })
       if (response.data?.tokens?.accessToken) {
         apiClient.setToken(response.data.tokens.accessToken)
         setUser(response.data.user)
@@ -105,7 +105,7 @@ export function useAuth() {
   const signup = useCallback(async (name: string, email: string, password: string) => {
     try {
       setLoading(true)
-      const response = await apiClient.post('/auth/signup', { name, email, password })
+      const response: any = await apiClient.post('/auth/signup', { name, email, password })
       if (response.data?.tokens?.accessToken) {
         apiClient.setToken(response.data.tokens.accessToken)
         setUser(response.data.user)
@@ -132,7 +132,7 @@ export function useAuth() {
 
   const updateProfile = useCallback(async (updates: any) => {
     try {
-      const response = await apiClient.put('/auth/profile', updates)
+      const response: any = await apiClient.put('/auth/profile', updates)
       if (response.data?.user) {
         setUser(response.data.user)
       }
@@ -166,7 +166,7 @@ export function useProjects() {
   const fetchProjects = useCallback(async (limit?: number, offset?: number) => {
     try {
       setLoading(true)
-      const response = await apiClient.get(
+      const response: any = await apiClient.get(
         `/projects${limit ? `?limit=${limit}&offset=${offset || 0}` : ''}`
       )
       if (response.data?.projects) {
@@ -184,7 +184,7 @@ export function useProjects() {
   const createProject = useCallback(
     async (name: string, description?: string, language?: string) => {
       try {
-        const response = await apiClient.post('/projects', { name, description, language })
+        const response: any = await apiClient.post('/projects', { name, description, language })
         if (response.data?.project) {
           setProjects((prev) => [response.data.project, ...prev])
         }
@@ -230,7 +230,7 @@ export function useFiles(projectId?: string) {
 
     try {
       setLoading(true)
-      const response = await apiClient.get(`/files/project/${pId || projectId}`)
+      const response: any = await apiClient.get(`/files/project/${pId || projectId}`)
       if (response.data?.files) {
         setFiles(response.data.files)
       }
@@ -248,7 +248,7 @@ export function useFiles(projectId?: string) {
       if (!projectId) throw new Error('Project ID is required')
 
       try {
-        const response = await apiClient.post('/files', {
+        const response: any = await apiClient.post('/files', {
           projectId,
           name,
           language,
@@ -268,7 +268,7 @@ export function useFiles(projectId?: string) {
 
   const updateFile = useCallback(async (fileId: string, content: string, message?: string) => {
     try {
-      const response = await apiClient.put(`/files/${fileId}`, { content, message })
+      const response: any = await apiClient.put(`/files/${fileId}`, { content, message })
       if (response.data?.file) {
         setFiles((prev) =>
           prev.map((f) => (f._id === fileId ? response.data.file : f))

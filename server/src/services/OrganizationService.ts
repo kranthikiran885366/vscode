@@ -283,7 +283,7 @@ export class OrganizationService {
       }
 
       // Prevent removing last owner
-      if (memberToUpdate.role === 'owner' && role !== 'owner') {
+      if (memberToUpdate.role === 'owner') {
         const ownerCount = org.members.filter((m) => m.role === 'owner').length
         if (ownerCount === 1) {
           throw new ValidationError('Organization must have at least one owner')

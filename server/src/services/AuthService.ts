@@ -1,6 +1,6 @@
 import User, { IUser } from '../models/User'
 import { generateTokenPair, TokenPayload } from '../utils/jwt'
-import { hashPassword, comparePassword, validatePasswordStrength } from '../utils/password'
+import { validatePasswordStrength } from '../utils/password'
 import { isValidEmail } from '../utils/validators'
 import {
   ValidationError,
@@ -118,14 +118,11 @@ export class AuthService {
         throw new ConflictError('Email already registered')
       }
 
-      // Hash password
-      const hashedPassword = await hashPassword(password)
-
       // Create user
       const user = new User({
         name: name.trim(),
         email: email.toLowerCase(),
-        password: hashedPassword,
+        password,
         isVerified: false,
         isActive: true,
         role: 'user',
@@ -145,7 +142,7 @@ export class AuthService {
       const tokens = generateTokenPair(tokenPayload)
 
       return {
-        user: user.toJSON() as IUser,
+        user: user.toJSON() as unknown as IUser,
         tokens,
       }
     } catch (error) {
@@ -190,7 +187,7 @@ export class AuthService {
       }
 
       // Verify password
-      const isPasswordValid = await comparePassword(password, user.password)
+      const isPasswordValid = await user.comparePassword(password)
       if (!isPasswordValid) {
         // Increment login attempts
         await user.incLoginAttempts()
@@ -218,7 +215,7 @@ export class AuthService {
       const tokens = generateTokenPair(tokenPayload)
 
       return {
-        user: user.toJSON() as IUser,
+        user: user.toJSON() as unknown as IUser,
         tokens,
       }
     } catch (error) {
@@ -241,7 +238,7 @@ export class AuthService {
       }
 
       // Verify old password
-      const isOldPasswordValid = await comparePassword(oldPassword, user.password)
+      const isOldPasswordValid = await user.comparePassword(oldPassword)
       if (!isOldPasswordValid) {
         throw new AuthenticationError('Current password is incorrect')
       }
@@ -254,9 +251,8 @@ export class AuthService {
         })
       }
 
-      // Hash and save new password
-      const hashedPassword = await hashPassword(newPassword)
-      user.password = hashedPassword
+      // The User model's pre-save hook hashes the password
+      user.password = newPassword
       await user.save()
 
       logger.info('Password changed successfully', 'AUTH_SERVICE', { userId })
@@ -329,9 +325,8 @@ export class AuthService {
         })
       }
 
-      // Hash and save new password
-      const hashedPassword = await hashPassword(newPassword)
-      user.password = hashedPassword
+      // The User model's pre-save hook hashes the password
+      user.password = newPassword
       user.passwordResetToken = undefined as any
       user.passwordResetExpiresAt = undefined as any
       await user.save()
@@ -561,7 +556,7 @@ export class AuthService {
       }
 
       // Verify password for security
-      const isPasswordValid = await comparePassword(password, user.password)
+      const isPasswordValid = await user.comparePassword(password)
       if (!isPasswordValid) {
         throw new AuthenticationError('Invalid password')
       }

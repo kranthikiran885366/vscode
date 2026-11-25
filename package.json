@@ -1,12 +1,20 @@
 {
-  "name": "my-v0-project",
+  "name": "zencode-ai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
     "dev": "next dev",
+    "dev:server": "npm --prefix server run dev",
+    "dev:all": "concurrently -n web,api -c blue,green \"next dev\" \"npm --prefix server run dev\"",
+    "build": "next build",
+    "build:server": "npm --prefix server run build",
+    "start": "next start",
+    "start:server": "npm --prefix server start",
     "lint": "next lint",
-    "start": "next start"
+    "type-check": "tsc --noEmit && npm --prefix server run typecheck",
+    "test": "npm --prefix server run test:unit",
+    "test:integration": "npm --prefix server run test:integration",
+    "postinstall": "npm --prefix server install --no-audit --no-fund"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -91,6 +99,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.5",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"

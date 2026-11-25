@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { api, setToken } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import {
   Code2,
@@ -92,20 +93,13 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const data = await api<{ tokens: { accessToken: string; refreshToken: string } }>('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        json: { email: formData.email, password: formData.password },
       })
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.message || 'Failed to log in. Please check your credentials.')
-        return
-      }
-
-      localStorage.setItem('token', data.token)
+      setToken(data.tokens.accessToken)
+      localStorage.setItem('refreshToken', data.tokens.refreshToken)
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true')
       }
@@ -115,8 +109,8 @@ export default function LoginPage() {
       setTimeout(() => {
         router.push('/dashboard')
       }, 500)
-    } catch (err) {
-      setError('An error occurred. Please try again later.')
+    } catch (err: any) {
+      setError(err?.message || 'Failed to log in. Please check your credentials.')
     } finally {
       setLoading(false)
     }

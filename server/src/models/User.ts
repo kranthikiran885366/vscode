@@ -30,6 +30,8 @@ export interface IUser extends Document {
   updatedAt: Date
   comparePassword(password: string): Promise<boolean>
   isLocked(): boolean
+  incLoginAttempts(): Promise<any>
+  resetLoginAttempts(): Promise<any>
 }
 
 const userSchema = new Schema<IUser>(

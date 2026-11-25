@@ -1,44 +1,26 @@
-# Multi-stage build for ZenCode AI
-
-# Stage 1: Build
-FROM node:18-alpine AS builder
-
+# Next.js frontend
+FROM node:20-alpine AS deps
 WORKDIR /app
+RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
-# Install dependencies
-COPY package*.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
-
-# Copy source
+FROM node:20-alpine AS builder
+WORKDIR /app
+RUN corepack enable
+# Rewrites are resolved at build time, so the backend URL must be known here.
+ARG BACKEND_URL=http://api:5000
+ARG NEXT_PUBLIC_WS_URL=
+ENV BACKEND_URL=$BACKEND_URL NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build
 RUN pnpm build
-RUN pnpm build:server
 
-# Stage 2: Runtime
-FROM node:18-alpine
-
+FROM node:20-alpine AS runner
 WORKDIR /app
-
-# Install only production dependencies
-COPY package*.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile --production
-
-# Copy built files from builder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/server/dist ./server/dist
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 COPY --from=builder /app/public ./public
-
-# Environment
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
-
-# Start app
-CMD ["node", "server/dist/index.js"]
+CMD ["node", "server.js"]

@@ -66,6 +66,7 @@ export function MonacoEditor({
     monaco.editor.defineTheme("high-contrast", {
       base: "hc-black",
       inherit: true,
+      rules: [],
       colors: {
         "editor.background": "#000000",
         "editor.foreground": "#ffffff",
@@ -126,33 +127,20 @@ export function MonacoEditor({
         foldingImportsByDefault: false,
         unfoldOnClickAfterEndOfLine: false,
         linkedEditing: true,
-        inlineHints: {
-          enabled: true,
-          fontSize: 12,
-          fontFamily: "'Cascadia Code', 'Courier New', monospace",
-          padding: true,
-        },
         inlineSuggest: {
           enabled: true,
-          mode: "always",
+          mode: "prefix",
         },
         showUnused: true,
         readOnly,
         contextmenu: true,
         copyWithSyntaxHighlighting: true,
         columnSelection: false,
-        codeActionsOnSave: {
-          "source.fixAll": "explicit",
-          "source.fixAll.eslint": "explicit",
-          "source.organizeImports": "explicit",
-        },
-        "editor.codeActionWidget.showHeaders": true,
         dropIntoEditor: {
           enabled: true,
         },
-        experimentalInlineEdit: true,
         lightbulb: {
-          enabled: true,
+          enabled: monaco.editor.ShowLightbulbIconMode.On,
         },
         gotoLocation: {
           multiple: "goto",
@@ -175,7 +163,6 @@ export function MonacoEditor({
           enabled: true,
           cycle: true,
         },
-        peekWidgetDefaultOpen: "goto",
         definitionLinkOpensInPeek: false,
         hover: {
           enabled: true,
@@ -558,14 +545,14 @@ if (typeof window !== "undefined") {
   })
 
   // Configure TypeScript compiler options
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.Latest,
+  ;(monaco.languages as any).typescript.typescriptDefaults.setCompilerOptions({
+    target: (monaco.languages as any).typescript.ScriptTarget.Latest,
     allowNonTsExtensions: true,
-    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
+    moduleResolution: (monaco.languages as any).typescript.ModuleResolutionKind.NodeJs,
+    module: (monaco.languages as any).typescript.ModuleKind.ESNext,
     noEmit: true,
     esModuleInterop: true,
-    jsx: monaco.languages.typescript.JsxEmit.React,
+    jsx: (monaco.languages as any).typescript.JsxEmit.React,
     reactNamespace: "React",
     allowJs: true,
     strict: true,
@@ -580,7 +567,7 @@ if (typeof window !== "undefined") {
   })
 
   // Add React type definitions
-  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+  ;(monaco.languages as any).typescript.typescriptDefaults.addExtraLib(
     `
     declare global {
       namespace React {
@@ -601,7 +588,7 @@ if (typeof window !== "undefined") {
   )
 
   // Add DOM type definitions
-  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+  ;(monaco.languages as any).typescript.typescriptDefaults.addExtraLib(
     `
     declare global {
       interface Document {}
@@ -614,8 +601,8 @@ if (typeof window !== "undefined") {
   )
 
   // Setup JavaScript defaults
-  monaco.languages.javascript.javascriptDefaults.setCompilerOptions({
-    target: monaco.languages.typescript.ScriptTarget.Latest,
+  ;(monaco.languages as any).typescript.javascriptDefaults.setCompilerOptions({
+    target: (monaco.languages as any).typescript.ScriptTarget.Latest,
     allowJs: true,
     allowNonTsExtensions: true,
   })

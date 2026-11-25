@@ -68,24 +68,14 @@ export function ActivityBar() {
     },
   ]
 
+  type EditorPanel = ReturnType<typeof useEditor>["state"]["activeLeftPanel"]
+
   const bottomItems = [
     {
-      id: "collaboration",
+      id: "ai",
       icon: Users,
-      label: "Collaboration",
-      action: () => {
-        dispatch({ type: "SET_ACTIVE_RIGHT_PANEL", payload: "collaboration" })
-        dispatch({ type: "SET_RIGHT_SIDEBAR_VISIBLE", payload: true })
-      },
-    },
-    {
-      id: "preview",
-      icon: Monitor,
-      label: "Live Preview",
-      action: () => {
-        dispatch({ type: "SET_ACTIVE_RIGHT_PANEL", payload: "preview" })
-        dispatch({ type: "SET_RIGHT_SIDEBAR_VISIBLE", payload: true })
-      },
+      label: "AI Assistant",
+      action: () => dispatch({ type: "TOGGLE_AI_CHAT" }),
     },
     {
       id: "terminal",
@@ -93,7 +83,7 @@ export function ActivityBar() {
       label: "Terminal",
       action: () => {
         dispatch({ type: "SET_ACTIVE_BOTTOM_PANEL", payload: "terminal" })
-        dispatch({ type: "SET_BOTTOM_PANEL_VISIBLE", payload: true })
+        dispatch({ type: "TOGGLE_TERMINAL" })
       },
     },
     {
@@ -120,7 +110,7 @@ export function ActivityBar() {
                       ? "bg-blue-500 text-white hover:bg-blue-600"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
-                  onClick={() => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: item.panel })}
+                  onClick={() => dispatch({ type: "SET_ACTIVE_LEFT_PANEL", payload: item.panel as EditorPanel })}
                 >
                   <item.icon className="w-5 h-5" />
                 </Button>

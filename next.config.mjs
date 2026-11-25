@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
+
 const nextConfig = {
-  experimental: {
-    allowedDevOrigins: [
-      'http://172.31.121.66:3000',
-      'http://localhost:3000',
-      'https://*.replit.dev',
-      'https://*.repl.co'
-    ]
-  }
+  output: 'standalone',
+  async rewrites() {
+    return {
+      fallback: [{ source: '/api/:path*', destination: `${BACKEND_URL}/api/:path*` }],
+    }
+  },
 }
 
 export default nextConfig
